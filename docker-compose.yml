@@ -1,0 +1,17 @@
+version: "2.0"
+services:
+    discovery_app:
+        image: threatworx/discovery_app:latest
+        container_name: threatworx_discovery_app
+        ports:
+            - 443:443
+        volumes:
+            - ./config:/opt/discovery_app/config
+        restart: on-failure:2
+    watchtower:
+        image: containrrr/watchtower
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        command: --interval 86400 --cleanup --remove-volumes --debug threatworx_discovery_app
+        depends_on: 
+            - discovery_app

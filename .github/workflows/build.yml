@@ -1,0 +1,34 @@
+# Build latest container image
+
+name: discovery app docker image build
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'version'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner
+        
+      - name: Get version tag
+        run: |
+          echo "TAG_NAME=$(cat version)" >> $GITHUB_ENV
+          
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: threatworx/discovery_app:${{ env.TAG_NAME }}, threatworx/discovery_app:latest
