@@ -2,7 +2,7 @@
 
 ![Container image build](https://github.com/threatworx/discovery_app/actions/workflows/build.yml/badge.svg)
 
-## _Zero Trust Automated AppSec for GitLab Enterprise_
+## _Automated Discovery Using 'twigs'_
 
 A complete automated discovery solution built around 'twigs' discovery CLI, part of the ThreatWorx proactive security platform.
 
