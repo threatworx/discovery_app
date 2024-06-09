@@ -11,4 +11,7 @@ token=
 [discovery_app]
 # App internal settings. Typically you don't need to modify these
 concurrency = 4
+# Level of logging for twigs commands run from within the app. Can be 'info' or 'debug'
 log_level=info
+# Use password authentication to access the app. Set to 'no' if you want to skip this
+auth=yes
