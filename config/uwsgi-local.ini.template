@@ -2,8 +2,8 @@
 
 # User editable section for webserver configuration
 
-#http-socket = :8080
-shared-socket = 0.0.0.0:443
+http-socket = :8080
+#shared-socket = 0.0.0.0:8443
 https =  =0,config/default.cert,config/default.key,EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA512:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:ECDH+AESGCM:ECDH+AES256:DH+AESGCM:DH+AES256:RSA+AESGCM:!aNULL:!eNULL:!LOW:!RC4:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS
 
 # Don't modify any details below

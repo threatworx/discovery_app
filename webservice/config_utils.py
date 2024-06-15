@@ -8,19 +8,20 @@ import re
 import csv
 import string
 import shutil
+from pathlib import Path
 
-CONFIG_PATH = '/opt/discovery_app/config'
+CONFIG_PATH = '/opt/discovery_app/config/'
+env_config_path = os.environ.get("DISCOVERY_APP_CONFIG_PATH")
+if env_config_path is not None:
+   CONFIG_PATH = env_config_path
 authenticators = []
 
 # validate login password 
 def validate_password(password):
     global CONFIG_PATH
-    env_config_path = os.environ.get("DISCOVERY_APP_CONFIG_PATH")
-    if env_config_path is not None:
-        CONFIG_PATH = env_config_path
 
-    cred_file = CONFIG_PATH + "/app_credentials"
-    key_file = CONFIG_PATH + "/default.key"
+    cred_file = CONFIG_PATH + "app_credentials"
+    key_file = CONFIG_PATH + "default.key"
 
     cmd = "/usr/bin/openssl rsautl -inkey "+key_file+" -decrypt < "+cred_file
     output = None
@@ -39,11 +40,8 @@ def validate_password(password):
 # read the config.ini contents into memory
 def get_config():
     global CONFIG_PATH
-    env_config_path = os.environ.get("DISCOVERY_APP_CONFIG_PATH")
-    if env_config_path is not None:
-        CONFIG_PATH = env_config_path
 
-    config_file = CONFIG_PATH + "/config.ini"
+    config_file = CONFIG_PATH + "config.ini"
 
     if os.path.isfile(config_file) == False:
         print("Error configuration file [%s] not found" % config_file)
@@ -56,11 +54,8 @@ def get_config():
 # write the current config to config.ini
 def write_config(config):
     global CONFIG_PATH
-    env_config_path = os.environ.get("DISCOVERY_APP_CONFIG_PATH")
-    if env_config_path is not None:
-        CONFIG_PATH = env_config_path
 
-    config_file = CONFIG_PATH + "/config.ini"
+    config_file = CONFIG_PATH + "config.ini"
     with open(config_file, 'w') as fd:
         config.write(fd)
 
@@ -77,6 +72,8 @@ def refresh_tw_creds(config):
     f.close()
 
 def create_twigs_cmd(config, scan_name, scan_type):
+    global CONFIG_PATH
+
     twigs_log = config['discovery_app']['log_level']
     log_switch = ''
     if twigs_log == 'info':
@@ -99,7 +96,7 @@ def create_twigs_cmd(config, scan_name, scan_type):
         if 'no_ping' in config[scan_name] and config[scan_name]['no_ping'] == 'on':
             twigs_cmd = twigs_cmd + " --discovery_scan_type N"
     elif scan_type == 'host':
-        twigs_cmd = twigs_cmd + " host --host_list "+config[scan_name]['host_list']
+        twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['host_list']
     elif scan_type == 'gitlab':
         twigs_cmd = twigs_cmd + " gitlab --gl_access_token "+config[scan_name]['access_token'] + " --gl_host "+config[scan_name]['server']
         if config[scan_name]['sast'] == 'on':
@@ -131,20 +128,20 @@ def create_twigs_cmd(config, scan_name, scan_type):
         if config[scan_name]['nocode'] == 'on':
             twigs_cmd = twigs_cmd + " --no_code"
     elif scan_type == 'gcp':
-        gcloud_cmd = shutil.which('gcloud') 
-        gcloud_cmd = gcloud_cmd + " auth activate-service-account --key-file "+config[scan_name]['key_file']
+        gcloud_cmd = shutil.which('gcloud')
+        gcloud_cmd = gcloud_cmd + " auth activate-service-account --key-file "+CONFIG_PATH+config[scan_name]['key_file']
         twigs_cmd = twigs_cmd + " gcp --enable_tracking_tags"
         twigs_cmd = gcloud_cmd + " && " + twigs_cmd
     elif scan_type == 'gcp_cspm':
-        gcloud_cmd = shutil.which('gcloud') 
-        gcloud_cmd = gcloud_cmd + " auth activate-service-account --key-file "+config[scan_name]['key_file']
+        gcloud_cmd = shutil.which('gcloud')
+        gcloud_cmd = gcloud_cmd + " auth activate-service-account --key-file "+CONFIG_PATH+config[scan_name]['key_file']
         twigs_cmd = twigs_cmd + " gcp_cis --assetid "+config[scan_name]['asset_id']
         twigs_cmd = gcloud_cmd + " && " + twigs_cmd
     elif scan_type == 'gcr':
         gcloud_cmd = shutil.which('gcloud')
         docker_cmd = shutil.which('docker')
-        gcloud_cmd = gcloud_cmd + " auth activate-service-account --key-file "+config[scan_name]['key_file']
-        docker_cmd = "cat "+config[scan_name]['key_file']+" | "+docker_cmd+" login -u _json_key --password-stdin "+config[scan_name]['gcr_repo']
+        gcloud_cmd = gcloud_cmd + " auth activate-service-account --key-file "+CONFIG_PATH+config[scan_name]['key_file']
+        docker_cmd = "cat "+CONFIG_PATH+config[scan_name]['key_file']+" | "+docker_cmd+" login -u _json_key --password-stdin "+config[scan_name]['gcr_repo']
         twigs_cmd = twigs_cmd + " gcr --repository "+config[scan_name]['gcr_repo']+" --check_all_vulns"
         twigs_cmd = gcloud_cmd + " && " + docker_cmd + " && " + twigs_cmd
 
@@ -170,8 +167,17 @@ def remove_cron_entry(config, scan_name):
         for ejob in ejobs:
             user_cron.remove(ejob)
 
+# remove any files, keys etc.  related to this scan config
+def remove_scan_files(scan_name):
+    global CONFIG_PATH
+
+    for filename in Path(CONFIG_PATH).glob(scan_name+'.*'):
+        filename.unlink()
+
 # reload configuration if any changes have happened
 def reload_config():
+    global CONFIG_PATH
+    print("Reloading app_configuration from "+CONFIG_PATH)
     config = get_config()
     refresh_tw_creds(config)
     with CronTab(user=True) as user_cron:
@@ -186,20 +192,24 @@ def reload_config():
         create_cron_entry(config, s, twigs_cmd)
 
 def create_gcp_key_file(scan_name, private_key):
+    global CONFIG_PATH
+
     pk_file_name = None
     if private_key and len(private_key) > 0:
-        pk_file_name = os.path.expanduser('~/.tw/'+scan_name+'.key')
+        pk_file_name = CONFIG_PATH+scan_name+'.key'
         with open(pk_file_name, mode='w') as pk_file:
             pk_file.write(private_key)
-    return pk_file_name 
+    return os.path.basename(pk_file_name)
 
 def create_host_csv(scan_name, hostname, user, passwd, private_key):
+    global CONFIG_PATH
+
     pk_file_name = None
     if private_key and len(private_key) > 0:
-        pk_file_name = os.path.expanduser('~/.tw/'+scan_name+'.key')
+        pk_file_name = CONFIG_PATH+scan_name+'.key'
         with open(pk_file_name, mode='w') as pk_file:
             pk_file.write(private_key)
-    csv_file = os.path.expanduser('~/.tw/'+scan_name+'.csv')
+    csv_file = CONFIG_PATH+scan_name+'.csv'
     with open(csv_file, mode='w') as csvfile:
          fieldnames = ['hostname','userlogin','userpwd','privatekey','assetname']
          writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_NONE, escapechar='\\')
@@ -212,7 +222,7 @@ def create_host_csv(scan_name, hostname, user, passwd, private_key):
          else:
              rdict['userpwd'] = passwd
          writer.writerow(rdict)
-    return csv_file
+    return os.path.basename(csv_file)
 
 def save_creds(config, request):
     # process any change to threatworx configuration 

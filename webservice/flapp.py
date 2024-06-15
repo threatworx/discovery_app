@@ -104,6 +104,7 @@ def delete_config():
         return redirect("/app")
     config_utils.remove_cron_entry(config,scan_name)
     config.remove_section(scan_name)
+    config_utils.remove_scan_files(scan_name)
     config.set('discovery_app','error_msg', "Deleted discovery configuration '"+scan_name+"'")
     config_utils.write_config(config)
     return redirect(url_for('app_page',auth=authenticator))
