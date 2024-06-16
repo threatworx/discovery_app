@@ -11,7 +11,7 @@ Provides a simple intuitive interface to automate and manage discovery scans usi
 ## Features
 
 - Intuitive UI to schedule discovery scans
-- Support for fingerprint, linux host, web application, GCP CWP, GCP CSPM and GCR discovery modes (more in the pipeline).
+- Support for fingerprint, linux host, web application, GCP (and more) discovery modes.
 - No need to share asset credentials with SaaS application - zero trust discovery and scan 
 - Easy way to manage scheduled discovery runs and execute them on demand
 - Can be run as a standalone app as well as a fully integrated container image
@@ -28,22 +28,24 @@ Provides a simple intuitive interface to automate and manage discovery scans usi
 
 - Ensure requirements are satisfied on linux system, especially docker support and https inbound / outbound connectivity
 
-- Download / clone the [ThreatWorx GitLab App](https://github.com/threatworx/gitlab_app) repository
+- Download / clone the [ThreatWorx Discovery App](https://github.com/threatworx/discovery_app) repository
 
 ```bash
-git clone https://github.com/threatworx/gitlab_app.git
+git clone https://github.com/threatworx/discovery_app.git
 ```
 
 - Run the setup.sh script
   
 ```bash
-cd gitlab_app
+cd discovery_app
 ./setup.sh
 ```
 
-> Defaults ports are 8080 if the app is run locally or 443 if the app is run as a container. Modify the ``uwsgi.ini`` or ``uwsgi.ini`` (for running the app locally) to pick your own ports for the app. 
-> This will create self signed cerficates for the app. If you have your own ssl certificates, copy them to the ``config`` directory and edit either the ``uwsgi.ini`` or ``uwsgi-local.ini`` (for running app locally) to use your certificates.
-> This will also (optionally) create a password for the app, will encrypt it using cerfiticate keys and store it in the ``config`` directory.
+> Defaults ports are 8080 if the app is run locally or 443 if the app is run as a container. Modify the ``uwsgi.ini`` or ``uwsgi.ini`` (for running the app locally) to pick your own ports for the app.
+> 
+> Setup will create self signed cerficates for the app. If you have your own ssl certificates, copy them to the ``config`` directory and edit either the ``uwsgi.ini`` or ``uwsgi-local.ini`` (for running app locally) to use your certificates.
+> 
+> Setup will also (optionally) create a password for the app, will encrypt it using cerfiticate keys and store it in the ``config`` directory.
 
 - For the containerized app start the app service by running the ``docker compose`` or the ``docker-compose`` command
 
@@ -54,13 +56,9 @@ docker compose up -d
 - For the local app start the app service by running the ``run.sh`` script
 
 ```bash
-run.sh
+./run.sh
 ```
 
 - Point a browser to ``https://linux-system:port`` to start using the app 
 
-> The browser will complain about the self signed certificate if are using one
->
-> Please be sure to replace it with an appropriate ssl certificate
-
-- Discovery runs will be scheduled using the ``cron`` service
+> For more details check the [Discovery App documentation](https://threatworx.io/docs-category/discovery-app/) 
