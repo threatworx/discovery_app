@@ -11,7 +11,7 @@ Provides a simple intuitive interface to automate and manage discovery scans usi
 ## Features
 
 - Intuitive UI to schedule discovery scans
-- Support for fingerprint, linux host and web application discovery modes (more in the pipeline).
+- Support for fingerprint, linux host, web application, GCP CWP, GCP CSPM and GCR discovery modes (more in the pipeline).
 - No need to share asset credentials with SaaS application - zero trust discovery and scan 
 - Easy way to manage scheduled discovery runs and execute them on demand
 - Can be run as a standalone app as well as a fully integrated container image
@@ -19,9 +19,10 @@ Provides a simple intuitive interface to automate and manage discovery scans usi
 
 ## Requirements
 
-- Standard linux system (Redhat, Ubuntu, CentOS etc.) with docker support (if running containerized version) and port 443 (https) inbound / outbound connectivity
-- For running as a local app, twigs and its dependencies (nmap etc.) and cron service will be required
-- SSL certificate for secure communication (optional). App supports and will allow creating self signed certificates if none are available
+- Standard linux system (Redhat, Ubuntu, CentOS etc.) with docker support (if running containerized version) and port 443 (https) inbound / outbound connectivity.
+- For running as a local app, twigs and its dependencies (nmap etc.) and cron service will be required.
+- SSL certificate for secure communication (optional). App supports and will allow creating self signed certificates if none are available.
+- Python requirements (in requirements.txt)
 
 ## Quick start - Install and configure the App Service
 
@@ -33,21 +34,16 @@ Provides a simple intuitive interface to automate and manage discovery scans usi
 git clone https://github.com/threatworx/gitlab_app.git
 ```
 
-- Run the setup.sh script to create self signed certificates
-
+- Run the setup.sh script
+  
 ```bash
 cd gitlab_app
 ./setup.sh
 ```
 
-> If you have ssl certificates, copy them to the ``config`` directory and edit either the ``uwsgi.ini`` or ``uwsgi-local.ini`` (for running app locally) to use your certificates
-
-```
-[uwsgi]
-...
-https = =0,/opt/discovery_app/config/my.cert,/opt/discovery_app/config/my.key,...
-...
-```
+> Defaults ports are 8080 if the app is run locally or 443 if the app is run as a container. Modify the ``uwsgi.ini`` or ``uwsgi.ini`` (for running the app locally) to pick your own ports for the app. 
+> This will create self signed cerficates for the app. If you have your own ssl certificates, copy them to the ``config`` directory and edit either the ``uwsgi.ini`` or ``uwsgi-local.ini`` (for running app locally) to use your certificates.
+> This will also (optionally) create a password for the app, will encrypt it using cerfiticate keys and store it in the ``config`` directory.
 
 - For the containerized app start the app service by running the ``docker compose`` or the ``docker-compose`` command
 
@@ -55,13 +51,13 @@ https = =0,/opt/discovery_app/config/my.cert,/opt/discovery_app/config/my.key,..
 docker compose up -d
 ```
 
-- For the local app start the app service by running the ``run_local.sh`` script
+- For the local app start the app service by running the ``run.sh`` script
 
 ```bash
-run_local.sh
+run.sh
 ```
 
-- Point a browser to ``https://linux-system`` to start using the app 
+- Point a browser to ``https://linux-system:port`` to start using the app 
 
 > The browser will complain about the self signed certificate if are using one
 >
