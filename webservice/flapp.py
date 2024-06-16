@@ -5,6 +5,8 @@ import subprocess
 import csv
 import string
 import random
+import psutil
+import json
 from flask import Flask
 from flask import request, redirect, render_template, url_for
 
@@ -141,6 +143,29 @@ def logout():
     if authenticator in authenticators:
         authenticators.remove(authenticator)
     return redirect("/")
+
+@app.route("/run_status")
+def run_status():
+    global authenticators
+    auth = request.args.get('auth') 
+    if not auth or auth not in authenticators:
+        return '[]', 200, {'Content-Type': 'application/json'}
+    plist = psutil.process_iter()
+    config = config_utils.get_config()
+    running_scans = []
+    for p in plist:
+        try:
+            if '--run_id' not in p.cmdline():
+                continue
+            for s in config.sections():
+                if s not in p.cmdline():
+                    continue
+                running_scans.append(s)
+        except:
+            # exception in psutil ignore
+            pass
+
+    return json.dumps(running_scans), 200, {'Content-Type': 'application/json'}
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int("80"))

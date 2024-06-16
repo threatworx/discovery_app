@@ -432,6 +432,66 @@ body {
     from {opacity :1;}
     to {opacity :0;}
 }
+
+// Glowing dot css
+@-webkit-keyframes dot-keyframes {
+  0% {
+    opacity: 0.4;
+    -webkit-transform: scale(1, 1);
+            transform: scale(1, 1);
+  }
+  50% {
+    opacity: 1;
+    -webkit-transform: scale(1.2, 1.2);
+            transform: scale(1.2, 1.2);
+  }
+  100% {
+    opacity: 0.4;
+    -webkit-transform: scale(1, 1);
+            transform: scale(1, 1);
+  }
+}
+
+@keyframes dot-keyframes {
+  0% {
+    opacity: 0.4;
+    -webkit-transform: scale(1, 1);
+            transform: scale(1, 1);
+  }
+  50% {
+    opacity: 1;
+    -webkit-transform: scale(1.2, 1.2);
+            transform: scale(1.2, 1.2);
+  }
+  100% {
+    opacity: 0.4;
+    -webkit-transform: scale(1, 1);
+            transform: scale(1, 1);
+  }
+}
+.loading-dots {
+  text-align: center;
+  width: 100%;
+}
+.loading-dots--dot {
+  -webkit-animation: dot-keyframes 3s infinite ease-in-out;
+          animation: dot-keyframes 3s infinite ease-in-out;
+  background-color: #ff0000;
+  border-radius: 10px;
+  display: inline-block;
+  height: 7px;
+  width: 7px;
+}
+.loading-dots--dot:nth-child(2) {
+  -webkit-animation-delay: 5s;
+          animation-delay: 5s;
+}
+.loading-dots--dot:nth-child(3) {
+  -webkit-animation-delay: 5s;
+          animation-delay: 5s;
+}
+// Glowing dot css
+
 </style>
                         </head><body><div id="report" style="width: 1024px; box-sizing: border-box; margin: 0 auto; background: #fff; padding: 0 20px 20px 20px; border-top: #263746 solid 3px; box-shadow: 0 2px 10px rgba(0, 0, 0, .2); margin-bottom: 20px; border-radius: 0 0 3px 3px;">
 
@@ -480,10 +540,12 @@ body {
 <table cellpadding="0" cellspacing="0">
 <thead>
 <tr>
-<th width="1%"></th>
+<th width="3%"></th>
 <th width="30%"></th>
 <th width="30%"></th>
-<th width="30%"></th>
+<th width="28%"></th>
+<th width="3%"></th>
+<th width="3%"></th>
 <th width="3%"></th>
 <th width="3%"></th>
 </tr>
@@ -497,14 +559,19 @@ body {
 <td class=""></td>
 <td class=""></td>
 <td class=""></td>
+<td class=""></td>
 </tr>
 {% for item in data %}
 {% if item != 'threatworx' and item != 'discovery_app' and item != 'authenticator' %}
 <tr class="plugin-row">
-<td class=""></td>
+<td class=""><div title="This discovery is currently running" class="loading-dots" id="loading-dots-{{item}}" style="display: none">
+  <div class="loading-dots--dot"></div>
+</div>
+</td>
 <td class="">{{item}}</td>
 <td class="">{{data[item]['type']}}</td>
 <td class="">{{data[item]['schedule']}}</td>
+<td class=""></td>
 <td class=""><a title="Run this discovery now" href="/run_scan?scan_name={{item}}&scan_type={{data[item]['type']}}&auth={{data['authenticator']}}"><i class="fa fa-play"></i></a></td>
 <td class=""><a title="Delete this discovery configuration" href="/delete_scan?scan_name={{item}}&auth={{data['authenticator']}}"><i class="fa fa-trash-o"></i></a></td>
 <td class=""><a title="View last log for this discovery (in a new tab)" href="/view_log?scan_name={{item}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-external-link"></i></a></td>
@@ -731,6 +798,27 @@ body {
 			document.getElementById('user_private_key').required = true;
 		}
         }
+
+	function check_run_status() {
+		alldivs = document.querySelectorAll("[id*=loading-dots-]");
+		var div_array = [...alldivs];
+		var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open( "GET", "/run_status?auth={{data['authenticator']}}", false ); // false for synchronous request
+                xmlHttp.send( null );
+                response = xmlHttp.responseText;
+		jsonlist = JSON.parse(response);
+		div_array.forEach(div => {
+		    div.style.display = 'none';
+		    for (let index = 0; index < jsonlist.length; ++index) {
+                        const element = jsonlist[index];
+			if (div.id.endsWith('-'+element)) {
+			    div.style.display = 'block';
+                        }
+                    }
+		});
+	}
+        check_run_status();
+	setInterval(check_run_status, 5000);
         </script>
 </body>
 </html>
