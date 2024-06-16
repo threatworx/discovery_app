@@ -15,3 +15,5 @@ concurrency = 4
 log_level=info
 # Use password authentication to access the app. Set to 'no' if you want to skip this
 auth=yes
+# Remove scheduled discovery cron command entries on exit
+purge_cron_on_exit=yes

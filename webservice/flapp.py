@@ -1,5 +1,7 @@
 import os
 import sys
+import signal
+import atexit
 import configparser
 import subprocess
 import csv
@@ -14,6 +16,9 @@ from . import config_utils
 
 app = Flask(__name__)
 authenticators = []
+
+def handle_exit(*args):
+    config_utils.unload_cron()
 
 @app.route('/')
 def index_page():
@@ -169,4 +174,7 @@ def run_status():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int("80"))
+atexit.register(handle_exit)
+signal.signal(signal.SIGTERM, handle_exit)
+signal.signal(signal.SIGINT, handle_exit)
 config_utils.reload_config()

@@ -74,7 +74,9 @@ def refresh_tw_creds(config):
 def create_twigs_cmd(config, scan_name, scan_type):
     global CONFIG_PATH
 
-    twigs_log = config['discovery_app']['log_level']
+    twigs_log = 'info'
+    if 'log_level' in config['discovery_app']:
+        twigs_log = config['discovery_app']['log_level']
     log_switch = ''
     if twigs_log == 'info':
         log_switch = '-v'
@@ -316,3 +318,14 @@ def add_scan(config, request):
         config[scan_name]['key_file'] = create_gcp_key_file(scan_name, request.form['gcr_private_key'])
 
     write_config(config)
+
+def unload_cron():
+    global CONFIG_PATH
+    config = get_config()
+    if 'purge_cron_on_exit' in config['discovery_app'] and config['discovery_app']['purge_cron_on_exit'] == 'yes':
+        print("Unloading cron entries")
+        with CronTab(user=True) as user_cron:
+            # Get any existing jobs and remove those
+            ejobs = user_cron.find_comment(re.compile(r'^TW_'))
+            for ejob in ejobs:
+                user_cron.remove(ejob)
