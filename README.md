@@ -24,7 +24,7 @@ Provides a simple intuitive interface to automate and manage discovery scans usi
 - SSL certificate for secure communication (optional). App supports and will allow creating self signed certificates if none are available.
 - Python requirements (in requirements.txt)
 
-## Quick start - Install and configure the App Service
+## Quick start
 
 - Ensure requirements are satisfied on linux system, especially docker support and https inbound / outbound connectivity
 
