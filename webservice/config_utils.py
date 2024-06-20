@@ -99,6 +99,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + " --discovery_scan_type N"
     elif scan_type == 'host':
         twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['host_list']
+    elif scan_type == 'vmware':
+        twigs_cmd = twigs_cmd + " vmware --host "+config[scan_name]['vcenter_host']+" --user "+config[scan_name]['vcenter_user']+" --password '"+config[scan_name]['vcenter_passwd']+"'"
     elif scan_type == 'gitlab':
         twigs_cmd = twigs_cmd + " gitlab --gl_access_token "+config[scan_name]['access_token'] + " --gl_host "+config[scan_name]['server']
         if config[scan_name]['sast'] == 'on':
@@ -134,7 +136,7 @@ def create_twigs_cmd(config, scan_name, scan_type):
         gcloud_cmd = gcloud_cmd + " auth activate-service-account --key-file "+CONFIG_PATH+config[scan_name]['key_file']
         twigs_cmd = twigs_cmd + " gcp --enable_tracking_tags"
         twigs_cmd = gcloud_cmd + " && " + twigs_cmd
-    elif scan_type == 'gcp_cspm':
+    elif scan_type == 'gcp-cspm':
         gcloud_cmd = shutil.which('gcloud')
         gcloud_cmd = gcloud_cmd + " auth activate-service-account --key-file "+CONFIG_PATH+config[scan_name]['key_file']
         twigs_cmd = twigs_cmd + " gcp_cis --assetid "+config[scan_name]['asset_id']
@@ -146,6 +148,16 @@ def create_twigs_cmd(config, scan_name, scan_type):
         docker_cmd = "cat "+CONFIG_PATH+config[scan_name]['key_file']+" | "+docker_cmd+" login -u _json_key --password-stdin "+config[scan_name]['gcr_repo']
         twigs_cmd = twigs_cmd + " gcr --repository "+config[scan_name]['gcr_repo']+" --check_all_vulns"
         twigs_cmd = gcloud_cmd + " && " + docker_cmd + " && " + twigs_cmd
+    elif scan_type == 'aws':
+        twigs_cmd = twigs_cmd + " aws --aws_account '"+config[scan_name]['aws_account']+"' --aws_access_key '"+config[scan_name]['aws_access_key']+"' --aws_secret_key '"+config[scan_name]['aws_secret_key']+"' --aws_s3_bucket "+config[scan_name]['aws_s3_bucket']+" --aws_region "+config[scan_name]['aws_region']+" --enable_tracking_tags"
+    elif scan_type == 'aws-cspm':
+        twigs_cmd = twigs_cmd + " aws_cis --assetid "+config[scan_name]['asset_id']+" --aws_access_key '"+config[scan_name]['aws_access_key']+"' --aws_secret_key '"+config[scan_name]['aws_secret_key']+"'"
+    elif scan_type == 'ecr':
+        aws_cmd = shutil.which('aws')
+        aws_cmd = "AWS_ACCESS_KEY_ID='"+config[scan_name]['ecr_access_key']+"' AWS_SECRET_ACCESS_KEY='"+config[scan_name]['ecr_secret_key']+"' aws ecr get-login-password --region "+config[scan_name]['ecr_region']+" | docker login --username AWS --password-stdin '"+config[scan_name]['ecr_account']+".dkr.ecr."+config[scan_name]['ecr_region']+".amazonaws.com'"
+        twigs_cmd_prefix = "AWS_ACCESS_KEY_ID='"+config[scan_name]['ecr_access_key']+"' AWS_SECRET_ACCESS_KEY='"+config[scan_name]['ecr_secret_key']+"' AWS_DEFAULT_REGION="+config[scan_name]['ecr_region']
+        twigs_cmd = twigs_cmd_prefix + " " + twigs_cmd + " ecr --registry "+config[scan_name]['ecr_account']+" --check_all_vulns"
+        twigs_cmd = aws_cmd + " && " + twigs_cmd
 
     twigs_cmd = twigs_cmd + " 1> /tmp/"+scan_name+" 2>&1"
     return twigs_cmd
@@ -261,6 +273,10 @@ def add_scan(config, request):
             config[scan_name]['nmap_no_ping'] = 'off'
     elif scan_type == 'host':
         config[scan_name]['host_list'] = create_host_csv(scan_name, request.form['host_list'], request.form['user_name'], request.form['user_passwd'], request.form['user_private_key'])
+    elif scan_type == 'vmware':
+        config[scan_name]['vcenter_host'] = request.form['vcenter_host']
+        config[scan_name]['vcenter_user'] = request.form['vcenter_user']
+        config[scan_name]['vcenter_passwd'] = request.form['vcenter_passwd']
     elif scan_type == 'gitlab':
         config[scan_name]['access_token'] = request.form['gitlab_access_token']
         config[scan_name]['server'] = request.form['gitlab_server']
@@ -310,12 +326,27 @@ def add_scan(config, request):
             config[scan_name]['nocode'] = 'on'
     elif scan_type == 'gcp':
         config[scan_name]['key_file'] = create_gcp_key_file(scan_name, request.form['gcp_private_key'])
-    elif scan_type == 'gcp_cspm':
+    elif scan_type == 'gcp-cspm':
         config[scan_name]['asset_id'] = request.form['gcp_cspm_asset_id']
         config[scan_name]['key_file'] = create_gcp_key_file(scan_name, request.form['gcp_cspm_private_key'])
     elif scan_type == 'gcr':
         config[scan_name]['gcr_repo'] = request.form['gcr_repo']
         config[scan_name]['key_file'] = create_gcp_key_file(scan_name, request.form['gcr_private_key'])
+    elif scan_type == 'aws':
+        config[scan_name]['aws_account'] = request.form['aws_account']
+        config[scan_name]['aws_access_key'] = request.form['aws_access_key']
+        config[scan_name]['aws_secret_key'] = request.form['aws_secret_key']
+        config[scan_name]['aws_s3_bucket'] = request.form['aws_s3_bucket']
+        config[scan_name]['aws_region'] = request.form['aws_region']
+    elif scan_type == 'aws-cspm':
+        config[scan_name]['asset_id'] = request.form['aws_cspm_asset_id']
+        config[scan_name]['aws_access_key'] = request.form['aws_cspm_access_key']
+        config[scan_name]['aws_secret_key'] = request.form['aws_cspm_secret_key']
+    elif scan_type == 'ecr':
+        config[scan_name]['ecr_account'] = request.form['ecr_account']
+        config[scan_name]['ecr_access_key'] = request.form['ecr_access_key']
+        config[scan_name]['ecr_secret_key'] = request.form['ecr_secret_key']
+        config[scan_name]['ecr_region'] = request.form['ecr_region']
 
     write_config(config)
 

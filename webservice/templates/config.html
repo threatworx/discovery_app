@@ -585,33 +585,42 @@ body {
 <form action="/save_scan?auth={{data['authenticator']}}" method="post" id="main_form">
 <div class="container">
 <div class="form-group">
-<label>Add a new discovery run</label>
+<label>Schedule a new discovery run</label>
+<input type="text" placeholder="Discovery name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
+<span class="help-block">A unique name for this discovery run. Up to 16 alphanumeric allowed</span>
+<input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
+<span class="help-block">Comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
 <select class="custom-select" style="width:200px;" name="scan_type" id="scan_type" onchange="mode_change()">
 <option value="nmap" selected>Fingerprint scan (uncredentialed)</option>
 <option value="host" >Linux deep discovery using SSH (credentialed)</option>
 <option value="webapp">Web application (DAST)</option>
+<option value="vmware">VMware</option>
 <option disabled>──────────────────────</option>
 <option value="github">Github</option>
 <option value="gitlab">Gitlab</option>
 <option value="bitbucket">Bitbucket</option>
 <option disabled>──────────────────────</option>
 <option value="gcp">GCP CWP (agentless)</option>
-<option value="gcp_cspm">GCP CSPM</option>
+<option value="gcp-cspm">GCP CSPM</option>
 <option value="gcr">GCR</option>
+<option disabled>──────────────────────</option>
+<option value="aws">AWS CWP (agentless)</option>
+<option value="aws-cspm">AWS CSPM</option>
+<option value="ecr">AWS ECR</option>
 </select>
 <span class="help-block">Select a discovery mode</span>
-
-<input type="text" placeholder="Discovery run name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
-<span class="help-block">A unique name for this discovery run e.g. myscan1, prodsubnet1 etc. Up to 16 alphanumeric allowed</span>
-<input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
-<span class="help-block">Comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
+<br>
+<hr style="border: 1px dotted #D3D3D3;">
+<br>
 <div id="nmap_div" style="display: block;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="IP addresses, ranges or CIDRs" name="hosts" id="hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
         <span class="help-block">Comma separated list of IP address, ranges or CIDRs that you would like to discover</span>
         <input type="checkbox" name="nmap_no_ping" id="nmap_no_ping">No ping</input>
         <span class="help-block">Don't ping, instead assume that the IP is up. You will get better coverage but discovery times will be longer.</span>
 </div>
 <div id="host_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="IP address, range or CIDR" name="host_list" id="host_list" pattern="[a-zA-Z0-9.\/\-_]+">
         <span class="help-block">A single IP address, range or CIDR that you would like to discover</span>
 	<input type="text" placeholder="Service user name" name="user_name" id="user_name" pattern="[a-zA-Z0-9\/\-_]+">
@@ -621,12 +630,23 @@ body {
 	<textarea placeholder="Paste private key contents here" name="user_private_key" id="user_private_key" rows="5" cols="40" style="display: none"></textarea>
 </div>	    
 <div id="webapp_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-web-application-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
         <input type="url" placeholder="Web application URL" name="url" id="url" value="">
         <span class="help-block">A web application URL that you would like to discover</span>
         <input type="checkbox" name="webapp_no_ping" id="webapp_no_ping">No ping</input>
         <span class="help-block">Don't ping, instead assume that the IP is up. You will get better coverage but discovery times will be longer.</span>
 </div>
+<div id="vmware_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-vmware-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="vCenter host" name="vcenter_host" id="vcenter_host" pattern="[a-zA-Z0-9.\-_]+">
+        <span class="help-block">vCenter host name or IP address</span>
+	<input type="text" placeholder="vCenter user" name="vcenter_user" id="vcenter_user" pattern="[a-zA-Z0-9\/\-_]+">
+        <span class="help-block">vCenter user name</span>
+	<input type="password" placeholder="vCenter password" name="vcenter_passwd" id="vcenter_passwd">
+        <span class="help-block">vCenter user password</span>
+</div>
 <div id="github_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/enterprise-github-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="Github identity" name="github_identity" id="github_identity" pattern="[a-zA-Z0-9\-_]+">
         <span class="help-block">Github identity (organization or user name)</span>
 	<input type="password" placeholder="Access token" name="github_access_token" id="github_access_token">
@@ -639,6 +659,7 @@ body {
 	<input type="checkbox" id="gh_nocode" name="gh_nocode">No code sharing</input>
 </div>
 <div id="gitlab_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/enterprise-gitlab-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="password" placeholder="Access token" name="gitlab_access_token" id="gitlab_access_token">
         <span class="help-block">Gitlab access token with correct permissions to read repositories and metadata</span>
 	<input type="text" placeholder="gitlab.com" name="gitlab_server" id="gitlab_server" pattern="[a-zA-Z0-9.\/\-_]+" value='gitlab.com'>
@@ -649,6 +670,7 @@ body {
 	<input type="checkbox" id="gl_nocode" name="gl_nocode">No code sharing</input>
 </div>
 <div id="bitbucket_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/bitbucket-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="Bitbucket user" name="bb_user" id="bb_user" pattern="[a-zA-Z0-9\-_]+">
         <span class="help-block">Bitbucket user name</span>
 	<input type="password" placeholder="Bitbucket app password" name="bb_app_password" id="bb_app_password">
@@ -661,22 +683,59 @@ body {
 	<input type="checkbox" id="bb_nocode" name="bb_nocode">No code sharing</input>
 </div>
 <div id="gcp_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-gcp-cwp/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<textarea placeholder="Paste private key JSON here" name="gcp_private_key" id="gcp_private_key" rows="10" cols="40"></textarea>
         <span class="help-block">Private key (JSON) associated with a GCP service account with required privileges</span>
 </div>
 <div id="gcp_cspm_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-gcp-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="Asset name" name="gcp_cspm_asset_id" id="gcp_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
         <span class="help-block">A unique asset name to track this asset in ThreatWorx</span>
 	<textarea placeholder="Paste private key JSON contents here" name="gcp_cspm_private_key" id="gcp_cspm_private_key" rows="10" cols="40"></textarea>
         <span class="help-block">Private key (JSON) associated with a GCP service account with required privileges</span>
 </div>
 <div id="gcr_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-gcp-gcr-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="" name="gcr_repo" id="gcr_repo" pattern="[a-zA-Z0-9.\/\-_]+">
         <span class="help-block">A repository URL in GCR that you want to scan</span>
 	<textarea placeholder="Paste private key JSON here" name="gcr_private_key" id="gcr_private_key" rows="10" cols="40"></textarea>
         <span class="help-block">Private key (JSON) associated with a GCR service account with required privileges</span>
 </div>
-
+<div id="aws_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-aws-cwp/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Account id" name="aws_account" id="aws_account" pattern="[0-9]{12}">
+        <span class="help-block">12 digit account id for this AWS subscription</span>
+	<input type="password" placeholder="Access key" name="aws_access_key" id="aws_access_key" pattern="[a-zA-Z0-9\/]+">
+        <span class="help-block">Access key for this AWS subscription</span>
+	<input type="password" placeholder="Secret key" name="aws_secret_key" id="aws_secret_key" ="[a-zA-Z0-9\/]+">
+        <span class="help-block">Secret key for AWS subscription</span>
+	<input type="text" placeholder="S3 bucket" name="aws_s3_bucket" id="aws_s3_bucket" ="[a-zA-Z0-9\-_]+">
+        <span class="help-block">S3 bucket name where the instance inventory is to be pulled from</span>
+	<input type="text" placeholder="Region" name="aws_region" id="aws_region" ="[a-zA-Z0-9\-]+">
+        <span class="help-block">Region where the S3 bucket is located e.g. us-west-1</span>
+</div>
+<div id="aws_cspm_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-aws-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Asset name" name="aws_cspm_asset_id" id="aws_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
+        <span class="help-block">A unique asset name to track this asset in ThreatWorx</span>
+	<input type="password" placeholder="Access key" name="aws_cspm_access_key" id="aws_cspm_access_key" pattern="[a-zA-Z0-9\/]+">
+        <span class="help-block">Access key for this AWS subscription</span>
+	<input type="password" placeholder="Secret key" name="aws_cspm_secret_key" id="aws_cspm_secret_key" ="[a-zA-Z0-9\/]+">
+        <span class="help-block">Secret key for AWS subscription</span>
+</div>
+<div id="ecr_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-ecr/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Account id" name="ecr_account" id="ecr_account" pattern="[0-9]{12}">
+        <span class="help-block">12 digit AWS account id for this ECR registry</span>
+	<input type="password" placeholder="Access key" name="ecr_access_key" id="ecr_access_key" pattern="[a-zA-Z0-9\/]+">
+        <span class="help-block">Access key for this AWS subscription</span>
+	<input type="password" placeholder="Secret key" name="ecr_secret_key" id="ecr_secret_key" ="[a-zA-Z0-9\/]+">
+        <span class="help-block">Secret key for AWS subscription</span>
+	<input type="text" placeholder="Region" name="ecr_region" id="ecr_region" ="[a-zA-Z0-9\-]+">
+        <span class="help-block">Region where the ECR registry is located e.g. us-west-1</span>
+</div>
+<br>
+<hr style="border: 1px dotted #D3D3D3;">
 <br>
 <select class="custom-select" style="width:200px;" name="schedule" id="schedule">
 <option value="@hourly">Hourly</option>
@@ -709,34 +768,65 @@ body {
             }
         } 
         function mode_change() {
-		// Hid all config divs
+		// Hide all config divs
 	        document.getElementById("nmap_div").style.display = 'none';
 	        document.getElementById("webapp_div").style.display = 'none';
 	        document.getElementById("host_div").style.display = 'none';
+	        document.getElementById("vmware_div").style.display = 'none';
 	        document.getElementById("gitlab_div").style.display = 'none';
 	        document.getElementById("github_div").style.display = 'none';
 	        document.getElementById("bitbucket_div").style.display = 'none';
 	        document.getElementById("gcp_div").style.display = 'none';
 	        document.getElementById("gcp_cspm_div").style.display = 'none';
 	        document.getElementById("gcr_div").style.display = 'none';
+	        document.getElementById("aws_div").style.display = 'none';
+	        document.getElementById("aws_cspm_div").style.display = 'none';
+	        document.getElementById("ecr_div").style.display = 'none';
 
 		// set all required fields to false
 	        document.getElementById("hosts").required = false;
+
 	        document.getElementById("url").required = false; 
+
 	        document.getElementById("host_list").required = false; 
 	        document.getElementById("user_name").required = false; 
 	        document.getElementById("user_passwd").required = false; 
+
+	        document.getElementById("vcenter_host").required = false; 
+	        document.getElementById("vcenter_user").required = false; 
+	        document.getElementById("vcenter_passwd").required = false; 
+
 	        document.getElementById("gitlab_access_token").required = false; 
+
 	        document.getElementById("github_identity").required = false; 
 	        document.getElementById("github_access_token").required = false; 
+
 	        document.getElementById("bb_user").required = false; 
 	        document.getElementById("bb_app_password").required = false; 
 	        document.getElementById("bb_url").required = false; 
+
 	        document.getElementById("gcp_private_key").required = false; 
+
 	        document.getElementById("gcp_cspm_private_key").required = false; 
 	        document.getElementById("gcp_cspm_asset_id").required = false; 
+
 	        document.getElementById("gcr_private_key").required = false; 
 	        document.getElementById("gcr_repo").required = false; 
+
+	        document.getElementById("aws_account").required = false; 
+	        document.getElementById("aws_access_key").required = false; 
+	        document.getElementById("aws_secret_key").required = false; 
+	        document.getElementById("aws_s3_bucket").required = false; 
+	        document.getElementById("aws_region").required = false; 
+
+	        document.getElementById("aws_cspm_access_key").required = false; 
+	        document.getElementById("aws_cspm_secret_key").required = false; 
+	        document.getElementById("aws_cspm_asset_id").required = false; 
+
+	        document.getElementById("ecr_account").required = false; 
+	        document.getElementById("ecr_access_key").required = false; 
+	        document.getElementById("ecr_secret_key").required = false; 
+	        document.getElementById("ecr_region").required = false; 
 
 		// enable config div based on scan type
 		var x = document.getElementById("scan_type").value;
@@ -753,6 +843,12 @@ body {
 	            document.getElementById("host_list").required = true; 
 	            document.getElementById("user_name").required = true; 
 	            document.getElementById("user_passwd").required = true; 
+		}
+		else if (x == "vmware") {
+	            document.getElementById("vmware_div").style.display = 'block';
+	            document.getElementById("vcenter_host").required = true; 
+	            document.getElementById("vcenter_user").required = true; 
+	            document.getElementById("vcenter_passwd").required = true; 
 		}
 		else if (x == "gitlab") {
 	            document.getElementById("gitlab_div").style.display = 'block';
@@ -773,7 +869,7 @@ body {
 	            document.getElementById("gcp_div").style.display = 'block';
 	            document.getElementById("gcp_private_key").required = true; 
 		}
-		else if (x == "gcp_cspm") {
+		else if (x == "gcp-cspm") {
 	            document.getElementById("gcp_cspm_div").style.display = 'block';
 	            document.getElementById("gcp_cspm_private_key").required = true; 
 	            document.getElementById("gcp_cspm_asset_id").required = true; 
@@ -782,6 +878,27 @@ body {
 	            document.getElementById("gcr_div").style.display = 'block';
 	            document.getElementById("gcr_private_key").required = true; 
 	            document.getElementById("gcr_repo").required = true; 
+		}
+		else if (x == "aws") {
+	            document.getElementById("aws_div").style.display = 'block';
+	            document.getElementById("aws_account").required = true; 
+	            document.getElementById("aws_access_key").required = true; 
+	            document.getElementById("aws_secret_key").required = true; 
+	            document.getElementById("aws_s3_bucket").required = true; 
+	            document.getElementById("aws_region").required = true; 
+		}
+		else if (x == "aws-cspm") {
+	            document.getElementById("aws_cspm_div").style.display = 'block';
+	            document.getElementById("aws_cspm_access_key").required = true; 
+	            document.getElementById("aws_cspm_secret_key").required = true; 
+	            document.getElementById("aws_cspm_asset_id").required = true; 
+		}
+		else if (x == "ecr") {
+	            document.getElementById("ecr_div").style.display = 'block';
+	            document.getElementById("ecr_account").required = true; 
+	            document.getElementById("ecr_access_key").required = true; 
+	            document.getElementById("ecr_secret_key").required = true; 
+	            document.getElementById("ecr_region").required = true; 
 		}
 	}
 
