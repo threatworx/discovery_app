@@ -154,10 +154,25 @@ def create_twigs_cmd(config, scan_name, scan_type):
         twigs_cmd = twigs_cmd + " aws_cis --assetid "+config[scan_name]['asset_id']+" --aws_access_key '"+config[scan_name]['aws_access_key']+"' --aws_secret_key '"+config[scan_name]['aws_secret_key']+"'"
     elif scan_type == 'ecr':
         aws_cmd = shutil.which('aws')
-        aws_cmd = "AWS_ACCESS_KEY_ID='"+config[scan_name]['ecr_access_key']+"' AWS_SECRET_ACCESS_KEY='"+config[scan_name]['ecr_secret_key']+"' aws ecr get-login-password --region "+config[scan_name]['ecr_region']+" | docker login --username AWS --password-stdin '"+config[scan_name]['ecr_account']+".dkr.ecr."+config[scan_name]['ecr_region']+".amazonaws.com'"
+        aws_cmd = "AWS_ACCESS_KEY_ID='"+config[scan_name]['ecr_access_key']+"' AWS_SECRET_ACCESS_KEY='"+config[scan_name]['ecr_secret_key']+"' " + aws_cmd + " ecr get-login-password --region "+config[scan_name]['ecr_region']+" | docker login --username AWS --password-stdin '"+config[scan_name]['ecr_account']+".dkr.ecr."+config[scan_name]['ecr_region']+".amazonaws.com'"
         twigs_cmd_prefix = "AWS_ACCESS_KEY_ID='"+config[scan_name]['ecr_access_key']+"' AWS_SECRET_ACCESS_KEY='"+config[scan_name]['ecr_secret_key']+"' AWS_DEFAULT_REGION="+config[scan_name]['ecr_region']
         twigs_cmd = twigs_cmd_prefix + " " + twigs_cmd + " ecr --registry "+config[scan_name]['ecr_account']+" --check_all_vulns"
         twigs_cmd = aws_cmd + " && " + twigs_cmd
+    elif scan_type == 'azure':
+        azure_cmd = shutil.which('az')
+        azure_cmd = azure_cmd + " login --service-principal -u '%s' -p '%s' --tenant '%s'" % (config[scan_name]['azure_sp'], config[scan_name]['azure_sp_secret'], config[scan_name]['azure_tenant'])
+        twigs_cmd = twigs_cmd + " azure --azure_workspace '"+config[scan_name]['azure_workspace']+"' --enable_tracking_tags"
+        twigs_cmd = azure_cmd + " && " + twigs_cmd
+    elif scan_type == 'azure-cspm':
+        azure_cmd = shutil.which('az')
+        azure_cmd = azure_cmd + " login --service-principal -u '%s' -p '%s' --tenant '%s'" % (config[scan_name]['azure_cspm_sp'], config[scan_name]['azure_cspm_sp_secret'], config[scan_name]['azure_cspm_tenant'])
+        twigs_cmd = twigs_cmd + " azure_cis --assetid "+config[scan_name]['azure_cspm_asset_id']
+        twigs_cmd = azure_cmd + " && " + twigs_cmd
+    elif scan_type == 'acr':
+        azure_cmd = shutil.which('az')
+        azure_cmd = azure_cmd + " login --service-principal -u '%s' -p '%s' --tenant '%s'" % (config[scan_name]['acr_sp'], config[scan_name]['acr_sp_secret'], config[scan_name]['acr_tenant'])
+        twigs_cmd = twigs_cmd + " acr --registry '"+config[scan_name]['acr_registry']+"' --check_all_vulns"
+        twigs_cmd = azure_cmd + " && " + twigs_cmd
 
     twigs_cmd = twigs_cmd + " 1> /tmp/"+scan_name+" 2>&1"
     return twigs_cmd
@@ -347,6 +362,21 @@ def add_scan(config, request):
         config[scan_name]['ecr_access_key'] = request.form['ecr_access_key']
         config[scan_name]['ecr_secret_key'] = request.form['ecr_secret_key']
         config[scan_name]['ecr_region'] = request.form['ecr_region']
+    elif scan_type == 'azure':
+        config[scan_name]['azure_sp'] = request.form['azure_sp']
+        config[scan_name]['azure_sp_secret'] = request.form['azure_sp_secret']
+        config[scan_name]['azure_tenant'] = request.form['azure_tenant']
+        config[scan_name]['azure_workspace'] = request.form['azure_workspace']
+    elif scan_type == 'azure-cspm':
+        config[scan_name]['azure_cspm_asset_id'] = request.form['azure_cspm_asset_id']
+        config[scan_name]['azure_cspm_sp'] = request.form['azure_cspm_sp']
+        config[scan_name]['azure_cspm_sp_secret'] = request.form['azure_cspm_sp_secret']
+        config[scan_name]['azure_cspm_tenant'] = request.form['azure_cspm_tenant']
+    elif scan_type == 'acr':
+        config[scan_name]['acr_registry'] = request.form['acr_registry']
+        config[scan_name]['acr_sp'] = request.form['acr_sp']
+        config[scan_name]['acr_sp_secret'] = request.form['acr_sp_secret']
+        config[scan_name]['acr_tenant'] = request.form['acr_tenant']
 
     write_config(config)
 

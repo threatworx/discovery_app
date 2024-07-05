@@ -607,6 +607,10 @@ body {
 <option value="aws">AWS CWP (agentless)</option>
 <option value="aws-cspm">AWS CSPM</option>
 <option value="ecr">AWS ECR</option>
+<option disabled>──────────────────────</option>
+<option value="azure">Azure CWP (agentless)</option>
+<option value="azure-cspm">Azure CSPM</option>
+<option value="acr">Azure ACR</option>
 </select>
 <span class="help-block">Select a discovery mode</span>
 <br>
@@ -690,7 +694,7 @@ body {
 <div id="gcp_cspm_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-gcp-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="Asset name" name="gcp_cspm_asset_id" id="gcp_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
-        <span class="help-block">A unique asset name to track this asset in ThreatWorx</span>
+        <span class="help-block">A unique name to track this asset in ThreatWorx</span>
 	<textarea placeholder="Paste private key JSON contents here" name="gcp_cspm_private_key" id="gcp_cspm_private_key" rows="10" cols="40"></textarea>
         <span class="help-block">Private key (JSON) associated with a GCP service account with required privileges</span>
 </div>
@@ -717,7 +721,7 @@ body {
 <div id="aws_cspm_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-aws-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="Asset name" name="aws_cspm_asset_id" id="aws_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
-        <span class="help-block">A unique asset name to track this asset in ThreatWorx</span>
+        <span class="help-block">A unique name to track this asset in ThreatWorx</span>
 	<input type="password" placeholder="Access key" name="aws_cspm_access_key" id="aws_cspm_access_key" pattern="[a-zA-Z0-9\/]+">
         <span class="help-block">Access key for this AWS subscription</span>
 	<input type="password" placeholder="Secret key" name="aws_cspm_secret_key" id="aws_cspm_secret_key" ="[a-zA-Z0-9\/]+">
@@ -729,11 +733,46 @@ body {
         <span class="help-block">12 digit AWS account id for this ECR registry</span>
 	<input type="password" placeholder="Access key" name="ecr_access_key" id="ecr_access_key" pattern="[a-zA-Z0-9\/]+">
         <span class="help-block">Access key for this AWS subscription</span>
-	<input type="password" placeholder="Secret key" name="ecr_secret_key" id="ecr_secret_key" ="[a-zA-Z0-9\/]+">
+	<input type="password" placeholder="Secret key" name="ecr_secret_key" id="ecr_secret_key" pattern="[a-zA-Z0-9\/]+">
         <span class="help-block">Secret key for AWS subscription</span>
-	<input type="text" placeholder="Region" name="ecr_region" id="ecr_region" ="[a-zA-Z0-9\-]+">
+	<input type="text" placeholder="Region" name="ecr_region" id="ecr_region" pattern="[a-zA-Z0-9\-]+">
         <span class="help-block">Region where the ECR registry is located e.g. us-west-1</span>
 </div>
+<div id="azure_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-azure-cwp/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Service principal" name="azure_sp" id="azure_sp">
+        <span class="help-block">Service principal name for this Azure subscription</span>
+	<input type="password" placeholder="Secret" name="azure_sp_secret" id="azure_sp_secret">
+        <span class="help-block">Azure service principal secret</span>
+	<input type="text" placeholder="Tenant Id" name="azure_tenant" id="azure_tenant" pattern="[a-zA-Z0-9\-]+">
+        <span class="help-block">Azure tenant Id</span>
+	<input type="text" placeholder="Workspace Id" name="azure_workspace" id="azure_workspace" pattern="[a-zA-Z0-9\-]+">
+        <span class="help-block">Azure workspace Id where inventory is located</span>
+</div>
+<div id="azure_cspm_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-azure-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Asset name" name="azure_cspm_asset_id" id="azure_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
+        <span class="help-block">A unique name to track this asset in ThreatWorx</span>
+	<input type="text" placeholder="Service principal" name="azure_cspm_sp" id="azure_cspm_sp">
+        <span class="help-block">Service principal name for this Azure subscription</span>
+	<input type="password" placeholder="Secret" name="azure_cspm_sp_secret" id="azure_cspm_sp_secret">
+        <span class="help-block">Azure service principal secret</span>
+	<input type="text" placeholder="Tenant Id" name="azure_cspm_tenant" id="azure_cspm_tenant" pattern="[a-zA-Z0-9\-]+">
+        <span class="help-block">Azure tenant Id</span>
+</div>
+<div id="acr_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-azure-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Service principal" name="acr_sp" id="acr_sp">
+        <span class="help-block">Service principal name for this Azure subscription</span>
+	<input type="password" placeholder="Secret" name="acr_sp_secret" id="acr_sp_secret">
+        <span class="help-block">Azure service principal secret</span>
+	<input type="text" placeholder="Tenant Id" name="acr_tenant" id="acr_tenant" pattern="[a-zA-Z0-9\-]+">
+        <span class="help-block">Azure tenant Id</span>
+	<input type="text" placeholder="Registry" name="acr_registry" id="acr_registry">
+        <span class="help-block">ACR registry URL</span>
+</div>
+
+
 <br>
 <hr style="border: 1px dotted #D3D3D3;">
 <br>
@@ -782,6 +821,9 @@ body {
 	        document.getElementById("aws_div").style.display = 'none';
 	        document.getElementById("aws_cspm_div").style.display = 'none';
 	        document.getElementById("ecr_div").style.display = 'none';
+	        document.getElementById("azure_div").style.display = 'none';
+	        document.getElementById("azure_cspm_div").style.display = 'none';
+	        document.getElementById("acr_div").style.display = 'none';
 
 		// set all required fields to false
 	        document.getElementById("hosts").required = false;
@@ -827,6 +869,21 @@ body {
 	        document.getElementById("ecr_access_key").required = false; 
 	        document.getElementById("ecr_secret_key").required = false; 
 	        document.getElementById("ecr_region").required = false; 
+
+	        document.getElementById("azure_sp").required = false; 
+	        document.getElementById("azure_sp_secret").required = false; 
+	        document.getElementById("azure_tenant").required = false; 
+	        document.getElementById("azure_workspace").required = false; 
+
+	        document.getElementById("azure_cspm_asset_id").required = false; 
+	        document.getElementById("azure_cspm_sp").required = false; 
+	        document.getElementById("azure_cspm_sp_secret").required = false; 
+	        document.getElementById("azure_cspm_tenant").required = false; 
+
+	        document.getElementById("acr_registry").required = false; 
+	        document.getElementById("acr_sp").required = false; 
+	        document.getElementById("acr_sp_secret").required = false; 
+	        document.getElementById("acr_tenant").required = false; 
 
 		// enable config div based on scan type
 		var x = document.getElementById("scan_type").value;
@@ -899,6 +956,27 @@ body {
 	            document.getElementById("ecr_access_key").required = true; 
 	            document.getElementById("ecr_secret_key").required = true; 
 	            document.getElementById("ecr_region").required = true; 
+		}
+		else if (x == "azure") {
+	            document.getElementById("azure_div").style.display = 'block';
+	            document.getElementById("azure_sp").required = true; 
+	            document.getElementById("azure_sp_secret").required = true; 
+	            document.getElementById("azure_tenant").required = true; 
+	            document.getElementById("azure_workspace").required = true; 
+		}
+		else if (x == "azure-cspm") {
+	            document.getElementById("azure_cspm_div").style.display = 'block';
+	            document.getElementById("azure_cspm_asset_id").required = true; 
+	            document.getElementById("azure_cspm_sp").required = true; 
+	            document.getElementById("azure_cspm_sp_secret").required = true; 
+	            document.getElementById("azure_cspm_tenant").required = true; 
+		}
+		else if (x == "acr") {
+	            document.getElementById("acr_div").style.display = 'block';
+	            document.getElementById("acr_registry").required = true; 
+	            document.getElementById("acr_sp").required = true; 
+	            document.getElementById("acr_sp_secret").required = true; 
+	            document.getElementById("acr_tenant").required = true; 
 		}
 	}
 
