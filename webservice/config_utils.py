@@ -94,7 +94,7 @@ def create_twigs_cmd(config, scan_name, scan_type):
         if 'no_ping' in config[scan_name] and config[scan_name]['no_ping'] == 'on':
             twigs_cmd = twigs_cmd + " --discovery_scan_type N"
     elif scan_type == 'nmap':
-        twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['hosts']
+        twigs_cmd = twigs_cmd + " nmap --no_ssl_audit --hosts "+config[scan_name]['hosts']
         if 'no_ping' in config[scan_name] and config[scan_name]['no_ping'] == 'on':
             twigs_cmd = twigs_cmd + " --discovery_scan_type N"
     elif scan_type == 'host':
