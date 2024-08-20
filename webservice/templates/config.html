@@ -635,8 +635,9 @@ body {
 </div>	    
 <div id="webapp_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-web-application-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="checkbox" id="webapp_opt" name="webapp_opt" onClick="webappOptChange(this);">Use ZAP plan</input><br>
         <input type="url" placeholder="Web application URL" name="url" id="url" value="">
-        <span class="help-block">A web application URL that you would like to discover</span>
+	<textarea placeholder="Paste ZAP plan yaml contents here" name="zap_plan_yaml" id="zap_plan_yaml" rows="5" cols="40" style="display: none"></textarea>
         <input type="checkbox" name="webapp_no_ping" id="webapp_no_ping">No ping</input>
         <span class="help-block">Don't ping, instead assume that the IP is up. You will get better coverage but discovery times will be longer.</span>
 </div>
@@ -991,6 +992,20 @@ body {
 			document.getElementById('user_passwd').required = false;
 			document.getElementById('user_private_key').style.display = 'block';
 			document.getElementById('user_private_key').required = true;
+		}
+        }
+
+        function webappOptChange(myCheck) {
+		if (myCheck.checked) {
+			document.getElementById('url').style.display = 'none';
+			document.getElementById('url').required = false;
+			document.getElementById('zap_plan_yaml').style.display = 'block';
+			document.getElementById('zap_plan_yaml').required = true;
+		} else {
+			document.getElementById('zap_plan_yaml').style.display = 'none';
+			document.getElementById('zap_plan_yaml').required = false;
+			document.getElementById('url').style.display = 'block';
+			document.getElementById('url').required = true;
 		}
         }
 

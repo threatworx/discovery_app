@@ -90,9 +90,12 @@ def create_twigs_cmd(config, scan_name, scan_type):
         for t in tags.split(','):
             twigs_cmd = twigs_cmd + " --tag "+t.strip()
     if scan_type == 'webapp':
-        twigs_cmd = twigs_cmd + " webapp --url "+config[scan_name]['url']
-        if 'no_ping' in config[scan_name] and config[scan_name]['no_ping'] == 'on':
-            twigs_cmd = twigs_cmd + " --discovery_scan_type N"
+        if 'plan_file' in config[scan_name]:
+            twigs_cmd = twigs_cmd + " webapp --planfile "+config[scan_name]['plan_file']
+        else:
+            twigs_cmd = twigs_cmd + " webapp --url "+config[scan_name]['url']
+            if 'no_ping' in config[scan_name] and config[scan_name]['no_ping'] == 'on':
+                twigs_cmd = twigs_cmd + " --discovery_scan_type N"
     elif scan_type == 'nmap':
         twigs_cmd = twigs_cmd + " nmap --no_ssl_audit --hosts "+config[scan_name]['hosts']
         if 'no_ping' in config[scan_name] and config[scan_name]['no_ping'] == 'on':
@@ -275,7 +278,14 @@ def add_scan(config, request):
     config[scan_name]['schedule'] = request.form['schedule']
     config[scan_name]['tags'] = request.form['tags']
     if scan_type == 'webapp':
-        config[scan_name]['url'] = request.form['url']
+        plan = request.form['zap_plan_yaml']
+        if plan and len(plan) > 0:
+            plan_file_name = CONFIG_PATH+scan_name+'.yaml'
+            with open(plan_file_name, mode='w') as plan_file:
+                plan_file.write(plan)
+            config[scan_name]['plan_file'] = plan_file_name
+        else:
+            config[scan_name]['url'] = request.form['url']
         if 'webapp_no_ping' in request.form and request.form['webapp_no_ping'] == 'on':
             config[scan_name]['no_ping'] = 'on'
         else:
