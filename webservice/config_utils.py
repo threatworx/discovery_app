@@ -176,6 +176,14 @@ def create_twigs_cmd(config, scan_name, scan_type):
         azure_cmd = azure_cmd + " login --service-principal -u '%s' -p '%s' --tenant '%s'" % (config[scan_name]['acr_sp'], config[scan_name]['acr_sp_secret'], config[scan_name]['acr_tenant'])
         twigs_cmd = twigs_cmd + " acr --registry '"+config[scan_name]['acr_registry']+"' --check_all_vulns"
         twigs_cmd = azure_cmd + " && " + twigs_cmd
+    elif scan_type == 'oci':
+        twigs_cmd = twigs_cmd + " oci --config_file "+CONFIG_PATH+config[scan_name]['config_file']+" --enable_tracking_tags"
+    elif scan_type == 'oci-cspm':
+        twigs_cmd = twigs_cmd + " oci_cis --assetid "+config[scan_name]['asset_id']+" --config_file "+CONFIG_PATH+config[scan_name]['config_file']
+    elif scan_type == 'ocr':
+        twigs_cmd = twigs_cmd + " ocr --region "+config[scan_name]['region']+" --config_file "+CONFIG_PATH+config[scan_name]['config_file']+" --check_all_vulns"
+        if 'repository' in config[scan_name] and config[scan_name]['repository'] != '':
+            twigs_cmd = twigs_cmd + " --repository "+config[scan_name]['repository']
 
     twigs_cmd = twigs_cmd + " 1> /tmp/"+scan_name+" 2>&1"
     return twigs_cmd
@@ -223,7 +231,7 @@ def reload_config():
         twigs_cmd = create_twigs_cmd(config, s, config[s]['type'])
         create_cron_entry(config, s, twigs_cmd)
 
-def create_gcp_key_file(scan_name, private_key):
+def create_key_file(scan_name, private_key):
     global CONFIG_PATH
 
     pk_file_name = None
@@ -231,6 +239,7 @@ def create_gcp_key_file(scan_name, private_key):
         pk_file_name = CONFIG_PATH+scan_name+'.key'
         with open(pk_file_name, mode='w') as pk_file:
             pk_file.write(private_key)
+    os.chmod(pk_file_name, 0o444)
     return os.path.basename(pk_file_name)
 
 def create_host_csv(scan_name, hostname, user, passwd, private_key):
@@ -255,6 +264,32 @@ def create_host_csv(scan_name, hostname, user, passwd, private_key):
              rdict['userpwd'] = passwd
          writer.writerow(rdict)
     return os.path.basename(csv_file)
+
+def create_oci_config(scan_name, userid, tenancy, region, key_file):
+    global CONFIG_PATH
+
+    # get fingerprint for private key
+    cmd = "/usr/bin/openssl rsa -in "+CONFIG_PATH+key_file+" -pubout -outform DER | /usr/bin/openssl md5 -c "
+    output = None
+    try:
+        output = subprocess.check_output(cmd, shell=True)
+    except CalledProcessError as e:
+        print(e.returncode)
+        print(e.message)
+        return None 
+    output = output.decode('utf-8').strip()
+    fingerprint = output.split("=")[1].strip()
+
+    config_file_name = CONFIG_PATH+scan_name+'.config'
+    with open(config_file_name, mode='w') as config_file:
+        config_file.write("[DEFAULT]\n")
+        config_file.write("user="+userid+"\n")
+        config_file.write("fingerprint="+fingerprint+"\n")
+        config_file.write("key_file="+CONFIG_PATH+key_file+"\n")
+        config_file.write("tenancy="+tenancy+"\n")
+        config_file.write("region="+region+"\n")
+    os.chmod(config_file_name, 0o444)
+    return os.path.basename(config_file_name)
 
 def save_creds(config, request):
     # process any change to threatworx configuration 
@@ -350,13 +385,13 @@ def add_scan(config, request):
         if 'bb_nocode' in request.form and request.form['bb_nocode'] == 'on':
             config[scan_name]['nocode'] = 'on'
     elif scan_type == 'gcp':
-        config[scan_name]['key_file'] = create_gcp_key_file(scan_name, request.form['gcp_private_key'])
+        config[scan_name]['key_file'] = create_key_file(scan_name, request.form['gcp_private_key'])
     elif scan_type == 'gcp-cspm':
         config[scan_name]['asset_id'] = request.form['gcp_cspm_asset_id']
-        config[scan_name]['key_file'] = create_gcp_key_file(scan_name, request.form['gcp_cspm_private_key'])
+        config[scan_name]['key_file'] = create_key_file(scan_name, request.form['gcp_cspm_private_key'])
     elif scan_type == 'gcr':
         config[scan_name]['gcr_repo'] = request.form['gcr_repo']
-        config[scan_name]['key_file'] = create_gcp_key_file(scan_name, request.form['gcr_private_key'])
+        config[scan_name]['key_file'] = create_key_file(scan_name, request.form['gcr_private_key'])
     elif scan_type == 'aws':
         config[scan_name]['aws_account'] = request.form['aws_account']
         config[scan_name]['aws_access_key'] = request.form['aws_access_key']
@@ -387,6 +422,24 @@ def add_scan(config, request):
         config[scan_name]['acr_sp'] = request.form['acr_sp']
         config[scan_name]['acr_sp_secret'] = request.form['acr_sp_secret']
         config[scan_name]['acr_tenant'] = request.form['acr_tenant']
+    elif scan_type == 'oci':
+        key_file = create_key_file(scan_name, request.form['oci_user_private_key'])
+        config[scan_name]['key_file'] = key_file
+        config_file_name = create_oci_config(scan_name, request.form['oci_user'], request.form['oci_tenancy'], request.form['oci_region'], key_file)
+        config[scan_name]['config_file'] = config_file_name
+    elif scan_type == 'oci-cspm':
+        key_file = create_key_file(scan_name, request.form['oci_cspm_user_private_key'])
+        config[scan_name]['key_file'] = key_file
+        config_file_name = create_oci_config(scan_name, request.form['oci_cspm_user'], request.form['oci_cspm_tenancy'], request.form['oci_cspm_region'], key_file)
+        config[scan_name]['config_file'] = config_file_name
+        config[scan_name]['asset_id'] = request.form['oci_cspm_asset_id']
+    elif scan_type == 'ocr':
+        key_file = create_key_file(scan_name, request.form['ocr_user_private_key'])
+        config[scan_name]['key_file'] = key_file
+        config_file_name = create_oci_config(scan_name, request.form['ocr_user'], request.form['ocr_tenancy'], request.form['ocr_region'], key_file)
+        config[scan_name]['config_file'] = config_file_name
+        config[scan_name]['region'] = request.form['ocr_region'] 
+        config[scan_name]['repository'] = request.form['ocr_repository'] 
 
     write_config(config)
 

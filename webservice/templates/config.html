@@ -586,10 +586,6 @@ body {
 <div class="container">
 <div class="form-group">
 <label>Schedule a new discovery run</label>
-<input type="text" placeholder="Discovery name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
-<span class="help-block">A unique name for this discovery run. Up to 16 alphanumeric allowed</span>
-<input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
-<span class="help-block">Comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
 <select class="custom-select" style="width:200px;" name="scan_type" id="scan_type" onchange="mode_change()">
 <option value="nmap" selected>Fingerprint scan (uncredentialed)</option>
 <option value="host" >Linux deep discovery using SSH (credentialed)</option>
@@ -611,8 +607,16 @@ body {
 <option value="azure">Azure CWP (agentless)</option>
 <option value="azure-cspm">Azure CSPM</option>
 <option value="acr">Azure ACR</option>
+<option disabled>──────────────────────</option>
+<option value="oci">OCI CWP (agentless)</option>
+<option value="oci-cspm">OCI CSPM</option>
+<option value="ocr">OCI OCR</option>
 </select>
 <span class="help-block">Select a discovery mode</span>
+<input type="text" placeholder="Discovery name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
+<span class="help-block">A unique name for this discovery run. Up to 16 alphanumeric allowed</span>
+<input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
+<span class="help-block">Comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
 <br>
 <hr style="border: 1px dotted #D3D3D3;">
 <br>
@@ -716,7 +720,7 @@ body {
         <span class="help-block">Secret key for AWS subscription</span>
 	<input type="text" placeholder="S3 bucket" name="aws_s3_bucket" id="aws_s3_bucket" ="[a-zA-Z0-9\-_]+">
         <span class="help-block">S3 bucket name where the instance inventory is to be pulled from</span>
-	<input type="text" placeholder="Region" name="aws_region" id="aws_region" ="[a-zA-Z0-9\-]+">
+	<input type="text" placeholder="Region" name="aws_region" id="aws_region" pattern="[a-zA-Z0-9\-]+">
         <span class="help-block">Region where the S3 bucket is located e.g. us-west-1</span>
 </div>
 <div id="aws_cspm_div" style="display: none;">
@@ -772,8 +776,43 @@ body {
 	<input type="text" placeholder="Registry" name="acr_registry" id="acr_registry">
         <span class="help-block">ACR registry URL</span>
 </div>
-
-
+<div id="oci_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/oci-workload-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="User id" name="oci_user" id="oci_user" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">OCI user identifier</span>
+	<input type="text" placeholder="Tenancy id" name="oci_tenancy" id="oci_tenancy" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">OCI tenancy identifier</span>
+	<input type="text" placeholder="Region" name="oci_region" id="oci_region" pattern="[a-zA-Z0-9\-]+">
+        <span class="help-block">OCI region e.g. us-sanjose-1</span>
+	<textarea placeholder="Paste private key contents here" name="oci_user_private_key" id="oci_user_private_key" rows="10" cols="40" ></textarea>
+        <span class="help-block">Private key associated with the OCI user account with required privileges</span>
+</div>
+<div id="oci_cspm_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/oci-workload-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Asset name" name="oci_cspm_asset_id" id="oci_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
+        <span class="help-block">A unique name to track this asset in ThreatWorx</span>
+	<input type="text" placeholder="User id" name="oci_cspm_user" id="oci_cspm_user" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">OCI user identifier</span>
+	<input type="text" placeholder="Tenancy id" name="oci_cspm_tenancy" id="oci_cspm_tenancy" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">OCI tenancy identifier</span>
+	<input type="text" placeholder="Region" name="oci_cspm_region" id="oci_cspm_region" pattern="[a-zA-Z0-9\-]+">
+        <span class="help-block">OCI region e.g. us-sanjose-1</span>
+	<textarea placeholder="Paste private key contents here" name="oci_cspm_user_private_key" id="oci_cspm_user_private_key" rows="10" cols="40" ></textarea>
+        <span class="help-block">Private key associated with the OCI user account with required privileges</span>
+</div>
+<div id="ocr_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/oci-ocr-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="User id" name="ocr_user" id="ocr_user" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">OCI user identifier</span>
+	<input type="text" placeholder="Tenancy id" name="ocr_tenancy" id="ocr_tenancy" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">OCI tenancy identifier</span>
+	<input type="text" placeholder="Region" name="ocr_region" id="ocr_region" pattern="[a-zA-Z0-9\-]+">
+        <span class="help-block">OCI region e.g. us-sanjose-1</span>
+	<input type="text" placeholder="Repository" name="ocr_repository" id="ocr_repository">
+        <span class="help-block">Optional OCR repository (all repositoriies in the region will be scanned if empty)</span>
+	<textarea placeholder="Paste private key contents here" name="ocr_user_private_key" id="ocr_user_private_key" rows="10" cols="40" ></textarea>
+        <span class="help-block">Private key associated with the OCI user account with required privileges</span>
+</div>
 <br>
 <hr style="border: 1px dotted #D3D3D3;">
 <br>
@@ -825,6 +864,9 @@ body {
 	        document.getElementById("azure_div").style.display = 'none';
 	        document.getElementById("azure_cspm_div").style.display = 'none';
 	        document.getElementById("acr_div").style.display = 'none';
+	        document.getElementById("oci_div").style.display = 'none';
+	        document.getElementById("oci_cspm_div").style.display = 'none';
+	        document.getElementById("ocr_div").style.display = 'none';
 
 		// set all required fields to false
 	        document.getElementById("hosts").required = false;
@@ -885,6 +927,22 @@ body {
 	        document.getElementById("acr_sp").required = false; 
 	        document.getElementById("acr_sp_secret").required = false; 
 	        document.getElementById("acr_tenant").required = false; 
+
+	        document.getElementById("oci_user").required = false; 
+	        document.getElementById("oci_tenancy").required = false; 
+	        document.getElementById("oci_region").required = false; 
+	        document.getElementById("oci_user_private_key").required = false; 
+
+	        document.getElementById("oci_cspm_asset_id").required = false; 
+	        document.getElementById("oci_cspm_user").required = false; 
+	        document.getElementById("oci_cspm_tenancy").required = false; 
+	        document.getElementById("oci_cspm_region").required = false; 
+	        document.getElementById("oci_cspm_user_private_key").required = false; 
+
+	        document.getElementById("ocr_user").required = false; 
+	        document.getElementById("ocr_tenancy").required = false; 
+	        document.getElementById("ocr_region").required = false; 
+	        document.getElementById("ocr_user_private_key").required = false; 
 
 		// enable config div based on scan type
 		var x = document.getElementById("scan_type").value;
@@ -978,6 +1036,28 @@ body {
 	            document.getElementById("acr_sp").required = true; 
 	            document.getElementById("acr_sp_secret").required = true; 
 	            document.getElementById("acr_tenant").required = true; 
+		}
+		else if (x == "oci") {
+	            document.getElementById("oci_div").style.display = 'block';
+	            document.getElementById("oci_user").required = true; 
+	            document.getElementById("oci_tenancy").required = true; 
+	            document.getElementById("oci_region").required = true; 
+	            document.getElementById("oci_user_private_key").required = true; 
+		}
+		else if (x == "oci-cspm") {
+	            document.getElementById("oci_cspm_div").style.display = 'block';
+	            document.getElementById("oci_cspm_asset_id").required = true; 
+	            document.getElementById("oci_cspm_user").required = true; 
+	            document.getElementById("oci_cspm_tenancy").required = true; 
+	            document.getElementById("oci_cspm_region").required = true; 
+	            document.getElementById("oci_cspm_user_private_key").required = true; 
+		}
+		else if (x == "ocr") {
+	            document.getElementById("ocr_div").style.display = 'block';
+	            document.getElementById("ocr_user").required = true; 
+	            document.getElementById("ocr_tenancy").required = true; 
+	            document.getElementById("ocr_region").required = true; 
+	            document.getElementById("ocr_user_private_key").required = true; 
 		}
 	}
 
