@@ -812,6 +812,10 @@ body {
         <span class="help-block">Optional OCR repository (all repositoriies in the region will be scanned if empty)</span>
 	<textarea placeholder="Paste private key contents here" name="ocr_user_private_key" id="ocr_user_private_key" rows="10" cols="40" ></textarea>
         <span class="help-block">Private key associated with the OCI user account with required privileges</span>
+	<input type="text" placeholder="Docker login" name="ocr_docker_login" id="ocr_docker_login" >
+        <span class="help-block">Docker login username for OCR in the format '<tenancy-namespace>/<username>'. Note if your tenancy is federated with Oracle Identity Cloud Service, use the format '<tenancy-namespace>/oracleidentitycloudservice/<username>'</span>
+	<input type="text" placeholder="Docker password" name="ocr_docker_passwd" id="ocr_docker_passwd" >
+        <span class="help-block">Password / Auth Token for docker login</span>
 </div>
 <br>
 <hr style="border: 1px dotted #D3D3D3;">
@@ -943,6 +947,8 @@ body {
 	        document.getElementById("ocr_tenancy").required = false; 
 	        document.getElementById("ocr_region").required = false; 
 	        document.getElementById("ocr_user_private_key").required = false; 
+	        document.getElementById("ocr_docker_login").required = false; 
+	        document.getElementById("ocr_docker_passwd").required = false; 
 
 		// enable config div based on scan type
 		var x = document.getElementById("scan_type").value;
@@ -1058,6 +1064,8 @@ body {
 	            document.getElementById("ocr_tenancy").required = true; 
 	            document.getElementById("ocr_region").required = true; 
 	            document.getElementById("ocr_user_private_key").required = true; 
+	            document.getElementById("ocr_docker_login").required = true; 
+	            document.getElementById("ocr_docker_passwd").required = true; 
 		}
 	}
 

@@ -181,7 +181,9 @@ def create_twigs_cmd(config, scan_name, scan_type):
     elif scan_type == 'oci-cspm':
         twigs_cmd = twigs_cmd + " oci_cis --assetid "+config[scan_name]['asset_id']+" --config_file "+CONFIG_PATH+config[scan_name]['config_file']
     elif scan_type == 'ocr':
+        docker_login_cmd = "echo '%s' | docker login 'ocir.%s.oci.oraclecloud.com' -u '%s' --password-stdin" % (config[scan_name]['docker_passwd'], config[scan_name]['region'], config[scan_name]['docker_login'])
         twigs_cmd = twigs_cmd + " ocr --region "+config[scan_name]['region']+" --config_file "+CONFIG_PATH+config[scan_name]['config_file']+" --check_all_vulns"
+        twigs_cmd = docker_login_cmd + " && " + twigs_cmd
         if 'repository' in config[scan_name] and config[scan_name]['repository'] != '':
             twigs_cmd = twigs_cmd + " --repository "+config[scan_name]['repository']
 
@@ -440,6 +442,8 @@ def add_scan(config, request):
         config[scan_name]['config_file'] = config_file_name
         config[scan_name]['region'] = request.form['ocr_region'] 
         config[scan_name]['repository'] = request.form['ocr_repository'] 
+        config[scan_name]['docker_login'] = request.form['ocr_docker_login'] 
+        config[scan_name]['docker_passwd'] = request.form['ocr_docker_passwd'] 
 
     write_config(config)
 
