@@ -591,6 +591,7 @@ body {
 <option value="host" >Linux deep discovery using SSH (credentialed)</option>
 <option value="webapp">Web application (DAST)</option>
 <option value="vmware">VMware</option>
+<option value="defender">MS Defender / Office 365</option>
 <option disabled>──────────────────────</option>
 <option value="github">Github</option>
 <option value="gitlab">Gitlab</option>
@@ -653,6 +654,16 @@ body {
         <span class="help-block">vCenter user name</span>
 	<input type="password" placeholder="vCenter password" name="vcenter_passwd" id="vcenter_passwd">
         <span class="help-block">vCenter user password</span>
+</div>
+<div id="defender_div" style="display: none;">
+	<!--<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-vmware-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>-->
+        <span class="help-block">Discover assets from Microsoft Defender / Office 365 subscription</span>
+	<input type="text" placeholder="Tenant Id" name="defender_tenant" id="defender_tenant" pattern="[a-zA-Z0-9\-]+">
+        <span class="help-block">Office 365 tenant Id</span>
+	<input type="text" placeholder="Application Id" name="defender_app_id" id="defender_app_id" pattern="[a-zA-Z0-9\-]+">
+        <span class="help-block">Office 365 application Id</span>
+	<input type="password" placeholder="Application key" name="defender_app_key" id="defender_app_key">
+        <span class="help-block">Office 365 application secret key</span>
 </div>
 <div id="github_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/enterprise-github-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
@@ -856,6 +867,7 @@ body {
 	        document.getElementById("webapp_div").style.display = 'none';
 	        document.getElementById("host_div").style.display = 'none';
 	        document.getElementById("vmware_div").style.display = 'none';
+	        document.getElementById("defender_div").style.display = 'none';
 	        document.getElementById("gitlab_div").style.display = 'none';
 	        document.getElementById("github_div").style.display = 'none';
 	        document.getElementById("bitbucket_div").style.display = 'none';
@@ -971,6 +983,12 @@ body {
 	            document.getElementById("vcenter_host").required = true; 
 	            document.getElementById("vcenter_user").required = true; 
 	            document.getElementById("vcenter_passwd").required = true; 
+		}
+		else if (x == "defender") {
+	            document.getElementById("defender_div").style.display = 'block';
+	            document.getElementById("defender_tenant").required = true; 
+	            document.getElementById("defender_app_id").required = true; 
+	            document.getElementById("defender_app_key").required = true; 
 		}
 		else if (x == "gitlab") {
 	            document.getElementById("gitlab_div").style.display = 'block';

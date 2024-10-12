@@ -104,6 +104,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
         twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['host_list']
     elif scan_type == 'vmware':
         twigs_cmd = twigs_cmd + " vmware --host "+config[scan_name]['vcenter_host']+" --user "+config[scan_name]['vcenter_user']+" --password '"+config[scan_name]['vcenter_passwd']+"'"
+    elif scan_type == 'defender':
+        twigs_cmd = twigs_cmd + " o365 --tenant_id "+config[scan_name]['tenant_id']+" --application_id "+config[scan_name]['app_id']+" --application_key '"+config[scan_name]['app_key']+"'"
     elif scan_type == 'gitlab':
         twigs_cmd = twigs_cmd + " gitlab --gl_access_token "+config[scan_name]['access_token'] + " --gl_host "+config[scan_name]['server']
         if config[scan_name]['sast'] == 'on':
@@ -339,6 +341,10 @@ def add_scan(config, request):
         config[scan_name]['vcenter_host'] = request.form['vcenter_host']
         config[scan_name]['vcenter_user'] = request.form['vcenter_user']
         config[scan_name]['vcenter_passwd'] = request.form['vcenter_passwd']
+    elif scan_type == 'defender':
+        config[scan_name]['tenant_id'] = request.form['defender_tenant']
+        config[scan_name]['app_id'] = request.form['defender_app_id']
+        config[scan_name]['app_key'] = request.form['defender_app_key']
     elif scan_type == 'gitlab':
         config[scan_name]['access_token'] = request.form['gitlab_access_token']
         config[scan_name]['server'] = request.form['gitlab_server']
