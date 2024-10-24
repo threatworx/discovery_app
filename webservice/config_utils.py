@@ -46,7 +46,7 @@ def get_config():
     if os.path.isfile(config_file) == False:
         print("Error configuration file [%s] not found" % config_file)
         sys.exit(1)
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(interpolation=None)
     config.read(config_file)
 
     return config
@@ -106,6 +106,11 @@ def create_twigs_cmd(config, scan_name, scan_type):
         twigs_cmd = twigs_cmd + " vmware --host "+config[scan_name]['vcenter_host']+" --user "+config[scan_name]['vcenter_user']+" --password '"+config[scan_name]['vcenter_passwd']+"'"
     elif scan_type == 'defender':
         twigs_cmd = twigs_cmd + " o365 --tenant_id "+config[scan_name]['tenant_id']+" --application_id "+config[scan_name]['app_id']+" --application_key '"+config[scan_name]['app_key']+"'"
+    elif scan_type == 'servicenow':
+        if 'snow_client_id' in config[scan_name]:
+            twigs_cmd = twigs_cmd + " servicenow --snow_instance "+config[scan_name]['snow_instance']+" --snow_client_id "+config[scan_name]['snow_client_id']+" --snow_client_secret '"+config[scan_name]['snow_client_secret']+"'"
+        else:
+            twigs_cmd = twigs_cmd + " servicenow --snow_instance "+config[scan_name]['snow_instance']+" --snow_user "+config[scan_name]['snow_user']+" --snow_user_pwd '"+config[scan_name]['snow_password']+"'"
     elif scan_type == 'gitlab':
         twigs_cmd = twigs_cmd + " gitlab --gl_access_token "+config[scan_name]['access_token'] + " --gl_host "+config[scan_name]['server']
         if config[scan_name]['sast'] == 'on':
@@ -345,6 +350,14 @@ def add_scan(config, request):
         config[scan_name]['tenant_id'] = request.form['defender_tenant']
         config[scan_name]['app_id'] = request.form['defender_app_id']
         config[scan_name]['app_key'] = request.form['defender_app_key']
+    elif scan_type == 'servicenow':
+        config[scan_name]['snow_instance'] = request.form['snow_instance']
+        if request.form['snow_client_id'] != None and request.form['snow_client_id'] != '':
+            config[scan_name]['snow_client_id'] = request.form['snow_client_id']
+            config[scan_name]['snow_client_secret'] = request.form['snow_client_secret']
+        else:
+            config[scan_name]['snow_user'] = request.form['snow_user']
+            config[scan_name]['snow_password'] = request.form['snow_password']
     elif scan_type == 'gitlab':
         config[scan_name]['access_token'] = request.form['gitlab_access_token']
         config[scan_name]['server'] = request.form['gitlab_server']

@@ -592,6 +592,7 @@ body {
 <option value="webapp">Web application (DAST)</option>
 <option value="vmware">VMware</option>
 <option value="defender">MS Defender / Office 365</option>
+<option value="servicenow">Servicenow CMDB</option>
 <option disabled>──────────────────────</option>
 <option value="github">Github</option>
 <option value="gitlab">Gitlab</option>
@@ -656,7 +657,7 @@ body {
         <span class="help-block">vCenter user password</span>
 </div>
 <div id="defender_div" style="display: none;">
-	<!--<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-vmware-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>-->
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-o365-defender/"><i class="fa fa-info-circle" alight="right"></i></a>
         <span class="help-block">Discover assets from Microsoft Defender / Office 365 subscription</span>
 	<input type="text" placeholder="Tenant Id" name="defender_tenant" id="defender_tenant" pattern="[a-zA-Z0-9\-]+">
         <span class="help-block">Office 365 tenant Id</span>
@@ -664,6 +665,19 @@ body {
         <span class="help-block">Office 365 application Id</span>
 	<input type="password" placeholder="Application key" name="defender_app_key" id="defender_app_key">
         <span class="help-block">Office 365 application secret key</span>
+</div>
+<div id="snow_div" style="display: none;">
+        <a target="_blank" style="float: right;" href="https://threatworx.io/docs/servicenow-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+        <span class="help-block">Discover assets from ServiceNow CMDB</span>
+	<input type="text" placeholder="ServiceNow instance" name="snow_instance" id="snow_instance" pattern="[a-zA-Z0-9.\-_]+">
+        <span class="help-block">ServiceNow instance name</span>
+	<input type="checkbox" id="snow_auth" name="snow_auth" onClick="snowAuthChange(this);">Use OAuth</input><br>
+	<input type="text" placeholder="User name" name="snow_user" id="snow_user" pattern="[a-zA-Z0-9.\/\-_]+">
+	<input type="text" placeholder="Client Id" name="snow_client_id" id="snow_client_id" pattern="[a-zA-Z0-9]+" style="display: none">
+        <span class="help-block">ServiceNow user name or client Id</span>
+	<input type="password" placeholder="User password" name="snow_password" id="snow_password" > 
+	<input type="password" placeholder="Client secret" name="snow_client_secret" id="snow_client_secret" style="display: none"> 
+        <span class="help-block">ServiceNow user password or client secret</span>
 </div>
 <div id="github_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/enterprise-github-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
@@ -868,6 +882,7 @@ body {
 	        document.getElementById("host_div").style.display = 'none';
 	        document.getElementById("vmware_div").style.display = 'none';
 	        document.getElementById("defender_div").style.display = 'none';
+	        document.getElementById("snow_div").style.display = 'none';
 	        document.getElementById("gitlab_div").style.display = 'none';
 	        document.getElementById("github_div").style.display = 'none';
 	        document.getElementById("bitbucket_div").style.display = 'none';
@@ -990,6 +1005,12 @@ body {
 	            document.getElementById("defender_app_id").required = true; 
 	            document.getElementById("defender_app_key").required = true; 
 		}
+		else if (x == "servicenow") {
+	            document.getElementById("snow_div").style.display = 'block';
+	            document.getElementById("snow_instance").required = true; 
+	            document.getElementById("snow_user").required = true; 
+	            document.getElementById("snow_password").required = true; 
+		}
 		else if (x == "gitlab") {
 	            document.getElementById("gitlab_div").style.display = 'block';
 	            document.getElementById("gitlab_access_token").required = true; 
@@ -1098,6 +1119,28 @@ body {
 			document.getElementById('user_passwd').required = false;
 			document.getElementById('user_private_key').style.display = 'block';
 			document.getElementById('user_private_key').required = true;
+		}
+        }
+
+        function snowAuthChange(myCheck) {
+		if (myCheck.checked) {
+			document.getElementById('snow_user').style.display = 'none';
+			document.getElementById('snow_password').style.display = 'none';
+			document.getElementById('snow_user').required = false;
+			document.getElementById('snow_password').required = false;
+			document.getElementById('snow_client_id').style.display = 'block';
+			document.getElementById('snow_client_secret').style.display = 'block';
+			document.getElementById('snow_client_id').required = true;
+			document.getElementById('snow_client_secret').required = true;
+		} else {
+			document.getElementById('snow_user').style.display = 'block';
+			document.getElementById('snow_password').style.display = 'block';
+			document.getElementById('snow_user').required = true;
+			document.getElementById('snow_password').required = true;
+			document.getElementById('snow_client_id').style.display = 'none';
+			document.getElementById('snow_client_secret').style.display = 'none';
+			document.getElementById('snow_client_id').required = false;
+			document.getElementById('snow_client_secret').required = false;
 		}
         }
 
