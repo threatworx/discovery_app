@@ -626,8 +626,15 @@ body {
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="IP addresses, ranges or CIDRs" name="hosts" id="hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
         <span class="help-block">Comma separated list of IP address, ranges or CIDRs that you would like to discover</span>
-        <input type="checkbox" name="nmap_no_ping" id="nmap_no_ping">No ping</input>
-        <span class="help-block">Don't ping, instead assume that the IP is up. You will get better coverage but discovery times will be longer.</span>
+        <!--<input type="checkbox" name="nmap_no_ping" id="nmap_no_ping">No ping</input>
+	<span class="help-block">Don't ping, instead assume that the IP is up. You will get better coverage but discovery times will be longer.</span>-->
+        <input type="checkbox" name="stype[]" id="stype[]" value="web" checked="checked">Web Services</input>
+        <input type="checkbox" name="stype[]" id="stype[]" value="database">Databases</input>
+        <input type="checkbox" name="stype[]" id="stype[]" value="vmware">VMware Clusters</input>
+        <input type="checkbox" name="stype[]" id="stype[]" value="os">OS Services</input>
+        <span class="help-block">Select one or more class of services that you want to discover on your network</span>
+	<input type="text" placeholder="Extra ports" name="extra_ports" id="extra_ports" pattern="[0-9\-,]+">
+	<span class="help-block">Comma separated list of extra ports and port ranges, that you would like include in the scan e.g. 444,9000-9100,..."</span>
 </div>
 <div id="host_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>

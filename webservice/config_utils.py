@@ -97,9 +97,11 @@ def create_twigs_cmd(config, scan_name, scan_type):
             if 'no_ping' in config[scan_name] and config[scan_name]['no_ping'] == 'on':
                 twigs_cmd = twigs_cmd + " --discovery_scan_type N"
     elif scan_type == 'nmap':
-        twigs_cmd = twigs_cmd + " nmap --no_ssl_audit --hosts "+config[scan_name]['hosts']
-        if 'no_ping' in config[scan_name] and config[scan_name]['no_ping'] == 'on':
-            twigs_cmd = twigs_cmd + " --discovery_scan_type N"
+        twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['hosts'] 
+        if 'services' in config[scan_name]:
+            twigs_cmd = twigs_cmd + ' --services '+config[scan_name]['services']
+        if 'extra_ports' in config[scan_name] and config[scan_name]['extra_ports'] != '':
+            twigs_cmd = twigs_cmd + ' --extra_ports '+config[scan_name]['extra_ports']
     elif scan_type == 'host':
         twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['host_list']
     elif scan_type == 'vmware':
@@ -336,10 +338,13 @@ def add_scan(config, request):
             config[scan_name]['no_ping'] = 'off'
     elif scan_type == 'nmap':
         config[scan_name]['hosts'] = request.form['hosts']
-        if 'nmap_no_ping' in request.form and request.form['nmap_no_ping'] == 'on':
-            config[scan_name]['nmap_no_ping'] = 'on'
+        stypes = request.form.getlist('stype[]')
+        if stypes == None or len(stypes) == 0:
+            stypes = 'web'
         else:
-            config[scan_name]['nmap_no_ping'] = 'off'
+            stypes = ' '.join(stypes)
+        config[scan_name]['services'] = stypes
+        config[scan_name]['extra_ports'] = request.form['extra_ports']
     elif scan_type == 'host':
         config[scan_name]['host_list'] = create_host_csv(scan_name, request.form['host_list'], request.form['user_name'], request.form['user_passwd'], request.form['user_private_key'])
     elif scan_type == 'vmware':
