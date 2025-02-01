@@ -104,6 +104,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + ' --extra_ports '+config[scan_name]['extra_ports']
     elif scan_type == 'host':
         twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['host_list']
+    elif scan_type == 'win_host':
+        twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['win_host_list']
     elif scan_type == 'vmware':
         twigs_cmd = twigs_cmd + " vmware --host "+config[scan_name]['vcenter_host']+" --user "+config[scan_name]['vcenter_user']+" --password '"+config[scan_name]['vcenter_passwd']+"'"
     elif scan_type == 'defender':
@@ -276,6 +278,21 @@ def create_host_csv(scan_name, hostname, user, passwd, private_key):
          writer.writerow(rdict)
     return os.path.basename(csv_file)
 
+def create_win_host_csv(scan_name, hostname, user, passwd):
+    global CONFIG_PATH
+
+    csv_file = CONFIG_PATH+scan_name+'.csv'
+    with open(csv_file, mode='w') as csvfile:
+         fieldnames = ['hostname','userlogin','userpwd']
+         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_NONE, escapechar='\\')
+         writer.writeheader()
+         rdict = {}
+         rdict['hostname'] = hostname
+         rdict['userlogin'] = user
+         rdict['userpwd'] = passwd
+         writer.writerow(rdict)
+    return os.path.basename(csv_file)
+
 def create_oci_config(scan_name, userid, tenancy, region, key_file):
     global CONFIG_PATH
 
@@ -347,6 +364,8 @@ def add_scan(config, request):
         config[scan_name]['extra_ports'] = request.form['extra_ports']
     elif scan_type == 'host':
         config[scan_name]['host_list'] = create_host_csv(scan_name, request.form['host_list'], request.form['user_name'], request.form['user_passwd'], request.form['user_private_key'])
+    elif scan_type == 'win_host':
+        config[scan_name]['win_host_list'] = create_win_host_csv(scan_name, request.form['win_host_list'], request.form['win_user_name'], request.form['win_user_passwd'])
     elif scan_type == 'vmware':
         config[scan_name]['vcenter_host'] = request.form['vcenter_host']
         config[scan_name]['vcenter_user'] = request.form['vcenter_user']

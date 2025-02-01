@@ -589,6 +589,7 @@ body {
 <select class="custom-select" style="width:200px;" name="scan_type" id="scan_type" onchange="mode_change()">
 <option value="nmap" selected>Fingerprint scan (uncredentialed)</option>
 <option value="host" >Linux deep discovery using SSH (credentialed)</option>
+<option value="win_host" >Windows deep discovery using WinRM (credentialed)</option>
 <option value="webapp">Web application (DAST)</option>
 <option value="vmware">VMware</option>
 <option value="defender">MS Defender / Office 365</option>
@@ -638,13 +639,21 @@ body {
 </div>
 <div id="host_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="IP address, range or CIDR" name="host_list" id="host_list" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">A single IP address, range or CIDR that you would like to discover</span>
+	<input type="text" placeholder="Host, IP address, range or CIDR" name="host_list" id="host_list" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">Host name, IP address, range or CIDR that you would like to discover</span>
 	<input type="text" placeholder="Service user name" name="user_name" id="user_name" pattern="[a-zA-Z0-9\/\-_]+">
         <span class="help-block">SSH user name</span>
 	<input type="checkbox" id="su_auth" name="su_auth" onClick="suAuthChange(this);" checked="checked">Use SSH password authentication</input>
 	<input type="password" placeholder="Service user password" name="user_passwd" id="user_passwd">
 	<textarea placeholder="Paste private key contents here" name="user_private_key" id="user_private_key" rows="5" cols="40" style="display: none"></textarea>
+</div>	
+<div id="win_host_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Host, IP address, range or CIDR" name="win_host_list" id="win_host_list" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">Host name, IP address, range or CIDR that you would like to discover</span>
+	<input type="text" placeholder="DOMAIN\username" name="win_user_name" id="win_user_name" pattern="[a-zA-Z0-9\/\\\-_]+">
+	<input type="password" placeholder="password" name="win_user_passwd" id="win_user_passwd">
+        <span class="help-block">Service user credentials for the windows system(s). DOMAIN is optional.</span>
 </div>	    
 <div id="webapp_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-web-application-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
@@ -887,6 +896,7 @@ body {
 	        document.getElementById("nmap_div").style.display = 'none';
 	        document.getElementById("webapp_div").style.display = 'none';
 	        document.getElementById("host_div").style.display = 'none';
+	        document.getElementById("win_host_div").style.display = 'none';
 	        document.getElementById("vmware_div").style.display = 'none';
 	        document.getElementById("defender_div").style.display = 'none';
 	        document.getElementById("snow_div").style.display = 'none';
@@ -1000,6 +1010,13 @@ body {
 	            document.getElementById("user_name").required = true; 
 	            document.getElementById("user_passwd").required = true; 
 		}
+		else if (x == "win_host") {
+	            document.getElementById("win_host_div").style.display = 'block';
+	            document.getElementById("win_host_list").required = true; 
+	            document.getElementById("win_user_name").required = true; 
+	            document.getElementById("win_user_passwd").required = true; 
+		}
+
 		else if (x == "vmware") {
 	            document.getElementById("vmware_div").style.display = 'block';
 	            document.getElementById("vcenter_host").required = true; 
