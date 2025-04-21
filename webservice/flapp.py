@@ -26,6 +26,7 @@ def index_page():
     data = {s:dict(config.items(s)) for s in config.sections()}
     del data['threatworx']['token']
     config.remove_option('discovery_app','error_msg')
+    config.remove_option('discovery_app','success_msg')
     config_utils.write_config(config)
     if config['discovery_app']['auth'] == 'no':
         return redirect("/authenticate")
@@ -56,6 +57,7 @@ def app_page():
     data['authenticator'] = auth
     del data['threatworx']['token']
     config.remove_option('discovery_app','error_msg')
+    config.remove_option('discovery_app','success_msg')
     config_utils.write_config(config)
     return render_template("config.html", data=data)
 
@@ -67,7 +69,7 @@ def handle_save_creds():
     config_utils.save_creds(config, request)
     config = config_utils.get_config()
     config_utils.refresh_tw_creds(config)
-    config.set('discovery_app','error_msg', "Saved ThreatWorx credentials")
+    config.set('discovery_app','success_msg', "Saved ThreatWorx credentials")
     config_utils.write_config(config)
     return redirect(url_for('app_page',auth=authenticator))
 
@@ -96,7 +98,7 @@ def handle_save_config():
     config_utils.create_cron_entry(config, scan_name, twigs_cmd)
     if 'run_now' in request.form and request.form['run_now'] == 'on':
         proc = subprocess.Popen([twigs_cmd], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
-    config.set('discovery_app','error_msg', "Added new discovery configuration '"+scan_name+"'")
+    config.set('discovery_app','success_msg', "Added new discovery configuration '"+scan_name+"'")
     config_utils.write_config(config)
     return redirect(url_for('app_page',auth=authenticator))
 
@@ -112,7 +114,7 @@ def delete_config():
     config_utils.remove_cron_entry(config,scan_name)
     config.remove_section(scan_name)
     config_utils.remove_scan_files(scan_name)
-    config.set('discovery_app','error_msg', "Deleted discovery configuration '"+scan_name+"'")
+    config.set('discovery_app','success_msg', "Deleted discovery configuration '"+scan_name+"'")
     config_utils.write_config(config)
     return redirect(url_for('app_page',auth=authenticator))
 
@@ -124,7 +126,7 @@ def run_config():
     config = config_utils.get_config()
     twigs_cmd = config_utils.create_twigs_cmd(config, scan_name, scan_type)
     proc = subprocess.Popen([twigs_cmd], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
-    config.set('discovery_app','error_msg', "Started new run for '"+scan_name+"'")
+    config.set('discovery_app','success_msg', "Started new run for '"+scan_name+"'")
     config_utils.write_config(config)
     return redirect(url_for('app_page',auth=authenticator))
 

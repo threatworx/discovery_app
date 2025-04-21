@@ -433,6 +433,33 @@ body {
     to {opacity :0;}
 }
 
+.success-message {
+  position: absolute;
+  top: 5%; 
+  right: 40%; 
+  padding: 20px;
+  background-color: #2bc22d; 
+  color: white;
+
+  animation:success-message 0.5s 1;
+  -webkit-animation:success-message 0.5s 1;
+  animation-fill-mode: forwards;
+
+  animation-delay:3s;
+  -webkit-animation-delay:3s; /* Safari and Chrome */
+  -webkit-animation-fill-mode: forwards;
+}
+
+@keyframes success-message{
+    from {opacity :1;}
+    to {opacity :0;}
+}
+
+@-webkit-keyframes success-message{
+    from {opacity :1;}
+    to {opacity :0;}
+}
+
 // Glowing dot css
 @-webkit-keyframes dot-keyframes {
   0% {
@@ -511,6 +538,12 @@ body {
 {% if data['discovery_app']['error_msg'] %}
 <div class="error-message">
 {{data['discovery_app']['error_msg']}}
+<br>
+</div>
+{% endif %}
+{% if data['discovery_app']['success_msg'] %}
+<div class="success-message">
+{{data['discovery_app']['success_msg']}}
 <br>
 </div>
 {% endif %}
