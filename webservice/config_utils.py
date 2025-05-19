@@ -94,8 +94,6 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + " webapp --planfile "+config[scan_name]['plan_file']
         else:
             twigs_cmd = twigs_cmd + " webapp --url "+config[scan_name]['url']
-            if 'no_ping' in config[scan_name] and config[scan_name]['no_ping'] == 'on':
-                twigs_cmd = twigs_cmd + " --discovery_scan_type N"
     elif scan_type == 'nmap':
         twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['hosts'] 
         if 'services' in config[scan_name]:
