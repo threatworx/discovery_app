@@ -103,7 +103,7 @@ def create_twigs_cmd(config, scan_name, scan_type):
     elif scan_type == 'host':
         twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['host_list']
     elif scan_type == 'win_host':
-        twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['win_host_list']
+        twigs_cmd = twigs_cmd + " win_host --host_list "+CONFIG_PATH+config[scan_name]['win_host_list']
     elif scan_type == 'vmware':
         twigs_cmd = twigs_cmd + " vmware --host "+config[scan_name]['vcenter_host']+" --user "+config[scan_name]['vcenter_user']+" --password '"+config[scan_name]['vcenter_passwd']+"'"
     elif scan_type == 'defender':
