@@ -114,7 +114,7 @@ def create_twigs_cmd(config, scan_name, scan_type):
         else:
             twigs_cmd = twigs_cmd + " servicenow --snow_instance "+config[scan_name]['snow_instance']+" --snow_user "+config[scan_name]['snow_user']+" --snow_user_pwd '"+config[scan_name]['snow_password']+"'"
     elif scan_type == 'gitlab':
-        twigs_cmd = twigs_cmd + " gitlab --gl_access_token '"+config[scan_name]['access_token'] + "' --gl_host "+config[scan_name]['server']
+        twigs_cmd = twigs_cmd + " gitlab --gl_access_token='"+config[scan_name]['access_token'] + "' --gl_host "+config[scan_name]['server']
         if config[scan_name]['sast'] == 'on':
             twigs_cmd = twigs_cmd + " --sast"
         if config[scan_name]['secrets'] == 'on':
