@@ -108,6 +108,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
         twigs_cmd = twigs_cmd + " vmware --host "+config[scan_name]['vcenter_host']+" --user "+config[scan_name]['vcenter_user']+" --password '"+config[scan_name]['vcenter_passwd']+"'"
     elif scan_type == 'defender':
         twigs_cmd = twigs_cmd + " o365 --tenant_id "+config[scan_name]['tenant_id']+" --application_id "+config[scan_name]['app_id']+" --application_key '"+config[scan_name]['app_key']+"'"
+        if 'all_devices' in config[scan_name] and config[scan_name]['all_devices'] == 'on':
+            twigs_cmd = twigs_cmd + " --all"
     elif scan_type == 'servicenow':
         if 'snow_client_id' in config[scan_name]:
             twigs_cmd = twigs_cmd + " servicenow --snow_instance "+config[scan_name]['snow_instance']+" --snow_client_id "+config[scan_name]['snow_client_id']+" --snow_client_secret '"+config[scan_name]['snow_client_secret']+"'"
@@ -372,6 +374,9 @@ def add_scan(config, request):
         config[scan_name]['tenant_id'] = request.form['defender_tenant']
         config[scan_name]['app_id'] = request.form['defender_app_id']
         config[scan_name]['app_key'] = request.form['defender_app_key']
+        config[scan_name]['all_devices'] = 'off'
+        if 'defender_all_devices' in request.form and request.form['defender_all_devices'] == 'on':
+            config[scan_name]['all_devices'] = 'on'
     elif scan_type == 'servicenow':
         config[scan_name]['snow_instance'] = request.form['snow_instance']
         if request.form['snow_client_id'] != None and request.form['snow_client_id'] != '':
