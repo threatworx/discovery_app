@@ -55,7 +55,7 @@ def app_page():
         return redirect("/")
     data = {s:dict(config.items(s)) for s in config.sections()}
     data['authenticator'] = auth
-    del data['threatworx']['token']
+    #del data['threatworx']['token']
     config.remove_option('discovery_app','error_msg')
     config.remove_option('discovery_app','success_msg')
     config_utils.write_config(config)

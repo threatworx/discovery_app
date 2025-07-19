@@ -3,6 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 <link rel="icon" href="https://threatworx.io/wp-content/uploads/2022/12/favicon.png" sizes="192x192" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet"/>
 <title>ThreatWorx twigs Discovery App</title>
 		
 <style type="text/css" media="all">
@@ -349,8 +350,8 @@
                  }
 
 		.custom-select {
-  min-width: 350px;
-  position: relative;
+                    min-width: 350px;
+                    position: relative;
 }
 
 select {
@@ -556,9 +557,9 @@ body {
 <span class="help-block">FQDN of your ThreatWorx instance e.g. acme.threatworx.io</span>
 <input type="email" placeholder="User / handle" name="handle" id="handle" value="{{data['threatworx']['handle']}}" required>
 <span class="help-block">Valid user/handle on the ThreatWorx instance</span>
-<input type="password" placeholder="API key" name="token" id="token" value="">
+<input type="password" placeholder="API key" name="token" id="token" value="{{data['threatworx']['token']}}" required>
 <!--<a title="Show / hide API key" href='javascript:;' onclick="toggle_api_key();"><i id="eyecon" class="fa fa-eye"></i></a>-->
-<span class="help-block">API key for ThreatWorx user (will not be displayed once saved)</span>
+<span class="help-block">API key for ThreatWorx user</span>
 <br>
 <button type="submit" class="btn">
 <i class="fa fa-save"></i> Save 
@@ -569,14 +570,15 @@ body {
 <br>
 <div class="container">
 <div class="form-group">
-<label>Configured twigs discovery runs</label>
+<label>Scheduled twigs discoveries</label>
 <table cellpadding="0" cellspacing="0">
 <thead>
 <tr>
 <th width="3%"></th>
 <th width="30%"></th>
 <th width="30%"></th>
-<th width="28%"></th>
+<th width="25%"></th>
+<th width="3%"></th>
 <th width="3%"></th>
 <th width="3%"></th>
 <th width="3%"></th>
@@ -587,8 +589,9 @@ body {
 <tr class="plugin-row-header">
 <td class=""></td>
 <td class="">Name</td>
-<td class="">Mode</td>
+<td class="">Type</td>
 <td class="">Schedule</td>
+<td class=""></td>
 <td class=""></td>
 <td class=""></td>
 <td class=""></td>
@@ -605,8 +608,10 @@ body {
 <td class="">{{data[item]['type']}}</td>
 <td class="">{{data[item]['schedule']}}</td>
 <td class=""></td>
+<td class=""></td>
 <td class=""><a title="Run this discovery now" href="/run_scan?scan_name={{item}}&scan_type={{data[item]['type']}}&auth={{data['authenticator']}}"><i class="fa fa-play"></i></a></td>
 <td class=""><a title="View last log for this discovery (in a new tab)" href="/view_log?scan_name={{item}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-external-link"></i></a></td>
+<!--<td class=""><a title="Edit this discovery configuration" href="javascript:edit_load('{{item}}', {{data[item]}});"><i class="fa fa-pencil-square-o"></i></a></td>-->
 <td class=""><a title="Delete this discovery configuration" href="/delete_scan?scan_name={{item}}&auth={{data['authenticator']}}"><i class="fa fa-trash-o"></i></a></td>
 </tr>
 {% endif %}
@@ -618,15 +623,19 @@ body {
 <form action="/save_scan?auth={{data['authenticator']}}" method="post" id="main_form">
 <div class="container">
 <div class="form-group">
-<label>Schedule a new discovery run</label>
-<select class="custom-select" style="width:200px;" name="scan_type" id="scan_type" onchange="mode_change()">
-<option value="nmap" selected>Fingerprint scan (uncredentialed)</option>
+<input type="text" placeholder="Discovery name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
+<span class="help-block">A unique name for this discovery. Up to 16 alphanumeric allowed</span>
+<input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
+<span class="help-block">Comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
+<select class="custom-select" style="width:250px;" name="scan_type" id="scan_type" onchange="mode_change()">
+<option selected value> -- select a discovery type -- </option>
+<option value="nmap" >Fingerprint scan (uncredentialed)</option>
 <option value="host" >Linux deep discovery using SSH (credentialed)</option>
 <option value="win_host" >Windows deep discovery using WinRM (credentialed)</option>
-<option value="webapp">Web application (DAST)</option>
+<option value="cisco_meraki" >Cisco Meraki</option>
+<option value="cisco_dna_center" >Cisco Catalyst Center (DNA Center)</option>
 <option value="vmware">VMware</option>
 <option value="defender">MS Defender / Office 365</option>
-<option value="servicenow">Servicenow CMDB</option>
 <option disabled>──────────────────────</option>
 <option value="github">Github</option>
 <option value="gitlab">Gitlab</option>
@@ -647,16 +656,17 @@ body {
 <option value="oci">OCI CWP (agentless)</option>
 <option value="oci-cspm">OCI CSPM</option>
 <option value="ocr">OCI OCR</option>
+<option disabled>──────────────────────</option>
+<option value="webapp">Web application (DAST)</option>
+<option disabled>──────────────────────</option>
+<option value="servicenow">Servicenow CMDB</option>
 </select>
-<span class="help-block">Select a discovery mode</span>
-<input type="text" placeholder="Discovery name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
-<span class="help-block">A unique name for this discovery run. Up to 16 alphanumeric allowed</span>
-<input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
-<span class="help-block">Comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
+
 <br>
 <hr style="border: 1px dotted #D3D3D3;">
 <br>
-<div id="nmap_div" style="display: block;">
+<!--<div id="nmap_div" style="display: block;">-->
+<div id="nmap_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="IP addresses, ranges or CIDRs" name="hosts" id="hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
         <span class="help-block">Comma separated list of IP address, ranges or CIDRs that you would like to discover</span>
@@ -687,7 +697,23 @@ body {
 	<input type="text" placeholder="DOMAIN\username" name="win_user_name" id="win_user_name" pattern="[a-zA-Z0-9\/\\\-_]+">
 	<input type="password" placeholder="password" name="win_user_passwd" id="win_user_passwd">
         <span class="help-block">Service user credentials for the windows system(s). DOMAIN is optional.</span>
-</div>	    
+</div>
+<div id="meraki_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/cisco-meraki-device-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="url" placeholder="https://api.meraki.com/api/v1" name="meraki_base_url" id="meraki_base_url" value="https://api.meraki.com/api/v1">
+        <span class="help-block">Meraki API base url (optional, defaults to https://api.meraki.com/api/v1)</span>
+	<input type="password" placeholder="API Key" name="meraki_api_key" id="meraki_api_key">
+        <span class="help-block">API key</span>
+</div>
+<div id="dna_center_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/cisco-catalyst-center-device-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="url" name="dna_center_url" id="dna_center_url" >
+        <span class="help-block">Cisco Catalyst Center (DNA Center) console URL</span>
+	<input type="text" name="dna_center_user" id="dna_center_user" pattern="[a-zA-Z0-9\/\\\-_]+">
+        <span class="help-block">Authorized user name</span>
+	<input type="password" name="dna_center_password" id="dna_center_password">
+        <span class="help-block">Password</span>
+</div>
 <div id="webapp_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-web-application-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="checkbox" id="webapp_opt" name="webapp_opt" onClick="webappOptChange(this);">Use ZAP plan</input><br>
@@ -929,6 +955,8 @@ body {
 	        document.getElementById("webapp_div").style.display = 'none';
 	        document.getElementById("host_div").style.display = 'none';
 	        document.getElementById("win_host_div").style.display = 'none';
+	        document.getElementById("meraki_div").style.display = 'none';
+	        document.getElementById("dna_center_div").style.display = 'none';
 	        document.getElementById("vmware_div").style.display = 'none';
 	        document.getElementById("defender_div").style.display = 'none';
 	        document.getElementById("snow_div").style.display = 'none';
@@ -956,6 +984,12 @@ body {
 	        document.getElementById("host_list").required = false; 
 	        document.getElementById("user_name").required = false; 
 	        document.getElementById("user_passwd").required = false; 
+
+	        document.getElementById("meraki_api_key").required = false; 
+
+	        document.getElementById("dna_center_url").required = false; 
+	        document.getElementById("dna_center_user").required = false; 
+	        document.getElementById("dna_center_password").required = false; 
 
 	        document.getElementById("vcenter_host").required = false; 
 	        document.getElementById("vcenter_user").required = false; 
@@ -1048,12 +1082,21 @@ body {
 	            document.getElementById("win_user_name").required = true; 
 	            document.getElementById("win_user_passwd").required = true; 
 		}
-
 		else if (x == "vmware") {
 	            document.getElementById("vmware_div").style.display = 'block';
 	            document.getElementById("vcenter_host").required = true; 
 	            document.getElementById("vcenter_user").required = true; 
 	            document.getElementById("vcenter_passwd").required = true; 
+		}
+		else if (x == "cisco_meraki") {
+	            document.getElementById("meraki_div").style.display = 'block';
+	            document.getElementById("meraki_api_key").required = true; 
+		}
+		else if (x == "cisco_dna_center") {
+	            document.getElementById("dna_center_div").style.display = 'block';
+	            document.getElementById("dna_center_url").required = true; 
+	            document.getElementById("dna_center_user").required = true; 
+	            document.getElementById("dna_center_password").required = true; 
 		}
 		else if (x == "defender") {
 	            document.getElementById("defender_div").style.display = 'block';
@@ -1213,6 +1256,147 @@ body {
 			document.getElementById('url').required = true;
 		}
         }
+
+        function edit_load(scan_name, scan_obj) {
+		//window.alert(scan_obj['type']);
+		const mySelect = document.getElementById('scan_type');
+		const event = new Event('change');
+		mySelect.value = scan_obj['type'];
+                mySelect.dispatchEvent(event);
+		console.log(JSON.stringify(scan_obj, null, 2));
+
+	        document.getElementById("scan_name").value = scan_name;
+	        document.getElementById("tags").value = scan_obj['tags'];
+	        document.getElementById("schedule").value = scan_obj['schedule'];
+
+		// populate config div from scan_obj 
+		var x = scan_obj['type'];
+		if (x == "nmap") {
+	            document.getElementById("hosts").required = true;
+		}
+		else if (x == "webapp") {
+	            document.getElementById("url").value = scan_obj['url'];
+		}
+		else if (x == "host") {
+	            document.getElementById("host_list").required = true; 
+	            document.getElementById("user_name").required = true; 
+	            document.getElementById("user_passwd").required = true; 
+		}
+		else if (x == "win_host") {
+	            document.getElementById("win_host_list").required = true; 
+	            document.getElementById("win_user_name").required = true; 
+	            document.getElementById("win_user_passwd").required = true; 
+		}
+		else if (x == "vmware") {
+	            document.getElementById("vcenter_host").required = true; 
+	            document.getElementById("vcenter_user").required = true; 
+	            document.getElementById("vcenter_passwd").required = true; 
+		}
+		else if (x == "cisco_meraki") {
+	            document.getElementById("meraki_api_key").required = true; 
+		}
+		else if (x == "cisco_dna_center") {
+	            document.getElementById("dna_center_url").required = true; 
+	            document.getElementById("dna_center_user").required = true; 
+	            document.getElementById("dna_center_password").required = true; 
+		}
+		else if (x == "defender") {
+	            document.getElementById("defender_tenant").required = true; 
+	            document.getElementById("defender_app_id").required = true; 
+	            document.getElementById("defender_app_key").required = true; 
+		}
+		else if (x == "servicenow") {
+	            document.getElementById("snow_instance").required = true; 
+	            document.getElementById("snow_user").required = true; 
+	            document.getElementById("snow_password").required = true; 
+		}
+		else if (x == "gitlab") {
+	            document.getElementById("gitlab_access_token").required = true; 
+		}
+		else if (x == "github") {
+	            document.getElementById("github_identity").value = scan_obj['identity']; 
+	            document.getElementById("github_access_token").value = scan_obj['access_token']; 
+	            document.getElementById("github_url").value = scan_obj['api_url']; 
+		    if (scan_obj['sast'] == 'on') document.getElementById("gh_sast").checked = true;
+		    if (scan_obj['secrets'] == 'on') document.getElementById("gh_secrets").checked = true;
+		    if (scan_obj['iac'] == 'on') document.getElementById("gh_iac").checked = true;
+		    if (scan_obj['nocode'] == 'on') document.getElementById("gh_nocode").checked = true;
+		}
+		else if (x == "bitbucket") {
+	            document.getElementById("bb_user").required = true; 
+	            document.getElementById("bb_app_password").required = true; 
+	            document.getElementById("bb_url").required = true; 
+		}
+		else if (x == "gcp") {
+	            document.getElementById("gcp_private_key").required = true; 
+		}
+		else if (x == "gcp-cspm") {
+	            document.getElementById("gcp_cspm_private_key").required = true; 
+	            document.getElementById("gcp_cspm_asset_id").required = true; 
+		}
+		else if (x == "gcr") {
+	            document.getElementById("gcr_private_key").required = true; 
+	            document.getElementById("gcr_repo").required = true; 
+		}
+		else if (x == "aws") {
+	            document.getElementById("aws_account").required = true; 
+	            document.getElementById("aws_access_key").required = true; 
+	            document.getElementById("aws_secret_key").required = true; 
+	            document.getElementById("aws_s3_bucket").required = true; 
+	            document.getElementById("aws_region").required = true; 
+		}
+		else if (x == "aws-cspm") {
+	            document.getElementById("aws_cspm_access_key").required = true; 
+	            document.getElementById("aws_cspm_secret_key").required = true; 
+	            document.getElementById("aws_cspm_asset_id").required = true; 
+		}
+		else if (x == "ecr") {
+	            document.getElementById("ecr_account").required = true; 
+	            document.getElementById("ecr_access_key").required = true; 
+	            document.getElementById("ecr_secret_key").required = true; 
+	            document.getElementById("ecr_region").required = true; 
+		}
+		else if (x == "azure") {
+	            document.getElementById("azure_sp").required = true; 
+	            document.getElementById("azure_sp_secret").required = true; 
+	            document.getElementById("azure_tenant").required = true; 
+	            document.getElementById("azure_workspace").required = true; 
+		}
+		else if (x == "azure-cspm") {
+	            document.getElementById("azure_cspm_asset_id").required = true; 
+	            document.getElementById("azure_cspm_sp").required = true; 
+	            document.getElementById("azure_cspm_sp_secret").required = true; 
+	            document.getElementById("azure_cspm_tenant").required = true; 
+		}
+		else if (x == "acr") {
+	            document.getElementById("acr_registry").required = true; 
+	            document.getElementById("acr_sp").required = true; 
+	            document.getElementById("acr_sp_secret").required = true; 
+	            document.getElementById("acr_tenant").required = true; 
+		}
+		else if (x == "oci") {
+	            document.getElementById("oci_user").required = true; 
+	            document.getElementById("oci_tenancy").required = true; 
+	            document.getElementById("oci_region").required = true; 
+	            document.getElementById("oci_user_private_key").required = true; 
+		}
+		else if (x == "oci-cspm") {
+	            document.getElementById("oci_cspm_asset_id").required = true; 
+	            document.getElementById("oci_cspm_user").required = true; 
+	            document.getElementById("oci_cspm_tenancy").required = true; 
+	            document.getElementById("oci_cspm_region").required = true; 
+	            document.getElementById("oci_cspm_user_private_key").required = true; 
+		}
+		else if (x == "ocr") {
+	            document.getElementById("ocr_user").required = true; 
+	            document.getElementById("ocr_tenancy").required = true; 
+	            document.getElementById("ocr_region").required = true; 
+	            document.getElementById("ocr_user_private_key").required = true; 
+	            document.getElementById("ocr_docker_login").required = true; 
+	            document.getElementById("ocr_docker_passwd").required = true; 
+		}
+
+	}
 
 	function check_run_status() {
 		alldivs = document.querySelectorAll("[id*=loading-dots-]");

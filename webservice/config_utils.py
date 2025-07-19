@@ -106,6 +106,10 @@ def create_twigs_cmd(config, scan_name, scan_type):
         twigs_cmd = twigs_cmd + " win_host --host_list "+CONFIG_PATH+config[scan_name]['win_host_list']
     elif scan_type == 'vmware':
         twigs_cmd = twigs_cmd + " vmware --host "+config[scan_name]['vcenter_host']+" --user "+config[scan_name]['vcenter_user']+" --password '"+config[scan_name]['vcenter_passwd']+"'"
+    elif scan_type == 'cisco_meraki':
+        twigs_cmd = twigs_cmd + " meraki --base_url '"+config[scan_name]['meraki_base_url']+"' --api_key '"+config[scan_name]['meraki_api_key']+"'"
+    elif scan_type == 'cisco_dna_center':
+        twigs_cmd = twigs_cmd + " dna_center --url '"+config[scan_name]['dna_center_url']+"' --user '"+config[scan_name]['dna_center_user']+"' --password '"+config[scan_name]['dna_center_password']+"'"
     elif scan_type == 'defender':
         twigs_cmd = twigs_cmd + " o365 --tenant_id "+config[scan_name]['tenant_id']+" --application_id "+config[scan_name]['app_id']+" --application_key '"+config[scan_name]['app_key']+"'"
         if 'all_devices' in config[scan_name] and config[scan_name]['all_devices'] == 'on':
@@ -370,6 +374,13 @@ def add_scan(config, request):
         config[scan_name]['vcenter_host'] = request.form['vcenter_host']
         config[scan_name]['vcenter_user'] = request.form['vcenter_user']
         config[scan_name]['vcenter_passwd'] = request.form['vcenter_passwd']
+    elif scan_type == 'cisco_meraki':
+        config[scan_name]['meraki_base_url'] = request.form['meraki_base_url']
+        config[scan_name]['meraki_api_key'] = request.form['meraki_api_key']
+    elif scan_type == 'cisco_dna_center':
+        config[scan_name]['dna_center_url'] = request.form['dna_center_url']
+        config[scan_name]['dna_center_user'] = request.form['dna_center_user']
+        config[scan_name]['dna_center_password'] = request.form['dna_center_password']
     elif scan_type == 'defender':
         config[scan_name]['tenant_id'] = request.form['defender_tenant']
         config[scan_name]['app_id'] = request.form['defender_app_id']
