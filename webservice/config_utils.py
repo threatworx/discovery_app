@@ -256,7 +256,7 @@ def create_key_file(scan_name, private_key):
         pk_file_name = CONFIG_PATH+scan_name+'.key'
         with open(pk_file_name, mode='w') as pk_file:
             pk_file.write(private_key)
-    os.chmod(pk_file_name, 0o444)
+    os.chmod(pk_file_name, 0o644)
     return os.path.basename(pk_file_name)
 
 def create_host_csv(scan_name, hostname, user, passwd, private_key):
@@ -367,8 +367,16 @@ def add_scan(config, request):
         config[scan_name]['services'] = stypes
         config[scan_name]['extra_ports'] = request.form['extra_ports']
     elif scan_type == 'host':
+        config[scan_name]['original_host_list'] = request.form['host_list']
+        if 'user_private_key' in request.form:
+            config[scan_name]['user_private_key'] = request.form['user_private_key']
+        config[scan_name]['user_name'] = request.form['user_name']
+        config[scan_name]['user_passwd'] = request.form['user_passwd']
         config[scan_name]['host_list'] = create_host_csv(scan_name, request.form['host_list'], request.form['user_name'], request.form['user_passwd'], request.form['user_private_key'])
     elif scan_type == 'win_host':
+        config[scan_name]['original_win_host_list'] = request.form['win_host_list']
+        config[scan_name]['win_user_name'] = request.form['win_user_name']
+        config[scan_name]['win_user_passwd'] = request.form['win_user_passwd']
         config[scan_name]['win_host_list'] = create_win_host_csv(scan_name, request.form['win_host_list'], request.form['win_user_name'], request.form['win_user_passwd'])
     elif scan_type == 'vmware':
         config[scan_name]['vcenter_host'] = request.form['vcenter_host']
@@ -386,7 +394,7 @@ def add_scan(config, request):
         config[scan_name]['app_id'] = request.form['defender_app_id']
         config[scan_name]['app_key'] = request.form['defender_app_key']
         config[scan_name]['all_devices'] = 'off'
-        if 'defender_all_devices' in request.form and request.form['defender_all_devices'] == 'on':
+        if 'defender_all_devices' in request.form:
             config[scan_name]['all_devices'] = 'on'
     elif scan_type == 'servicenow':
         config[scan_name]['snow_instance'] = request.form['snow_instance']
@@ -403,13 +411,13 @@ def add_scan(config, request):
         config[scan_name]['secrets'] = 'off'
         config[scan_name]['iac'] = 'off'
         config[scan_name]['nocode'] = 'off'
-        if 'gl_sast' in request.form and request.form['gl_sast'] == 'on':
+        if 'gl_sast' in request.form :
             config[scan_name]['sast'] = 'on'
-        if 'gl_secrets' in request.form and request.form['gl_secrets'] == 'on':
+        if 'gl_secrets' in request.form:
             config[scan_name]['secrets'] = 'on'
-        if 'gl_iac' in request.form and request.form['gl_iac'] == 'on':
+        if 'gl_iac' in request.form:
             config[scan_name]['iac'] = 'on'
-        if 'gl_nocode' in request.form and request.form['gl_nocode'] == 'on':
+        if 'gl_nocode' in request.form:
             config[scan_name]['nocode'] = 'on'
     elif scan_type == 'github':
         config[scan_name]['access_token'] = request.form['github_access_token']
@@ -419,13 +427,13 @@ def add_scan(config, request):
         config[scan_name]['secrets'] = 'off'
         config[scan_name]['iac'] = 'off'
         config[scan_name]['nocode'] = 'off'
-        if 'gh_sast' in request.form and request.form['gh_sast'] == 'on':
+        if 'gh_sast' in request.form:
             config[scan_name]['sast'] = 'on'
-        if 'gh_secrets' in request.form and request.form['gh_secrets'] == 'on':
+        if 'gh_secrets' in request.form:
             config[scan_name]['secrets'] = 'on'
-        if 'gh_iac' in request.form and request.form['gh_iac'] == 'on':
+        if 'gh_iac' in request.form:
             config[scan_name]['iac'] = 'on'
-        if 'gh_nocode' in request.form and request.form['gh_nocode'] == 'on':
+        if 'gh_nocode' in request.form:
             config[scan_name]['nocode'] = 'on'
     elif scan_type == 'bitbucket':
         config[scan_name]['user'] = request.form['bb_user']
@@ -435,21 +443,24 @@ def add_scan(config, request):
         config[scan_name]['secrets'] = 'off'
         config[scan_name]['iac'] = 'off'
         config[scan_name]['nocode'] = 'off'
-        if 'bb_sast' in request.form and request.form['bb_sast'] == 'on':
+        if 'bb_sast' in request.form:
             config[scan_name]['sast'] = 'on'
-        if 'bb_secrets' in request.form and request.form['bb_secrets'] == 'on':
+        if 'bb_secrets' in request.form:
             config[scan_name]['secrets'] = 'on'
-        if 'bb_iac' in request.form and request.form['bb_iac'] == 'on':
+        if 'bb_iac' in request.form:
             config[scan_name]['iac'] = 'on'
-        if 'bb_nocode' in request.form and request.form['bb_nocode'] == 'on':
+        if 'bb_nocode' in request.form:
             config[scan_name]['nocode'] = 'on'
     elif scan_type == 'gcp':
+        config[scan_name]['private_key'] = request.form['gcp_private_key']
         config[scan_name]['key_file'] = create_key_file(scan_name, request.form['gcp_private_key'])
     elif scan_type == 'gcp-cspm':
         config[scan_name]['asset_id'] = request.form['gcp_cspm_asset_id']
         config[scan_name]['key_file'] = create_key_file(scan_name, request.form['gcp_cspm_private_key'])
+        config[scan_name]['private_key'] = request.form['gcp_cspm_private_key']
     elif scan_type == 'gcr':
         config[scan_name]['gcr_repo'] = request.form['gcr_repo']
+        config[scan_name]['private_key'] = request.form['gcr_private_key']
         config[scan_name]['key_file'] = create_key_file(scan_name, request.form['gcr_private_key'])
     elif scan_type == 'aws':
         config[scan_name]['aws_account'] = request.form['aws_account']
@@ -482,11 +493,19 @@ def add_scan(config, request):
         config[scan_name]['acr_sp_secret'] = request.form['acr_sp_secret']
         config[scan_name]['acr_tenant'] = request.form['acr_tenant']
     elif scan_type == 'oci':
+        config[scan_name]['oci_user'] = request.form['oci_user']
+        config[scan_name]['oci_tenancy'] = request.form['oci_tenancy']
+        config[scan_name]['oci_region'] = request.form['oci_region']
+        config[scan_name]['oci_user_private_key'] = request.form['oci_user_private_key']
         key_file = create_key_file(scan_name, request.form['oci_user_private_key'])
         config[scan_name]['key_file'] = key_file
         config_file_name = create_oci_config(scan_name, request.form['oci_user'], request.form['oci_tenancy'], request.form['oci_region'], key_file)
         config[scan_name]['config_file'] = config_file_name
     elif scan_type == 'oci-cspm':
+        config[scan_name]['oci_cspm_user'] = request.form['oci_cspm_user']
+        config[scan_name]['oci_cspm_tenancy'] = request.form['oci_cspm_tenancy']
+        config[scan_name]['oci_cspm_region'] = request.form['oci_cspm_region']
+        config[scan_name]['oci_cspm_user_private_key'] = request.form['oci_cspm_user_private_key']
         key_file = create_key_file(scan_name, request.form['oci_cspm_user_private_key'])
         config[scan_name]['key_file'] = key_file
         config_file_name = create_oci_config(scan_name, request.form['oci_cspm_user'], request.form['oci_cspm_tenancy'], request.form['oci_cspm_region'], key_file)
@@ -497,8 +516,11 @@ def add_scan(config, request):
         config[scan_name]['key_file'] = key_file
         config_file_name = create_oci_config(scan_name, request.form['ocr_user'], request.form['ocr_tenancy'], request.form['ocr_region'], key_file)
         config[scan_name]['config_file'] = config_file_name
+        config[scan_name]['user'] = request.form['ocr_user'] 
+        config[scan_name]['tenancy'] = request.form['ocr_tenancy'] 
         config[scan_name]['region'] = request.form['ocr_region'] 
         config[scan_name]['repository'] = request.form['ocr_repository'] 
+        config[scan_name]['private_key'] = request.form['ocr_user_private_key'] 
         config[scan_name]['docker_login'] = request.form['ocr_docker_login'] 
         config[scan_name]['docker_passwd'] = request.form['ocr_docker_passwd'] 
 

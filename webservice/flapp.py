@@ -84,12 +84,7 @@ def handle_save_config():
         config_utils.write_config(config)
         return redirect(url_for('app_page',auth=authenticator))
 
-    # Check for duplicate scan name
     scan_name = request.form['scan_name']
-    if config.has_section(scan_name):
-        config.set('discovery_app','error_msg', "Error: Discovery by the name '"+scan_name+"' is already configured")
-        config_utils.write_config(config)
-        return redirect(url_for('app_page',auth=authenticator))
 
     config_utils.add_scan(config, request)
     config = config_utils.get_config()
@@ -98,7 +93,7 @@ def handle_save_config():
     config_utils.create_cron_entry(config, scan_name, twigs_cmd)
     if 'run_now' in request.form and request.form['run_now'] == 'on':
         proc = subprocess.Popen([twigs_cmd], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
-    config.set('discovery_app','success_msg', "Added new discovery configuration '"+scan_name+"'")
+    config.set('discovery_app','success_msg', "Saved schedule for '"+scan_name+"'")
     config_utils.write_config(config)
     return redirect(url_for('app_page',auth=authenticator))
 

@@ -350,7 +350,7 @@
                  }
 
 		.custom-select {
-                    min-width: 350px;
+                    min-width: 500px;
                     position: relative;
 }
 
@@ -608,10 +608,9 @@ body {
 <td class="">{{data[item]['type']}}</td>
 <td class="">{{data[item]['schedule']}}</td>
 <td class=""></td>
-<td class=""></td>
 <td class=""><a title="Run this discovery now" href="/run_scan?scan_name={{item}}&scan_type={{data[item]['type']}}&auth={{data['authenticator']}}"><i class="fa fa-play"></i></a></td>
 <td class=""><a title="View last log for this discovery (in a new tab)" href="/view_log?scan_name={{item}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-external-link"></i></a></td>
-<!--<td class=""><a title="Edit this discovery configuration" href="javascript:edit_load('{{item}}', {{data[item]}});"><i class="fa fa-pencil-square-o"></i></a></td>-->
+<td class=""><a title="Edit this discovery configuration" href="javascript:edit_load('{{item}}', {{data[item]}});"><i class="fa fa-pencil-square-o"></i></a></td>
 <td class=""><a title="Delete this discovery configuration" href="/delete_scan?scan_name={{item}}&auth={{data['authenticator']}}"><i class="fa fa-trash-o"></i></a></td>
 </tr>
 {% endif %}
@@ -666,16 +665,17 @@ body {
 <hr style="border: 1px dotted #D3D3D3;">
 <br>
 <!--<div id="nmap_div" style="display: block;">-->
+<div id="config_div">
 <div id="nmap_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="IP addresses, ranges or CIDRs" name="hosts" id="hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
         <span class="help-block">Comma separated list of IP address, ranges or CIDRs that you would like to discover</span>
         <!--<input type="checkbox" name="nmap_no_ping" id="nmap_no_ping">No ping</input>
 	<span class="help-block">Don't ping, instead assume that the IP is up. You will get better coverage but discovery times will be longer.</span>-->
-        <input type="checkbox" name="stype[]" id="stype[]" value="web" checked="checked">Web Services</input>
-        <input type="checkbox" name="stype[]" id="stype[]" value="database">Databases</input>
-        <input type="checkbox" name="stype[]" id="stype[]" value="vmware">VMware Clusters</input>
-        <input type="checkbox" name="stype[]" id="stype[]" value="os">OS Services</input>
+        <input type="checkbox" name="stype[]" value="web" checked="checked">Web Services</input>
+        <input type="checkbox" name="stype[]" value="database">Databases</input>
+        <input type="checkbox" name="stype[]" value="vmware">VMware Clusters</input>
+        <input type="checkbox" name="stype[]" value="os">OS Services</input>
         <span class="help-block">Select one or more class of services that you want to discover on your network</span>
 	<input type="text" placeholder="Extra ports" name="extra_ports" id="extra_ports" pattern="[0-9\-,]+">
 	<span class="help-block">Comma separated list of extra ports and port ranges, that you would like include in the scan e.g. 444,9000-9100,..."</span>
@@ -738,7 +738,7 @@ body {
         <span class="help-block">Office 365 application Id</span>
 	<input type="password" placeholder="Application key" name="defender_app_key" id="defender_app_key">
         <span class="help-block">Office 365 application secret key</span>
-	<input type="checkbox" id="defender_all_devices" name="defender_all_devices">Discover all active devices (default is high risk active devices only)</input>
+	<input type="checkbox" name="defender_all_devices" id="defender_all_devices">Discover all active devices</input>
 </div>
 <div id="snow_div" style="display: none;">
         <a target="_blank" style="float: right;" href="https://threatworx.io/docs/servicenow-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
@@ -916,6 +916,7 @@ body {
 	<input type="text" placeholder="Docker password" name="ocr_docker_passwd" id="ocr_docker_passwd" >
         <span class="help-block">Password / Auth Token for docker login</span>
 </div>
+</div><!--end of config divs-->
 <br>
 <hr style="border: 1px dotted #D3D3D3;">
 <br>
@@ -929,9 +930,7 @@ body {
 <input type="checkbox" name="run_now" id="run_now">Run now</input>
 <span class="help-block">Run this discovery now</span>
 <br>
-<button type="submit" class="btn">
-<i class="fa fa-plus"></i> Add 
-</button>
+<button type="submit" class="btn" name="submitbtn" id=submitbtn"> Save </button>
 </div>
 </div>
 
@@ -951,30 +950,36 @@ body {
         } 
         function mode_change() {
 		// Hide all config divs
-	        document.getElementById("nmap_div").style.display = 'none';
-	        document.getElementById("webapp_div").style.display = 'none';
-	        document.getElementById("host_div").style.display = 'none';
-	        document.getElementById("win_host_div").style.display = 'none';
-	        document.getElementById("meraki_div").style.display = 'none';
-	        document.getElementById("dna_center_div").style.display = 'none';
-	        document.getElementById("vmware_div").style.display = 'none';
-	        document.getElementById("defender_div").style.display = 'none';
-	        document.getElementById("snow_div").style.display = 'none';
-	        document.getElementById("gitlab_div").style.display = 'none';
-	        document.getElementById("github_div").style.display = 'none';
-	        document.getElementById("bitbucket_div").style.display = 'none';
-	        document.getElementById("gcp_div").style.display = 'none';
-	        document.getElementById("gcp_cspm_div").style.display = 'none';
-	        document.getElementById("gcr_div").style.display = 'none';
-	        document.getElementById("aws_div").style.display = 'none';
-	        document.getElementById("aws_cspm_div").style.display = 'none';
-	        document.getElementById("ecr_div").style.display = 'none';
-	        document.getElementById("azure_div").style.display = 'none';
-	        document.getElementById("azure_cspm_div").style.display = 'none';
-	        document.getElementById("acr_div").style.display = 'none';
-	        document.getElementById("oci_div").style.display = 'none';
-	        document.getElementById("oci_cspm_div").style.display = 'none';
-	        document.getElementById("ocr_div").style.display = 'none';
+	        var config_div = document.getElementById("config_div")	
+		config_div.querySelectorAll('div').forEach(div=> {
+                    div.style.display = 'none';
+                });
+
+	        document.getElementById("hosts").required = false;
+	        //document.getElementById("nmap_div").style.display = 'none';
+	        //document.getElementById("webapp_div").style.display = 'none';
+	        //document.getElementById("host_div").style.display = 'none';
+	        //document.getElementById("win_host_div").style.display = 'none';
+	        //document.getElementById("meraki_div").style.display = 'none';
+	        //document.getElementById("dna_center_div").style.display = 'none';
+	        //document.getElementById("vmware_div").style.display = 'none';
+	        //document.getElementById("defender_div").style.display = 'none';
+	        //document.getElementById("snow_div").style.display = 'none';
+	        //document.getElementById("gitlab_div").style.display = 'none';
+	        //document.getElementById("github_div").style.display = 'none';
+	        //document.getElementById("bitbucket_div").style.display = 'none';
+	        //document.getElementById("gcp_div").style.display = 'none';
+	        //document.getElementById("gcp_cspm_div").style.display = 'none';
+	        //document.getElementById("gcr_div").style.display = 'none';
+	        //document.getElementById("aws_div").style.display = 'none';
+	        //document.getElementById("aws_cspm_div").style.display = 'none';
+	        //document.getElementById("ecr_div").style.display = 'none';
+	        //document.getElementById("azure_div").style.display = 'none';
+	        //document.getElementById("azure_cspm_div").style.display = 'none';
+	        //document.getElementById("acr_div").style.display = 'none';
+	        //document.getElementById("oci_div").style.display = 'none';
+	        //document.getElementById("oci_cspm_div").style.display = 'none';
+	        //document.getElementById("ocr_div").style.display = 'none';
 
 		// set all required fields to false
 	        document.getElementById("hosts").required = false;
@@ -1060,6 +1065,15 @@ body {
 	        document.getElementById("ocr_docker_login").required = false; 
 	        document.getElementById("ocr_docker_passwd").required = false; 
 
+		// reset all inputs and textareas
+		config_div.querySelectorAll('input').forEach(input=> {
+                    input.value = '';
+                });
+		config_div.querySelectorAll('textarea').forEach(textarea=> {
+                    textarea.value = '';
+                });
+	        document.getElementById("scan_name").value = ''; 
+	        document.getElementById("tags").value = ''; 
 		// enable config div based on scan type
 		var x = document.getElementById("scan_type").value;
 		if (x == "nmap") {
@@ -1258,12 +1272,12 @@ body {
         }
 
         function edit_load(scan_name, scan_obj) {
-		//window.alert(scan_obj['type']);
 		const mySelect = document.getElementById('scan_type');
+                mySelect.scrollIntoView({ behavior: 'smooth' });
 		const event = new Event('change');
 		mySelect.value = scan_obj['type'];
                 mySelect.dispatchEvent(event);
-		console.log(JSON.stringify(scan_obj, null, 2));
+		//console.log(JSON.stringify(scan_obj, null, 2));
 
 	        document.getElementById("scan_name").value = scan_name;
 	        document.getElementById("tags").value = scan_obj['tags'];
@@ -1272,130 +1286,193 @@ body {
 		// populate config div from scan_obj 
 		var x = scan_obj['type'];
 		if (x == "nmap") {
-	            document.getElementById("hosts").required = true;
+	            document.getElementById("hosts").value = scan_obj['hosts'];
+		    const items = document.querySelectorAll('[id^="stype"]');
+                    items.forEach(item => {
+		        if(scan_obj['services'].includes(item.value)) item.checked = true;
+                    });
+		    if (scan_obj['extra_ports']) document.getElementById("extra_ports").value = scan_obj['extra_ports'];
 		}
 		else if (x == "webapp") {
 	            document.getElementById("url").value = scan_obj['url'];
 		}
 		else if (x == "host") {
-	            document.getElementById("host_list").required = true; 
-	            document.getElementById("user_name").required = true; 
-	            document.getElementById("user_passwd").required = true; 
+	            document.getElementById("host_list").value = scan_obj['original_host_list']; 
+	            document.getElementById("user_name").value = scan_obj['user_name'];
+		    if (scan_obj['user_passwd']) document.getElementById("user_passwd").value = scan_obj['user_passwd'];
+		    if (scan_obj['user_private_key']) document.getElementById("user_private_key").value = scan_obj['user_private_key'];
 		}
 		else if (x == "win_host") {
-	            document.getElementById("win_host_list").required = true; 
-	            document.getElementById("win_user_name").required = true; 
-	            document.getElementById("win_user_passwd").required = true; 
+	            document.getElementById("win_host_list").value = scan_obj['original_win_host_list']; 
+	            document.getElementById("win_user_name").value = scan_obj['win_user_name'];
+	            document.getElementById("win_user_passwd").value = scan_obj['win_user_passwd'];
 		}
 		else if (x == "vmware") {
-	            document.getElementById("vcenter_host").required = true; 
-	            document.getElementById("vcenter_user").required = true; 
-	            document.getElementById("vcenter_passwd").required = true; 
+	            document.getElementById("vcenter_host").value = scan_obj['vcenter_host']; 
+	            document.getElementById("vcenter_user").value = scan_obj['vcenter_user']; 
+	            document.getElementById("vcenter_passwd").value = scan_obj['vcenter_passwd']; 
 		}
 		else if (x == "cisco_meraki") {
-	            document.getElementById("meraki_api_key").required = true; 
+	            document.getElementById("meraki_base_url").value = scan_obj['meraki_base_url'];
+	            document.getElementById("meraki_api_key").value = scan_obj['meraki_api_key'];
 		}
 		else if (x == "cisco_dna_center") {
-	            document.getElementById("dna_center_url").required = true; 
-	            document.getElementById("dna_center_user").required = true; 
-	            document.getElementById("dna_center_password").required = true; 
+	            document.getElementById("dna_center_url").value = scan_obj['dna_center_url']; 
+	            document.getElementById("dna_center_user").value = scan_obj['dna_center_user']; 
+	            document.getElementById("dna_center_password").value = scan_obj['dna_center_password']; 
 		}
 		else if (x == "defender") {
-	            document.getElementById("defender_tenant").required = true; 
-	            document.getElementById("defender_app_id").required = true; 
-	            document.getElementById("defender_app_key").required = true; 
+	            document.getElementById("defender_tenant").value = scan_obj['tenant_id']; 
+	            document.getElementById("defender_app_id").value = scan_obj['app_id']; 
+	            document.getElementById("defender_app_key").value = scan_obj['app_key']; 
+		    if (scan_obj['all_devices'] == 'on') 
+			document.getElementById("defender_all_devices").checked = true;
+		    else
+			document.getElementById("defender_all_devices").checked = false;
 		}
 		else if (x == "servicenow") {
-	            document.getElementById("snow_instance").required = true; 
-	            document.getElementById("snow_user").required = true; 
-	            document.getElementById("snow_password").required = true; 
+	            document.getElementById("snow_instance").value = scan_obj['snow_instance']; 
+		    if (scan_obj['snow_client_id']) {
+		        document.getElementById("snow_auth").checked = true;
+		        document.getElementById("snow_client_id").value = scan_obj['snow_client_id'];
+		        document.getElementById("snow_client_secret").value = scan_obj['snow_client_secret'];
+		    } else {
+		        document.getElementById("snow_auth").checked = false;
+	                document.getElementById("snow_user").value = scan_obj['snow_user']; 
+	                document.getElementById("snow_password").value = scan_obj['snow_password']; 
+	            }
 		}
 		else if (x == "gitlab") {
-	            document.getElementById("gitlab_access_token").required = true; 
+	            document.getElementById("gitlab_access_token").value = scan_obj['access_token']; 
+	            document.getElementById("gitlab_server").value = scan_obj['server']; 
+		    if (scan_obj['sast'] == 'on') 
+			document.getElementById("gl_sast").checked = true;
+		    else
+			document.getElementById("gl_sast").checked = false;
+		    if (scan_obj['secrets'] == 'on') 
+			document.getElementById("gl_secrets").checked = true;
+		    else
+			document.getElementById("gl_secrets").checked = false;
+		    if (scan_obj['iac'] == 'on') 
+			document.getElementById("gl_iac").checked = true;
+		    else
+			document.getElementById("gl_iac").checked = false;
+		    if (scan_obj['nocode'] == 'on') 
+			document.getElementById("gl_nocode").checked = true;
+		    else
+			document.getElementById("gl_nocode").checked = false;
 		}
 		else if (x == "github") {
 	            document.getElementById("github_identity").value = scan_obj['identity']; 
 	            document.getElementById("github_access_token").value = scan_obj['access_token']; 
 	            document.getElementById("github_url").value = scan_obj['api_url']; 
-		    if (scan_obj['sast'] == 'on') document.getElementById("gh_sast").checked = true;
-		    if (scan_obj['secrets'] == 'on') document.getElementById("gh_secrets").checked = true;
-		    if (scan_obj['iac'] == 'on') document.getElementById("gh_iac").checked = true;
-		    if (scan_obj['nocode'] == 'on') document.getElementById("gh_nocode").checked = true;
+		    if (scan_obj['sast'] == 'on') 
+			document.getElementById("gh_sast").checked = true;
+		    else
+			document.getElementById("gh_sast").checked = false;
+		    if (scan_obj['secrets'] == 'on') 
+			document.getElementById("gh_secrets").checked = true;
+		    else
+			document.getElementById("gh_secrets").checked = false;
+		    if (scan_obj['iac'] == 'on') 
+			document.getElementById("gh_iac").checked = true;
+		    else
+			document.getElementById("gh_iac").checked = false;
+		    if (scan_obj['nocode'] == 'on') 
+			document.getElementById("gh_nocode").checked = true;
+		    else
+			document.getElementById("gh_nocode").checked = false;
 		}
 		else if (x == "bitbucket") {
-	            document.getElementById("bb_user").required = true; 
-	            document.getElementById("bb_app_password").required = true; 
-	            document.getElementById("bb_url").required = true; 
+	            document.getElementById("bb_user").value = scan_obj['user']; 
+	            document.getElementById("bb_app_password").value = scan_obj['app_password']; 
+	            document.getElementById("bb_url").value = scan_obj['url']; 
+		    if (scan_obj['sast'] == 'on') 
+			document.getElementById("bb_sast").checked = true;
+		    else
+			document.getElementById("bb_sast").checked = false;
+		    if (scan_obj['secrets'] == 'on') 
+			document.getElementById("bb_secrets").checked = true;
+		    else
+			document.getElementById("bb_secrets").checked = false;
+		    if (scan_obj['iac'] == 'on') 
+			document.getElementById("bb_iac").checked = true;
+		    else
+			document.getElementById("bb_iac").checked = false;
+		    if (scan_obj['nocode'] == 'on') 
+			document.getElementById("bb_nocode").checked = true;
+		    else
+			document.getElementById("bb_nocode").checked = false;
 		}
 		else if (x == "gcp") {
-	            document.getElementById("gcp_private_key").required = true; 
+		    if (scan_obj['private_key']) document.getElementById("gcp_private_key").value = scan_obj['private_key'];
 		}
 		else if (x == "gcp-cspm") {
-	            document.getElementById("gcp_cspm_private_key").required = true; 
-	            document.getElementById("gcp_cspm_asset_id").required = true; 
+		    if (scan_obj['private_key']) document.getElementById("gcp_cspm_private_key").value = scan_obj['private_key'];
+		    if (scan_obj['asset_id']) document.getElementById("gcp_cspm_asset_id").value = scan_obj['asset_id'];
 		}
 		else if (x == "gcr") {
-	            document.getElementById("gcr_private_key").required = true; 
-	            document.getElementById("gcr_repo").required = true; 
+		    if (scan_obj['private_key']) document.getElementById("gcr_private_key").value = scan_obj['private_key'];
+	            document.getElementById("gcr_repo").value = scan_obj['gcr_repo']; 
 		}
 		else if (x == "aws") {
-	            document.getElementById("aws_account").required = true; 
-	            document.getElementById("aws_access_key").required = true; 
-	            document.getElementById("aws_secret_key").required = true; 
-	            document.getElementById("aws_s3_bucket").required = true; 
-	            document.getElementById("aws_region").required = true; 
+	            document.getElementById("aws_account").value = scan_obj['aws_account']; 
+	            document.getElementById("aws_access_key").value = scan_obj['aws_access_key']; 
+	            document.getElementById("aws_secret_key").value = scan_obj['aws_secret_key']; 
+	            document.getElementById("aws_s3_bucket").value = scan_obj['aws_s3_bucket']; 
+	            document.getElementById("aws_region").value = scan_obj['aws_region']; 
 		}
 		else if (x == "aws-cspm") {
-	            document.getElementById("aws_cspm_access_key").required = true; 
-	            document.getElementById("aws_cspm_secret_key").required = true; 
-	            document.getElementById("aws_cspm_asset_id").required = true; 
+	            document.getElementById("aws_cspm_access_key").value = scan_obj['aws_access_key']; 
+	            document.getElementById("aws_cspm_secret_key").value = scan_obj['aws_secret_key']; 
+	            document.getElementById("aws_cspm_asset_id").value = scan_obj['asset_id']; 
 		}
 		else if (x == "ecr") {
-	            document.getElementById("ecr_account").required = true; 
-	            document.getElementById("ecr_access_key").required = true; 
-	            document.getElementById("ecr_secret_key").required = true; 
-	            document.getElementById("ecr_region").required = true; 
+	            document.getElementById("ecr_account").value = scan_obj['ecr_account']; 
+	            document.getElementById("ecr_access_key").value = scan_obj['ecr_access_key']; 
+	            document.getElementById("ecr_secret_key").value = scan_obj['ecr_secret_key']; 
+	            document.getElementById("ecr_region").value = scan_obj['ecr_region']; 
 		}
 		else if (x == "azure") {
-	            document.getElementById("azure_sp").required = true; 
-	            document.getElementById("azure_sp_secret").required = true; 
-	            document.getElementById("azure_tenant").required = true; 
-	            document.getElementById("azure_workspace").required = true; 
+	            document.getElementById("azure_sp").value = scan_obj['azure_sp']; 
+	            document.getElementById("azure_sp_secret").value = scan_obj['azure_sp_secret']; 
+	            document.getElementById("azure_tenant").value = scan_obj['azure_tenant']; 
+	            document.getElementById("azure_workspace").value = scan_obj['azure_workspace']; 
 		}
 		else if (x == "azure-cspm") {
-	            document.getElementById("azure_cspm_asset_id").required = true; 
-	            document.getElementById("azure_cspm_sp").required = true; 
-	            document.getElementById("azure_cspm_sp_secret").required = true; 
-	            document.getElementById("azure_cspm_tenant").required = true; 
+	            document.getElementById("azure_cspm_asset_id").value = scan_obj['azure_cspm_asset_id']; 
+	            document.getElementById("azure_cspm_sp").value = scan_obj['azure_cspm_sp']; 
+	            document.getElementById("azure_cspm_sp_secret").value = scan_obj['azure_cspm_sp_secret']; 
+	            document.getElementById("azure_cspm_tenant").value = scan_obj['azure_cspm_tenant']; 
 		}
 		else if (x == "acr") {
-	            document.getElementById("acr_registry").required = true; 
-	            document.getElementById("acr_sp").required = true; 
-	            document.getElementById("acr_sp_secret").required = true; 
-	            document.getElementById("acr_tenant").required = true; 
+	            document.getElementById("acr_registry").value = scan_obj['acr_registry']; 
+	            document.getElementById("acr_sp").value = scan_obj['acr_sp']; 
+	            document.getElementById("acr_sp_secret").value = scan_obj['acr_sp_secret']; 
+	            document.getElementById("acr_tenant").value = scan_obj['acr_tenant']; 
 		}
 		else if (x == "oci") {
-	            document.getElementById("oci_user").required = true; 
-	            document.getElementById("oci_tenancy").required = true; 
-	            document.getElementById("oci_region").required = true; 
-	            document.getElementById("oci_user_private_key").required = true; 
+	            if (scan_obj['oci_user']) document.getElementById("oci_user").value = scan_obj['oci_user']; 
+	            if (scan_obj['oci_tenancy']) document.getElementById("oci_tenancy").value = scan_obj['oci_tenancy']; 
+	            if (scan_obj['oci_region']) document.getElementById("oci_region").value = scan_obj['oci_region']; 
+	            if (scan_obj['oci_user_private_key']) document.getElementById("oci_user_private_key").value = scan_obj['oci_user_private_key']; 
 		}
 		else if (x == "oci-cspm") {
-	            document.getElementById("oci_cspm_asset_id").required = true; 
-	            document.getElementById("oci_cspm_user").required = true; 
-	            document.getElementById("oci_cspm_tenancy").required = true; 
-	            document.getElementById("oci_cspm_region").required = true; 
-	            document.getElementById("oci_cspm_user_private_key").required = true; 
+	            if (scan_obj['asset_id']) document.getElementById("oci_cspm_asset_id").value = scan_obj['asset_id']; 
+	            if (scan_obj['oci_cspm_user']) document.getElementById("oci_cspm_user").value = scan_obj['oci_cspm_user']; 
+	            if (scan_obj['oci_cspm_tenancy']) document.getElementById("oci_cspm_tenancy").value = scan_obj['oci_cspm_tenancy']; 
+	            if (scan_obj['oci_cspm_region']) document.getElementById("oci_cspm_region").value = scan_obj['oci_cspm_region']; 
+	            if (scan_obj['oci_cspm_user_private_key']) document.getElementById("oci_cspm_user_private_key").value = scan_obj['oci_cspm_user_private_key']; 
 		}
 		else if (x == "ocr") {
-	            document.getElementById("ocr_user").required = true; 
-	            document.getElementById("ocr_tenancy").required = true; 
-	            document.getElementById("ocr_region").required = true; 
-	            document.getElementById("ocr_user_private_key").required = true; 
-	            document.getElementById("ocr_docker_login").required = true; 
-	            document.getElementById("ocr_docker_passwd").required = true; 
+	            if (scan_obj['user']) document.getElementById("ocr_user").value = scan_obj['user']; 
+	            if (scan_obj['tenancy']) document.getElementById("ocr_tenancy").value = scan_obj['tenancy']; 
+	            if (scan_obj['region']) document.getElementById("ocr_region").value = scan_obj['region']; 
+	            if (scan_obj['private_key']) document.getElementById("ocr_user_private_key").value = scan_obj['private_key']; 
+	            if (scan_obj['docker_login']) document.getElementById("ocr_docker_login").value = scan_obj['docker_login']; 
+	            if (scan_obj['docker_passwd']) document.getElementById("ocr_docker_passwd").value = scan_obj['docker_passwd']; 
+	            if (scan_obj['repository']) document.getElementById("ocr_repository").value = scan_obj['repository']; 
 		}
-
 	}
 
 	function check_run_status() {
