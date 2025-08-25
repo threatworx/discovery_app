@@ -592,7 +592,7 @@ body {
 <td class="">Type</td>
 <td class="">Schedule</td>
 <td class=""></td>
-<td class=""></td>
+<td class="">Actions</td>
 <td class=""></td>
 <td class=""></td>
 <td class=""></td>
@@ -622,10 +622,6 @@ body {
 <form action="/save_scan?auth={{data['authenticator']}}" method="post" id="main_form">
 <div class="container">
 <div class="form-group">
-<input type="text" placeholder="Discovery name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
-<span class="help-block">A unique name for this discovery. Up to 16 alphanumeric allowed</span>
-<input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
-<span class="help-block">Comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
 <select class="custom-select" style="width:250px;" name="scan_type" id="scan_type" onchange="mode_change()">
 <option selected value> -- select a discovery type -- </option>
 <option value="nmap" >Fingerprint scan (uncredentialed)</option>
@@ -660,7 +656,12 @@ body {
 <option disabled>──────────────────────</option>
 <option value="servicenow">Servicenow CMDB</option>
 </select>
-
+<br>
+<br>
+<input type="text" placeholder="Discovery name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
+<span class="help-block">A unique name for this discovery. Up to 16 alphanumeric allowed</span>
+<input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
+<span class="help-block">Comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
 <br>
 <hr style="border: 1px dotted #D3D3D3;">
 <br>
@@ -672,10 +673,11 @@ body {
         <span class="help-block">Comma separated list of IP address, ranges or CIDRs that you would like to discover</span>
         <!--<input type="checkbox" name="nmap_no_ping" id="nmap_no_ping">No ping</input>
 	<span class="help-block">Don't ping, instead assume that the IP is up. You will get better coverage but discovery times will be longer.</span>-->
-        <input type="checkbox" name="stype[]" value="web" checked="checked">Web Services</input>
-        <input type="checkbox" name="stype[]" value="database">Databases</input>
-        <input type="checkbox" name="stype[]" value="vmware">VMware Clusters</input>
-        <input type="checkbox" name="stype[]" value="os">OS Services</input>
+        <input type="checkbox" name="stype_web" value='web' checked="checked">Web Services
+        <input type="checkbox" name="stype_database" value='database'>Databases
+        <input type="checkbox" name="stype_vmware" value='vmware'>VMware Clusters
+        <input type="checkbox" name="stype_os" value='os'>OS Services
+        <input type="checkbox" name="stype_printers" value='printers'>Printers
         <span class="help-block">Select one or more class of services that you want to discover on your network</span>
 	<input type="text" placeholder="Extra ports" name="extra_ports" id="extra_ports" pattern="[0-9\-,]+">
 	<span class="help-block">Comma separated list of extra ports and port ranges, that you would like include in the scan e.g. 444,9000-9100,..."</span>
@@ -1287,9 +1289,13 @@ body {
 		var x = scan_obj['type'];
 		if (x == "nmap") {
 	            document.getElementById("hosts").value = scan_obj['hosts'];
-		    const items = document.querySelectorAll('[id^="stype"]');
+		    const items = document.querySelectorAll('[name^="stype_"]');
                     items.forEach(item => {
-		        if(scan_obj['services'].includes(item.value)) item.checked = true;
+			sname = item.name.replace('stype_','');
+		        if(scan_obj['services'].includes(sname)) 
+			    item.checked = true;
+			else
+			    item.checked = false;
                     });
 		    if (scan_obj['extra_ports']) document.getElementById("extra_ports").value = scan_obj['extra_ports'];
 		}

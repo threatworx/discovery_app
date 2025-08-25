@@ -359,8 +359,12 @@ def add_scan(config, request):
             config[scan_name]['no_ping'] = 'off'
     elif scan_type == 'nmap':
         config[scan_name]['hosts'] = request.form['hosts']
-        stypes = request.form.getlist('stype[]')
-        if stypes == None or len(stypes) == 0:
+        items = request.form.items()
+        stypes = []
+        for key, value in request.form.items():
+            if key.startswith('stype'):
+                stypes.append(key.replace('stype_',''))
+        if len(stypes) == 0:
             stypes = 'web'
         else:
             stypes = ' '.join(stypes)
