@@ -9,6 +9,7 @@ import string
 import random
 import psutil
 import json
+import traceback
 from flask import Flask
 from flask import request, redirect, render_template, url_for
 
@@ -119,9 +120,27 @@ def run_config():
     scan_name = request.args.get('scan_name')
     scan_type = request.args.get('scan_type')
     config = config_utils.get_config()
+
+    # check if discovery is already in progress
+    plist = psutil.process_iter()
+    running = False
+    for p in plist:
+        try:
+            if scan_name in p.cmdline() and '--run_id' in p.cmdline():
+                running = True
+        except:
+            # exception in psutil ignore
+            #traceback.print_exc()
+            pass
+
+    if running:
+        config.set('discovery_app','error_msg', "Discovery is already in progress for '"+scan_name+"'")
+        config_utils.write_config(config)
+        return redirect(url_for('app_page',auth=authenticator))
+
     twigs_cmd = config_utils.create_twigs_cmd(config, scan_name, scan_type)
     proc = subprocess.Popen([twigs_cmd], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
-    config.set('discovery_app','success_msg', "Started new run for '"+scan_name+"'")
+    config.set('discovery_app','success_msg', "Started new discovery run for '"+scan_name+"'")
     config_utils.write_config(config)
     return redirect(url_for('app_page',auth=authenticator))
 
@@ -168,6 +187,37 @@ def run_status():
             pass
 
     return json.dumps(running_scans), 200, {'Content-Type': 'application/json'}
+
+@app.route("/stop_scan", methods=['GET'])
+def stop_scan():
+    global authenticators
+    config = config_utils.get_config()
+    auth = request.args.get('auth') 
+    if not auth or auth not in authenticators:
+        return '[]', 200, {'Content-Type': 'application/json'}
+    runid = request.args.get('run_id')
+    if not runid or runid == '':
+        config.set('discovery_app','error_msg', "Invalid discovery run Id") 
+        config_utils.write_config(config)
+        return redirect("/app")
+    plist = psutil.process_iter()
+    killed = False
+    for p in plist:
+        try:
+            if runid in p.cmdline() and '--run_id' in p.cmdline():
+                killed = True
+                p.kill()
+        except:
+            # exception in psutil ignore
+            #traceback.print_exc()
+            pass
+
+    if killed:
+        config.set('discovery_app','success_msg', "Stopped discovery run for '"+runid+"'")
+    else:
+        config.set('discovery_app','error_msg', "No running discovery for '"+runid+"'")
+    config_utils.write_config(config)
+    return redirect(url_for('app_page',auth=auth))
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int("80"))
