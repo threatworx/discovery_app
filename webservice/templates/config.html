@@ -560,6 +560,12 @@ body {
 <input type="password" placeholder="API key" name="token" id="token" value="{{data['threatworx']['token']}}" required>
 <!--<a title="Show / hide API key" href='javascript:;' onclick="toggle_api_key();"><i id="eyecon" class="fa fa-eye"></i></a>-->
 <span class="help-block">API key for ThreatWorx user</span>
+{% if data['discovery_app']['log_level'] == 'debug' %}
+<input type="checkbox" name="debug_log" id="debug_log" value='on' checked >Enable debug log
+{% else %}
+<input type="checkbox" name="debug_log" id="debug_log" value='on' >Enable debug log
+{% endif %}
+<br>
 <br>
 <button type="submit" class="btn">
 <i class="fa fa-save"></i> Save 

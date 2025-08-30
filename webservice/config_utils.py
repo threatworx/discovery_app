@@ -335,6 +335,9 @@ def save_creds(config, request):
         config['threatworx']['token'] = request.form['token']
     else:
         config['threatworx']['token'] = saved_token
+    config['discovery_app']['log_level'] = 'info' 
+    if 'debug_log' in request.form:
+        config['discovery_app']['log_level'] = 'debug' 
     write_config(config)
 
 def add_scan(config, request):
