@@ -630,10 +630,12 @@ body {
 <option value="nmap" >Fingerprint scan (uncredentialed)</option>
 <option value="host" >Linux deep discovery using SSH (credentialed)</option>
 <option value="win_host" >Windows deep discovery using WinRM (credentialed)</option>
-<option value="cisco_meraki" >Cisco Meraki</option>
-<option value="cisco_dna_center" >Cisco Catalyst Center (DNA Center)</option>
 <option value="vmware">VMware</option>
 <option value="defender">MS Defender / Office 365</option>
+<option disabled>──────────────────────</option>
+<option value="cisco_meraki" >Cisco Meraki</option>
+<option value="cisco_dna_center" >Cisco Catalyst Center (DNA Center)</option>
+<option value="printer" >Printer discovery</option>
 <option disabled>──────────────────────</option>
 <option value="github">Github</option>
 <option value="gitlab">Gitlab</option>
@@ -674,8 +676,6 @@ body {
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="IP addresses, ranges or CIDRs" name="hosts" id="hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
         <span class="help-block">Comma separated list of IP address, ranges or CIDRs that you would like to discover</span>
-        <!--<input type="checkbox" name="nmap_no_ping" id="nmap_no_ping">No ping</input>
-	<span class="help-block">Don't ping, instead assume that the IP is up. You will get better coverage but discovery times will be longer.</span>-->
         <input type="checkbox" name="stype_web" value='web' checked="checked">Web Services
         <input type="checkbox" name="stype_database" value='database'>Databases
         <input type="checkbox" name="stype_vmware" value='vmware'>VMware Clusters
@@ -684,6 +684,11 @@ body {
         <span class="help-block">Select one or more class of services that you want to discover on your network</span>
 	<input type="text" placeholder="Extra ports" name="extra_ports" id="extra_ports" pattern="[0-9\-,]+">
 	<span class="help-block">Comma separated list of extra ports and port ranges, that you would like include in the scan e.g. 444,9000-9100,..."</span>
+</div>
+<div id="printer_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Network printer IPs, ranges or CIDRs" name="printer_hosts" id="printer_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
+        <span class="help-block">Comma separated list of network printer IP address, ranges or CIDRs that you would like to discover</span>
 </div>
 <div id="host_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
@@ -960,34 +965,10 @@ body {
                     div.style.display = 'none';
                 });
 
-	        document.getElementById("hosts").required = false;
-	        //document.getElementById("nmap_div").style.display = 'none';
-	        //document.getElementById("webapp_div").style.display = 'none';
-	        //document.getElementById("host_div").style.display = 'none';
-	        //document.getElementById("win_host_div").style.display = 'none';
-	        //document.getElementById("meraki_div").style.display = 'none';
-	        //document.getElementById("dna_center_div").style.display = 'none';
-	        //document.getElementById("vmware_div").style.display = 'none';
-	        //document.getElementById("defender_div").style.display = 'none';
-	        //document.getElementById("snow_div").style.display = 'none';
-	        //document.getElementById("gitlab_div").style.display = 'none';
-	        //document.getElementById("github_div").style.display = 'none';
-	        //document.getElementById("bitbucket_div").style.display = 'none';
-	        //document.getElementById("gcp_div").style.display = 'none';
-	        //document.getElementById("gcp_cspm_div").style.display = 'none';
-	        //document.getElementById("gcr_div").style.display = 'none';
-	        //document.getElementById("aws_div").style.display = 'none';
-	        //document.getElementById("aws_cspm_div").style.display = 'none';
-	        //document.getElementById("ecr_div").style.display = 'none';
-	        //document.getElementById("azure_div").style.display = 'none';
-	        //document.getElementById("azure_cspm_div").style.display = 'none';
-	        //document.getElementById("acr_div").style.display = 'none';
-	        //document.getElementById("oci_div").style.display = 'none';
-	        //document.getElementById("oci_cspm_div").style.display = 'none';
-	        //document.getElementById("ocr_div").style.display = 'none';
-
 		// set all required fields to false
 	        document.getElementById("hosts").required = false;
+
+	        document.getElementById("printer_hosts").required = false;
 
 	        document.getElementById("url").required = false; 
 
@@ -1084,6 +1065,10 @@ body {
 		if (x == "nmap") {
 	            document.getElementById("nmap_div").style.display = 'block';
 	            document.getElementById("hosts").required = true;
+		}
+		if (x == "printer") {
+	            document.getElementById("printer_div").style.display = 'block';
+	            document.getElementById("printer_hosts").required = true;
 		}
 		else if (x == "webapp") {
 		    document.getElementById("webapp_div").style.display = 'block';
@@ -1301,6 +1286,9 @@ body {
 			    item.checked = false;
                     });
 		    if (scan_obj['extra_ports']) document.getElementById("extra_ports").value = scan_obj['extra_ports'];
+		}
+		if (x == "printer") {
+	            document.getElementById("printer_hosts").value = scan_obj['printer_hosts'];
 		}
 		else if (x == "webapp") {
 	            document.getElementById("url").value = scan_obj['url'];

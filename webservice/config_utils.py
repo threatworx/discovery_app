@@ -100,6 +100,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + ' --services '+config[scan_name]['services']
         if 'extra_ports' in config[scan_name] and config[scan_name]['extra_ports'] != '':
             twigs_cmd = twigs_cmd + ' --extra_ports '+config[scan_name]['extra_ports']
+    elif scan_type == 'printer':
+        twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['printer_hosts'] + " --services printers" 
     elif scan_type == 'host':
         twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['host_list']
     elif scan_type == 'win_host':
@@ -370,6 +372,8 @@ def add_scan(config, request):
             stypes = ' '.join(stypes)
         config[scan_name]['services'] = stypes
         config[scan_name]['extra_ports'] = request.form['extra_ports']
+    elif scan_type == 'printer':
+        config[scan_name]['printer_hosts'] = request.form['printer_hosts']
     elif scan_type == 'host':
         config[scan_name]['original_host_list'] = request.form['host_list']
         if 'user_private_key' in request.form:
