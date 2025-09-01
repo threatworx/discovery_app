@@ -507,8 +507,8 @@ body {
   background-color: #ff0000;
   border-radius: 10px;
   display: inline-block;
-  height: 7px;
-  width: 7px;
+  height: 8px;
+  width: 8px;
 }
 .loading-dots--dot:nth-child(2) {
   -webkit-animation-delay: 5s;
@@ -641,7 +641,8 @@ body {
 <option disabled>──────────────────────</option>
 <option value="cisco_meraki" >Cisco Meraki</option>
 <option value="cisco_dna_center" >Cisco Catalyst Center (DNA Center)</option>
-<option value="printer" >Printer discovery</option>
+<option value="printer" >Printers</option>
+<option value="cctv" >CCTV Cameras</option>
 <option disabled>──────────────────────</option>
 <option value="github">Github</option>
 <option value="gitlab">Gitlab</option>
@@ -696,6 +697,12 @@ body {
 	<input type="text" placeholder="Network printer IPs, ranges or CIDRs" name="printer_hosts" id="printer_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
         <span class="help-block">Comma separated list of network printer IP address, ranges or CIDRs that you would like to discover</span>
 </div>
+<div id="cctv_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="Network CCTV / Camera IPs, ranges or CIDRs" name="cctv_hosts" id="cctv_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
+        <span class="help-block">Comma separated list of network CCTV / Camera device IP address, ranges or CIDRs that you would like to discover</span>
+</div>
+
 <div id="host_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
 	<input type="text" placeholder="Host, IP address, range or CIDR" name="host_list" id="host_list" pattern="[a-zA-Z0-9.\/\-_]+">
@@ -1076,6 +1083,10 @@ body {
 	            document.getElementById("printer_div").style.display = 'block';
 	            document.getElementById("printer_hosts").required = true;
 		}
+		if (x == "cctv") {
+	            document.getElementById("cctv_div").style.display = 'block';
+	            document.getElementById("cctv_hosts").required = true;
+		}
 		else if (x == "webapp") {
 		    document.getElementById("webapp_div").style.display = 'block';
 	            document.getElementById("url").required = true;
@@ -1295,6 +1306,9 @@ body {
 		}
 		if (x == "printer") {
 	            document.getElementById("printer_hosts").value = scan_obj['printer_hosts'];
+		}
+		if (x == "cctv") {
+	            document.getElementById("cctv_hosts").value = scan_obj['cctv_hosts'];
 		}
 		else if (x == "webapp") {
 	            document.getElementById("url").value = scan_obj['url'];
