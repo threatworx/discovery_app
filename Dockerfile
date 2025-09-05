@@ -9,8 +9,6 @@ USER root
 COPY build_docker.sh /tmp
 COPY requirements.txt /tmp
 COPY . /usr/share/discovery_app
-RUN apt-get -y update && apt-get install -y curl
-RUN /usr/bin/curl -f https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN apt-get -y update && apt-get install -y libssl-dev
 RUN apt-get install -y cron vim
 RUN /bin/bash /tmp/build_docker.sh
