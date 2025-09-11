@@ -1506,20 +1506,28 @@ body {
 		alldivs = document.querySelectorAll("[id*=loading-dots-]");
 		var div_array = [...alldivs];
 		var xmlHttp = new XMLHttpRequest();
-                xmlHttp.open( "GET", "/run_status?auth={{data['authenticator']}}", false ); // false for synchronous request
+                xmlHttp.open( "GET", "/run_status?auth={{data['authenticator']}}", true ); // false for synchronous request
                 xmlHttp.send( null );
-                response = xmlHttp.responseText;
-		jsonlist = JSON.parse(response);
-		div_array.forEach(div => {
-		    div.style.display = 'none';
-		    for (let index = 0; index < jsonlist.length; ++index) {
-                        const element = jsonlist[index];
-			if (div.id.endsWith('-'+element)) {
-			    div.style.display = 'block';
-                        }
-                    }
-		});
+		xmlHttp.onreadystatechange = function() {
+                    if (xmlHttp.readyState === 4) { // Request finished and response is ready
+                        if (xmlHttp.status === 200) { // HTTP status OK
+                            response = xmlHttp.responseText;
+		            console.log(response);
+		            jsonlist = JSON.parse(response);
+		            div_array.forEach(div => {
+		                div.style.display = 'none';
+		                for (let index = 0; index < jsonlist.length; ++index) {
+                                    const element = jsonlist[index];
+			            if (div.id.endsWith('-'+element)) {
+			                div.style.display = 'block';
+                                    }
+                                }
+		            });
+			}
+		    }
+	        };
 	}
+
         check_run_status();
 	setInterval(check_run_status, 5000);
         </script>
