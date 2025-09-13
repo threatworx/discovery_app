@@ -52,12 +52,15 @@ def authenticate():
 def check_upgrade():
     out = ''
     url = 'https://hub.docker.com/v2/repositories/threatworx/discovery_app/tags/?page_size=2'
-    response = requests.get(url)
-    if response.status_code == 200:
-        oj = json.loads(response.text)
-        lver = oj['results'][1]['name']
-        if LooseVersion(__version__) < LooseVersion(lver): 
-            out = "(upgrade available)"
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            oj = json.loads(response.text)
+            lver = oj['results'][1]['name']
+            if LooseVersion(__version__) < LooseVersion(lver): 
+                out = "(upgrade available)"
+    except:
+        pass
     return out
 
 @app.route('/app')
