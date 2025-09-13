@@ -100,6 +100,10 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + ' --services '+config[scan_name]['services']
         if 'extra_ports' in config[scan_name] and config[scan_name]['extra_ports'] != '':
             twigs_cmd = twigs_cmd + ' --extra_ports '+config[scan_name]['extra_ports']
+    elif scan_type == 'snmp':
+        twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['snmp_hosts'] + " --services snmp --snmp_community " + config[scan_name]['community_str']
+        if config[scan_name]['security_name'] != '':
+            twigs_cmd = twigs_cmd + " --snmp_security_name "+config[scan_name]['security_name']
     elif scan_type == 'printer':
         twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['printer_hosts'] + " --services printers" 
     elif scan_type == 'cctv':
@@ -379,6 +383,14 @@ def add_scan(config, request):
             stypes = ' '.join(stypes)
         config[scan_name]['services'] = stypes
         config[scan_name]['extra_ports'] = request.form['extra_ports']
+    elif scan_type == 'snmp':
+        config[scan_name]['snmp_hosts'] = request.form['snmp_hosts']
+        config[scan_name]['community_str'] = 'public'
+        if 'community_str' in request.form and request.form['community_str'] != '':
+            config[scan_name]['community_str'] = request.form['community_str']
+        config[scan_name]['security_name'] = ''
+        if 'security_name' in request.form and request.form['security_name'] != '':
+            config[scan_name]['security_name'] = request.form['security_name']
     elif scan_type == 'printer':
         config[scan_name]['printer_hosts'] = request.form['printer_hosts']
     elif scan_type == 'cctv':

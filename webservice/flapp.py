@@ -10,10 +10,13 @@ import random
 import psutil
 import json
 import traceback
+import requests
+from distutils.version import LooseVersion
 from flask import Flask
 from flask import request, redirect, render_template, url_for
 
 from . import config_utils
+from . import __version__
 
 app = Flask(__name__)
 authenticators = []
@@ -46,6 +49,17 @@ def authenticate():
     authenticators.append(authenticator)
     return redirect(url_for('app_page',auth=authenticator))
 
+def check_upgrade():
+    out = ''
+    url = 'https://hub.docker.com/v2/repositories/threatworx/discovery_app/tags/?page_size=2'
+    response = requests.get(url)
+    if response.status_code == 200:
+        oj = json.loads(response.text)
+        lver = oj['results'][1]['name']
+        if LooseVersion(__version__) < LooseVersion(lver): 
+            out = "(upgrade available)"
+    return out
+
 @app.route('/app')
 def app_page():
     config = config_utils.get_config()
@@ -56,6 +70,9 @@ def app_page():
         return redirect("/")
     data = {s:dict(config.items(s)) for s in config.sections()}
     data['authenticator'] = auth
+    vstr = 'v'+__version__
+    upgradestr = check_upgrade()
+    data['discovery_app']['version'] = 'v'+__version__+' '+check_upgrade()
     #del data['threatworx']['token']
     config.remove_option('discovery_app','error_msg')
     config.remove_option('discovery_app','success_msg')

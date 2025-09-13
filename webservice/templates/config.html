@@ -534,7 +534,9 @@ body {
 
 <h3 style="font-size: 24px; font-weight: bold;">twigs Discovery App</h3>
 <br>
-<h6 style="font-size: 10px; font-weight: bold;"><a href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">twigs user guide</a></h6>
+<h6 style="font-size: 10px; font-weight: bold;">{{data['discovery_app']['version']}}</h6>
+<br>
+<h5 style="font-size: 10px; font-weight: bold;"><a href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">twigs user guide</a></h5>
 <br>
 {% if data['discovery_app']['error_msg'] %}
 <div class="error-message">
@@ -634,6 +636,7 @@ body {
 <select class="custom-select" style="width:250px;" name="scan_type" id="scan_type" onchange="mode_change()">
 <option selected value> -- select a discovery type -- </option>
 <option value="nmap" >Fingerprint scan (uncredentialed)</option>
+<option value="snmp" >SNMP scan (for network devices)</option>
 <option value="host" >Linux deep discovery using SSH (credentialed)</option>
 <option value="win_host" >Windows deep discovery using WinRM (credentialed)</option>
 <option value="vmware">VMware</option>
@@ -691,6 +694,15 @@ body {
         <span class="help-block">Select one or more class of services that you want to discover on your network</span>
 	<input type="text" placeholder="Extra ports" name="extra_ports" id="extra_ports" pattern="[0-9\-,]+">
 	<span class="help-block">Comma separated list of extra ports and port ranges, that you would like include in the scan e.g. 444,9000-9100,..."</span>
+</div>
+<div id="snmp_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="text" placeholder="IP addresses, ranges or CIDRs" name="snmp_hosts" id="snmp_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
+        <span class="help-block">Comma separated list of IP address, ranges or CIDRs that you would like to discover using SNMP</span>
+	<input type="text" placeholder="SNMP community string" name="community_str" id="community_str" value="public" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">Optional SNMP community string (defaults to 'public')</span>
+	<input type="text" placeholder="SNMP v3 security name" name="security_name" id="security_name" pattern="[a-zA-Z0-9.\/\-_]+">
+        <span class="help-block">Optional SNMP v3 security name</span>
 </div>
 <div id="printer_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
@@ -978,109 +990,16 @@ body {
                     div.style.display = 'none';
                 });
 
-		// set all required fields to false
-	        document.getElementById("hosts").required = false;
-
-	        document.getElementById("printer_hosts").required = false;
-
-	        document.getElementById("cctv_hosts").required = false;
-
-	        document.getElementById("win_host_list").required = false; 
-	        document.getElementById("win_user_name").required = false; 
-	        document.getElementById("win_user_passwd").required = false; 
-
-	        document.getElementById("defender_app_id").required = false; 
-	        document.getElementById("defender_tenant").required = false; 
-	        document.getElementById("defender_app_key").required = false; 
-
-	        document.getElementById("url").required = false; 
-
-	        document.getElementById("host_list").required = false; 
-	        document.getElementById("user_name").required = false; 
-	        document.getElementById("user_passwd").required = false; 
-
-	        document.getElementById("meraki_api_key").required = false; 
-
-	        document.getElementById("dna_center_url").required = false; 
-	        document.getElementById("dna_center_user").required = false; 
-	        document.getElementById("dna_center_password").required = false; 
-
-	        document.getElementById("vcenter_host").required = false; 
-	        document.getElementById("vcenter_user").required = false; 
-	        document.getElementById("vcenter_passwd").required = false; 
-
-	        document.getElementById("gitlab_access_token").required = false; 
-
-	        document.getElementById("github_identity").required = false; 
-	        document.getElementById("github_access_token").required = false; 
-
-	        document.getElementById("bb_user").required = false; 
-	        document.getElementById("bb_app_password").required = false; 
-	        document.getElementById("bb_url").required = false; 
-
-	        document.getElementById("gcp_private_key").required = false; 
-
-	        document.getElementById("gcp_cspm_private_key").required = false; 
-	        document.getElementById("gcp_cspm_asset_id").required = false; 
-
-	        document.getElementById("gcr_private_key").required = false; 
-	        document.getElementById("gcr_repo").required = false; 
-
-	        document.getElementById("aws_account").required = false; 
-	        document.getElementById("aws_access_key").required = false; 
-	        document.getElementById("aws_secret_key").required = false; 
-	        document.getElementById("aws_s3_bucket").required = false; 
-	        document.getElementById("aws_region").required = false; 
-
-	        document.getElementById("aws_cspm_access_key").required = false; 
-	        document.getElementById("aws_cspm_secret_key").required = false; 
-	        document.getElementById("aws_cspm_asset_id").required = false; 
-
-	        document.getElementById("ecr_account").required = false; 
-	        document.getElementById("ecr_access_key").required = false; 
-	        document.getElementById("ecr_secret_key").required = false; 
-	        document.getElementById("ecr_region").required = false; 
-
-	        document.getElementById("azure_sp").required = false; 
-	        document.getElementById("azure_sp_secret").required = false; 
-	        document.getElementById("azure_tenant").required = false; 
-	        document.getElementById("azure_workspace").required = false; 
-
-	        document.getElementById("azure_cspm_asset_id").required = false; 
-	        document.getElementById("azure_cspm_sp").required = false; 
-	        document.getElementById("azure_cspm_sp_secret").required = false; 
-	        document.getElementById("azure_cspm_tenant").required = false; 
-
-	        document.getElementById("acr_registry").required = false; 
-	        document.getElementById("acr_sp").required = false; 
-	        document.getElementById("acr_sp_secret").required = false; 
-	        document.getElementById("acr_tenant").required = false; 
-
-	        document.getElementById("oci_user").required = false; 
-	        document.getElementById("oci_tenancy").required = false; 
-	        document.getElementById("oci_region").required = false; 
-	        document.getElementById("oci_user_private_key").required = false; 
-
-	        document.getElementById("oci_cspm_asset_id").required = false; 
-	        document.getElementById("oci_cspm_user").required = false; 
-	        document.getElementById("oci_cspm_tenancy").required = false; 
-	        document.getElementById("oci_cspm_region").required = false; 
-	        document.getElementById("oci_cspm_user_private_key").required = false; 
-
-	        document.getElementById("ocr_user").required = false; 
-	        document.getElementById("ocr_tenancy").required = false; 
-	        document.getElementById("ocr_region").required = false; 
-	        document.getElementById("ocr_user_private_key").required = false; 
-	        document.getElementById("ocr_docker_login").required = false; 
-	        document.getElementById("ocr_docker_passwd").required = false; 
-
 		// reset all inputs and textareas
 		config_div.querySelectorAll('input').forEach(input=> {
                     input.value = '';
+		    input.required = false;
                 });
 		config_div.querySelectorAll('textarea').forEach(textarea=> {
                     textarea.value = '';
+		    textarea.required = false;
                 });
+
 	        document.getElementById("scan_name").value = ''; 
 	        document.getElementById("tags").value = ''; 
 		// enable config div based on scan type
@@ -1088,6 +1007,10 @@ body {
 		if (x == "nmap") {
 	            document.getElementById("nmap_div").style.display = 'block';
 	            document.getElementById("hosts").required = true;
+		}
+		if (x == "snmp") {
+	            document.getElementById("snmp_div").style.display = 'block';
+	            document.getElementById("snmp_hosts").required = true;
 		}
 		if (x == "printer") {
 	            document.getElementById("printer_div").style.display = 'block';
@@ -1313,6 +1236,11 @@ body {
 			    item.checked = false;
                     });
 		    if (scan_obj['extra_ports']) document.getElementById("extra_ports").value = scan_obj['extra_ports'];
+		}
+		if (x == "snmp") {
+	            document.getElementById("snmp_hosts").value = scan_obj['snmp_hosts'];
+	            document.getElementById("community_str").value = scan_obj['community_str'];
+	            document.getElementById("security_name").value = scan_obj['security_name'];
 		}
 		if (x == "printer") {
 	            document.getElementById("printer_hosts").value = scan_obj['printer_hosts'];
