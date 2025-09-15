@@ -117,7 +117,7 @@ def create_twigs_cmd(config, scan_name, scan_type):
     elif scan_type == 'cisco_meraki':
         twigs_cmd = twigs_cmd + " meraki --api_key '"+config[scan_name]['meraki_api_key']+"'"
         if config[scan_name]['meraki_base_url'] != '':
-            twigs_cmd = twigs_cmd = " --base_url '"+config[scan_name]['meraki_base_url']+"'"
+            twigs_cmd = twigs_cmd + " --base_url '"+config[scan_name]['meraki_base_url']+"'"
     elif scan_type == 'cisco_dna_center':
         twigs_cmd = twigs_cmd + " dna_center --url '"+config[scan_name]['dna_center_url']+"' --user '"+config[scan_name]['dna_center_user']+"' --password '"+config[scan_name]['dna_center_password']+"'"
     elif scan_type == 'defender':
