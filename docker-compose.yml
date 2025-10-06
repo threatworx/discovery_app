@@ -1,4 +1,3 @@
-version: "2.0"
 services:
     discovery_app:
         image: threatworx/discovery_app:latest
@@ -8,6 +7,7 @@ services:
         volumes:
             - ./config:/opt/discovery_app/config
         restart: on-failure:2
+        pull_policy: always
     watchtower:
         image: containrrr/watchtower
         volumes:
