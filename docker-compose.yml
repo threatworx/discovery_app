@@ -6,7 +6,7 @@ services:
             - 443:443
         volumes:
             - ./config:/opt/discovery_app/config
-        restart: on-failure:2
+        restart: always
         pull_policy: always
     watchtower:
         image: containrrr/watchtower
