@@ -89,6 +89,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
     if tags and tags != '':
         for t in tags.split(','):
             twigs_cmd = twigs_cmd + " --tag "+t.strip()
+    if 'org' in config[scan_name] and config[scan_name]['org'].strip() != '':
+        twigs_cmd = twigs_cmd + " --org "+config[scan_name]['org'].strip()
     if scan_type == 'webapp':
         if 'plan_file' in config[scan_name]:
             twigs_cmd = twigs_cmd + " webapp --planfile "+config[scan_name]['plan_file']
@@ -357,6 +359,7 @@ def add_scan(config, request):
     config[scan_name]['type'] = scan_type
     config[scan_name]['schedule'] = request.form['schedule']
     config[scan_name]['tags'] = request.form['tags']
+    config[scan_name]['org'] = request.form['org']
     if scan_type == 'webapp':
         plan = request.form['zap_plan_yaml']
         if plan and len(plan) > 0:

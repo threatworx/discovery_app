@@ -560,7 +560,6 @@ body {
 <input type="email" placeholder="User / handle" name="handle" id="handle" value="{{data['threatworx']['handle']}}" required>
 <span class="help-block">Valid user/handle on the ThreatWorx instance</span>
 <input type="password" placeholder="API key" name="token" id="token" value="{{data['threatworx']['token']}}" required>
-<!--<a title="Show / hide API key" href='javascript:;' onclick="toggle_api_key();"><i id="eyecon" class="fa fa-eye"></i></a>-->
 <span class="help-block">API key for ThreatWorx user</span>
 {% if data['discovery_app']['log_level'] == 'debug' %}
 <input type="checkbox" name="debug_log" id="debug_log" value='on' checked >Enable debug log
@@ -676,7 +675,9 @@ body {
 <input type="text" placeholder="Discovery name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
 <span class="help-block">A unique name for this discovery. Up to 16 alphanumeric allowed</span>
 <input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
-<span class="help-block">Comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
+<span class="help-block">Optional comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
+<input type="text" placeholder="Organization name" name="org" id="org" pattern="[a-zA-Z0-9_\-]*" value="">
+<span class="help-block">Optional organization / vendor name associated with this discovery schedule. Should already be configured in the ThreatWorx console</span>
 <br>
 <hr style="border: 1px dotted #D3D3D3;">
 <br>
@@ -1002,6 +1003,7 @@ body {
 
 	        document.getElementById("scan_name").value = ''; 
 	        document.getElementById("tags").value = ''; 
+	        document.getElementById("org").value = '';
 		// enable config div based on scan type
 		var x = document.getElementById("scan_type").value;
 		if (x == "nmap") {
@@ -1221,6 +1223,10 @@ body {
 
 	        document.getElementById("scan_name").value = scan_name;
 	        document.getElementById("tags").value = scan_obj['tags'];
+		if (scan_obj['org'])
+	            document.getElementById("org").value = scan_obj['org'];
+		else
+	            document.getElementById("org").value = '';
 	        document.getElementById("schedule").value = scan_obj['schedule'];
 
 		// populate config div from scan_obj 
