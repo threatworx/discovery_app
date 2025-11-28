@@ -525,6 +525,50 @@ body {
 }
 // Glowing dot css
 
+/* Style the tab */
+.tab {
+  width: 80%;
+  margin: 0 auto;
+  //padding: 20px;
+  background-color: #f1f1f1;
+}
+
+.tabcontainer {
+  width: 80%;
+  margin: 0 auto;
+  //padding: 20px;
+}
+
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  //float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  //border: 1px solid #ccc;
+  border-top: none;
+}
+
 </style>
                         </head><body><div id="report" style="width: 1024px; box-sizing: border-box; margin: 0 auto; background: #fff; padding: 0 20px 20px 20px; border-top: #263746 solid 3px; box-shadow: 0 2px 10px rgba(0, 0, 0, .2); margin-bottom: 20px; border-radius: 0 0 3px 3px;">
 
@@ -542,7 +586,6 @@ body {
 <h6 style="font-size: 10px; font-weight: bold;">{{data['discovery_app']['version']}}</h6>
 <br>
 <h5 style="font-size: 10px; font-weight: bold;"><a href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">twigs user guide</a></h5>
-<br>
 {% if data['discovery_app']['error_msg'] %}
 <div class="error-message">
 {{data['discovery_app']['error_msg']}}
@@ -555,6 +598,13 @@ body {
 <br>
 </div>
 {% endif %}
+<div class="tabcontainer">
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Schedules')" id="scheduleTab">Discovery Schedules</button>
+  <button class="tablinks" onclick="openTab(event, 'Settings')" id="settingsTab">Settings</button>
+</div>
+</div>
+<div id="Settings" class="tabcontent">
 <form action="/save_creds?auth={{data['authenticator']}}" method="post" id="tw_auth_form">
 <div class="container">
 <div class="form-group">
@@ -574,12 +624,13 @@ body {
 <br>
 <br>
 <button type="submit" class="btn">
-<i class="fa fa-save"></i> Save 
+ Save 
 </button>
 </div>
 </div>
 </form>
-<br>
+</div>
+<div id="Schedules" class="tabcontent">
 <div class="container">
 <div class="form-group">
 <label>Scheduled twigs discoveries</label>
@@ -971,12 +1022,13 @@ body {
 <input type="checkbox" name="run_now" id="run_now">Run now</input>
 <span class="help-block">Run this discovery now</span>
 <br>
-<button type="submit" class="btn" name="submitbtn" id=submitbtn"> Save </button>
+<button type="submit" class="btn" name="submitbtn" id=submitbtn"> Add </button>
 </div>
 </div>
 
 <br>
 </form>
+</div>
         <script>
 	function toggle_api_key() {
             var x = document.getElementById("token");
@@ -1491,6 +1543,28 @@ body {
           }
         });
 
+        function openTab(evt, cityName) {
+          // Declare all variables
+          var i, tabcontent, tablinks;
+
+          // Get all elements with class="tabcontent" and hide them
+          tabcontent = document.getElementsByClassName("tabcontent");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+
+          // Get all elements with class="tablinks" and remove the class "active"
+          tablinks = document.getElementsByClassName("tablinks");
+          for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+          }
+
+          // Show the current tab, and add an "active" class to the button that opened the tab
+          document.getElementById(cityName).style.display = "block";
+          evt.currentTarget.className += " active";
+        }
+
+        document.getElementById("scheduleTab").click();
         check_run_status();
 	setInterval(check_run_status, 5000);
         </script>
