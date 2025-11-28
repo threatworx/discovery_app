@@ -91,7 +91,10 @@
 
                     }
 
-
+		    .selected-row {
+                        background-color: #e0e0e0; /* Light gray background */
+                        font-weight: bold;
+                    }
 
                     .plugin-row-header {
 
@@ -146,6 +149,10 @@
                     }
 
 
+                    tr:hover {
+                      background-color: #e0e0e0; /* Change background color on hover */
+                      cursor: pointer; /* Change cursor to pointer to indicate interactivity */
+                    }
 
                     .button {
                       background-color: #04AA6D;
@@ -170,8 +177,6 @@
                         background: #ccc;
 
                     }
-
-
 
                     .expand {
 
@@ -578,14 +583,13 @@ body {
 <div class="container">
 <div class="form-group">
 <label>Scheduled twigs discoveries</label>
-<table cellpadding="0" cellspacing="0">
+<table cellpadding="0" cellspacing="0" id='schedule_table' name='schedule_table'>
 <thead>
 <tr>
 <th width="3%"></th>
 <th width="30%"></th>
 <th width="30%"></th>
 <th width="25%"></th>
-<th width="3%"></th>
 <th width="3%"></th>
 <th width="3%"></th>
 <th width="3%"></th>
@@ -620,8 +624,9 @@ body {
 <td class=""><a title="Run this discovery now" href="/run_scan?scan_name={{item}}&scan_type={{data[item]['type']}}&auth={{data['authenticator']}}"><i class="fa fa-play"></i></a></td>
 <td class=""><a title="Stop this discovery run" href="/stop_scan?run_id={{item}}&auth={{data['authenticator']}}"><i class="fa fa-stop"></i></a></td>
 <td class=""><a title="View last log for this discovery (in a new tab)" href="/view_log?scan_name={{item}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-external-link"></i></a></td>
-<td class=""><a title="Edit this discovery configuration" href="javascript:edit_load('{{item}}', {{data[item]}});"><i class="fa fa-pencil-square-o"></i></a></td>
+<!--<td class=""><a title="Edit this discovery configuration" href="javascript:edit_load('{{item}}', {{data[item]}});"><i class="fa fa-pencil-square-o"></i></a></td>-->
 <td class=""><a title="Delete this discovery configuration" href="/delete_scan?scan_name={{item}}&auth={{data['authenticator']}}"><i class="fa fa-trash-o"></i></a></td>
+<td class="" style="display: none">{{data[item]}}</td>
 </tr>
 {% endif %}
 {% endfor %}
@@ -1461,6 +1466,30 @@ body {
 		    }
 	        };
 	}
+
+	const table = document.getElementById('schedule_table');
+        let selectedRow = null; // Keep track of the currently selected row
+
+        table.addEventListener('click', function(event) {
+            const clickedRow = event.target.closest('tr'); // Find the closest 'tr' ancestor
+
+            if (clickedRow && clickedRow.parentNode.tagName === 'TBODY') { // Ensure its a data row, not header
+            // Remove 'selected-row' class from previously selected row (if any)
+            if (selectedRow) {
+              selectedRow.classList.remove('selected-row');
+            }
+
+            // Add 'selected-row' class to the newly clicked row
+            clickedRow.classList.add('selected-row');
+            selectedRow = clickedRow; // Update the selectedRow variable
+
+            // Get cell values
+            const cells = clickedRow.querySelectorAll('td');
+            //cells.forEach(cell => console.log(cell.textContent));
+            scan_obj = JSON.parse(cells[9].textContent.replace(/'/g,'"'));
+            edit_load(cells[1].textContent, scan_obj);
+          }
+        });
 
         check_run_status();
 	setInterval(check_run_status, 5000);
