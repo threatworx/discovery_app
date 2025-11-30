@@ -419,6 +419,8 @@ body {
   padding: 20px;
   background-color: #f44336; 
   color: white;
+  border-radius: 12px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 
   animation:error-message 0.5s 1;
   -webkit-animation:error-message 0.5s 1;
@@ -446,6 +448,8 @@ body {
   padding: 20px;
   background-color: #2bc22d; 
   color: white;
+  border-radius: 12px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 
   animation:success-message 0.5s 1;
   -webkit-animation:success-message 0.5s 1;
@@ -581,11 +585,9 @@ body {
 
 <div style="float: right;"><h1 style="font-size: 18px;"></h1><h2 style="color: #999; text-align: right"></h2></div><div class="clear"></div></header><div class="clear"></div>
 
-<h3 style="font-size: 24px; font-weight: bold;">twigs Discovery App</h3>
+<h3 style="font-size: 24px; font-weight: bold; display: inline-block;">twigs Discovery App </h3>&nbsp;&nbsp;<h6 style="font-size: 10px; font-weight: bold; display: inline-block;">{{data['discovery_app']['version']}}</h6> <h5 style="font-size: 10px; font-weight: bold; display: inline-block; float: right"><a href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">twigs user guide&nbsp;<i class="fa fa-external-link"></i></a></h5>
 <br>
-<h6 style="font-size: 10px; font-weight: bold;">{{data['discovery_app']['version']}}</h6>
 <br>
-<h5 style="font-size: 10px; font-weight: bold;"><a href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">twigs user guide</a></h5>
 {% if data['discovery_app']['error_msg'] %}
 <div class="error-message">
 {{data['discovery_app']['error_msg']}}
