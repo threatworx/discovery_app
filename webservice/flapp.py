@@ -170,7 +170,7 @@ def view_log():
     log_file = "/tmp/"+scan_name
     
     if os.path.isfile(log_file):
-        f = open(log_file, 'r')
+        f = open(log_file, 'r', encoding='latin-1')
         contents = f.read()
         f.close()
 
