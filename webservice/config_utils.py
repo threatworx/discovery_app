@@ -15,6 +15,12 @@ env_config_path = os.environ.get("DISCOVERY_APP_CONFIG_PATH")
 if env_config_path is not None:
    CONFIG_PATH = env_config_path
 authenticators = []
+twigs_bin = shutil.which('twigs')
+if twigs_bin == None: 
+    print("Warning: twigs executable not found in PATH. Using /usr/local/bin/twigs as default.")
+    twigs_bin = "/usr/local/bin/twigs"
+else:
+    print("Using twigs from: "+twigs_bin)
 
 # validate login password 
 def validate_password(password):
@@ -82,7 +88,7 @@ def create_twigs_cmd(config, scan_name, scan_type):
         log_switch = '-v'
     elif twigs_log == 'debug':
         log_switch = '-vv'
-    twigs_cmd = "/usr/local/bin/twigs "+log_switch+" --run_id "+scan_name
+    twigs_cmd = twigs_bin+" "+log_switch+" --run_id "+scan_name
     tags = ''
     if 'tags' in config[scan_name]:
         tags = config[scan_name]['tags'].strip()
@@ -143,6 +149,16 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + " --no_code"
     elif scan_type == 'github':
         twigs_cmd = twigs_cmd + " github --gh_identity "+config[scan_name]['identity']+" --gh_access_token "+config[scan_name]['access_token'] + " --gh_api_url "+config[scan_name]['api_url']
+        if config[scan_name]['sast'] == 'on':
+            twigs_cmd = twigs_cmd + " --sast"
+        if config[scan_name]['secrets'] == 'on':
+            twigs_cmd = twigs_cmd + " --secrets_scan"
+        if config[scan_name]['iac'] == 'on':
+            twigs_cmd = twigs_cmd + " --iac_checks"
+        if config[scan_name]['nocode'] == 'on':
+            twigs_cmd = twigs_cmd + " --no_code"
+    elif scan_type == 'gitrepo':
+        twigs_cmd = twigs_cmd + " repo --repo "+config[scan_name]['git_url']
         if config[scan_name]['sast'] == 'on':
             twigs_cmd = twigs_cmd + " --sast"
         if config[scan_name]['secrets'] == 'on':
@@ -482,6 +498,20 @@ def add_scan(config, request):
         if 'bb_iac' in request.form:
             config[scan_name]['iac'] = 'on'
         if 'bb_nocode' in request.form:
+            config[scan_name]['nocode'] = 'on'
+    elif scan_type == 'gitrepo':
+        config[scan_name]['git_url'] = request.form['git_url']
+        config[scan_name]['sast'] = 'off'
+        config[scan_name]['secrets'] = 'off'
+        config[scan_name]['iac'] = 'off'
+        config[scan_name]['nocode'] = 'off'
+        if 'g_sast' in request.form:
+            config[scan_name]['sast'] = 'on'
+        if 'g_secrets' in request.form:
+            config[scan_name]['secrets'] = 'on'
+        if 'g_iac' in request.form:
+            config[scan_name]['iac'] = 'on'
+        if 'g_nocode' in request.form:
             config[scan_name]['nocode'] = 'on'
     elif scan_type == 'gcp':
         config[scan_name]['private_key'] = request.form['gcp_private_key']

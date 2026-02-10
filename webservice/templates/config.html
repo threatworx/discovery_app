@@ -707,6 +707,7 @@ body {
 <option value="github">Github</option>
 <option value="gitlab">Gitlab</option>
 <option value="bitbucket">Bitbucket</option>
+<option value="gitrepo">Generic Git Repository</option>
 <option disabled>──────────────────────</option>
 <option value="gcp">GCP CWP (agentless)</option>
 <option value="gcp-cspm">GCP CSPM</option>
@@ -883,6 +884,15 @@ body {
 	<input type="checkbox" id="bb_secrets" name="bb_secrets">Run secrets scan</input>
 	<input type="checkbox" id="bb_iac" name="bb_iac">Run IaC scan</input>
 	<input type="checkbox" id="bb_nocode" name="bb_nocode">No code sharing</input>
+</div>
+<div id="gitrepo_div" style="display: none;">
+	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-source-code-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
+	<input type="url" name="git_url" id="git_url">
+        <span class="help-block">HTTP URL of your git repository. Can include authentication information if it is a private repository. For e.g. https://{PAT}@dev.azure.com/{organization}/{project}/_git/{repository}</span>
+	<input type="checkbox" id="g_sast" name="g_sast">Run SAST</input>
+	<input type="checkbox" id="g_secrets" name="g_secrets">Run secrets scan</input>
+	<input type="checkbox" id="g_iac" name="g_iac">Run IaC scan</input>
+	<input type="checkbox" id="g_nocode" name="g_nocode">No code sharing</input>
 </div>
 <div id="gcp_div" style="display: none;">
 	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-gcp-cwp/"><i class="fa fa-info-circle" alight="right"></i></a>
@@ -1139,6 +1149,10 @@ body {
 	            document.getElementById("bb_user").required = true; 
 	            document.getElementById("bb_app_password").required = true; 
 	            document.getElementById("bb_url").required = true; 
+		}
+		else if (x == "gitrepo") {
+	            document.getElementById("gitrepo_div").style.display = 'block';
+	            document.getElementById("git_url").required = true; 
 		}
 		else if (x == "gcp") {
 	            document.getElementById("gcp_div").style.display = 'block';
@@ -1423,6 +1437,25 @@ body {
 			document.getElementById("bb_nocode").checked = true;
 		    else
 			document.getElementById("bb_nocode").checked = false;
+		}
+		else if (x == "gitrepo") {
+	            document.getElementById("git_url").value = scan_obj['git_url']; 
+		    if (scan_obj['sast'] == 'on') 
+			document.getElementById("g_sast").checked = true;
+		    else
+			document.getElementById("g_sast").checked = false;
+		    if (scan_obj['secrets'] == 'on') 
+			document.getElementById("g_secrets").checked = true;
+		    else
+			document.getElementById("g_secrets").checked = false;
+		    if (scan_obj['iac'] == 'on') 
+			document.getElementById("g_iac").checked = true;
+		    else
+			document.getElementById("g_iac").checked = false;
+		    if (scan_obj['nocode'] == 'on') 
+			document.getElementById("g_nocode").checked = true;
+		    else
+			document.getElementById("g_nocode").checked = false;
 		}
 		else if (x == "gcp") {
 		    if (scan_obj['private_key']) document.getElementById("gcp_private_key").value = scan_obj['private_key'];
