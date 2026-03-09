@@ -678,7 +678,7 @@ body {
 <td class=""><a title="Stop this discovery run" href="/stop_scan?run_id={{item}}&auth={{data['authenticator']}}"><i class="fa fa-stop"></i></a></td>
 <td class=""><a title="View last log for this discovery (in a new tab)" href="/view_log?scan_name={{item}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-external-link"></i></a></td>
 <!--<td class=""><a title="Edit this discovery configuration" href="javascript:edit_load('{{item}}', {{data[item]}});"><i class="fa fa-pencil-square-o"></i></a></td>-->
-<td class=""><a title="Delete this discovery configuration" href="/delete_scan?scan_name={{item}}&auth={{data['authenticator']}}"><i class="fa fa-trash-o"></i></a></td>
+<td class=""><a title="Delete this discovery configuration" onclick="delete_scan('{{item}}','{{data['authenticator']}}')"><i class="fa fa-trash-o"></i></a></td>
 <td class="" style="display: none">{{data[item]}}</td>
 </tr>
 {% endif %}
@@ -1538,7 +1538,7 @@ body {
                     if (xmlHttp.readyState === 4) { // Request finished and response is ready
                         if (xmlHttp.status === 200) { // HTTP status OK
                             response = xmlHttp.responseText;
-		            console.log(response);
+		            //console.log(response);
 		            jsonlist = JSON.parse(response);
 		            div_array.forEach(div => {
 		                div.style.display = 'none';
@@ -1577,6 +1577,27 @@ body {
             edit_load(cells[1].textContent, scan_obj);
           }
         });
+
+        function delete_scan(item, authenticator) {
+          if (confirm("Are you sure you want to delete this?")) {
+            console.log("Confirmed");
+	    const apiUrl = "/delete_scan?scan_name=" + item + "&auth=" + authenticator;
+
+            fetch(apiUrl)
+              .then(response => {
+                // Check if the network response was ok (status in the 200-299 range)
+                if (!response.ok) {
+                  throw new Error('Network response was not ok: ' + response.statusText);
+                }
+		window.location.reload();
+                return response.text(); 
+              })
+              .catch(error => {
+                // Handle any errors that occurred during the fetch operation
+                console.error('Error:', error);
+              });
+          }
+	}
 
         function openTab(evt, cityName) {
           // Declare all variables
