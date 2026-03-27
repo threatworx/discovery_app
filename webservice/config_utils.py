@@ -137,6 +137,12 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + " servicenow --snow_instance "+config[scan_name]['snow_instance']+" --snow_client_id "+config[scan_name]['snow_client_id']+" --snow_client_secret '"+config[scan_name]['snow_client_secret']+"'"
         else:
             twigs_cmd = twigs_cmd + " servicenow --snow_instance "+config[scan_name]['snow_instance']+" --snow_user "+config[scan_name]['snow_user']+" --snow_user_pwd '"+config[scan_name]['snow_password']+"'"
+    elif scan_type == 'trustmodel':
+        twigs_cmd = twigs_cmd + " trustmodel --evaluate --assetname "+config[scan_name]['tm_asset_id']+" --model_identifier '"+config[scan_name]['tm_model_id']+"' --vendor_identifier '"+config[scan_name]['tm_vendor_id']+"' --trustmodel_api_key '"+config[scan_name]['tm_api_key']+"'"
+        if config[scan_name]['tm_vendor_api_key'] and config[scan_name]['tm_vendor_api_key'] != '':
+            twigs_cmd = twigs_cmd + " --api_key "+config[scan_name]['tm_vendor_api_key']
+        if config[scan_name]['tm_vendor_api_endpoint'] and config[scan_name]['tm_vendor_api_endpoint'] != '':
+            twigs_cmd = twigs_cmd + " --api_endpoint "+config[scan_name]['tm_vendor_api_endpoint']
     elif scan_type == 'gitlab':
         twigs_cmd = twigs_cmd + " gitlab --gl_access_token='"+config[scan_name]['access_token'] + "' --gl_host "+config[scan_name]['server']
         if config[scan_name]['sast'] == 'on':
@@ -234,6 +240,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
     return twigs_cmd
 
 def create_cron_entry(config, scan_name, twigs_cmd):
+    if config[scan_name]['type'] == 'trustmodel':
+        return
     cron_comment = "TW_CRON_"+scan_name
     random_delay = '/bin/bash -c "sleep \$((RANDOM % 300))s";'
     twigs_cmd = random_delay + twigs_cmd
@@ -373,7 +381,10 @@ def add_scan(config, request):
     # add the new scan entry
     config[scan_name] = {}
     config[scan_name]['type'] = scan_type
-    config[scan_name]['schedule'] = request.form['schedule']
+    if 'schedule' in request.form:
+        config[scan_name]['schedule'] = request.form['schedule']
+    else:
+        config[scan_name]['schedule'] = ''
     config[scan_name]['tags'] = request.form['tags']
     config[scan_name]['org'] = request.form['org']
     if scan_type == 'webapp':
@@ -452,6 +463,20 @@ def add_scan(config, request):
         else:
             config[scan_name]['snow_user'] = request.form['snow_user']
             config[scan_name]['snow_password'] = request.form['snow_password']
+    elif scan_type == 'trustmodel':
+        config[scan_name]['tm_asset_id'] = request.form['tm_asset_id']
+        config[scan_name]['tm_api_key'] = request.form['tm_api_key']
+        config[scan_name]['tm_vendor_id'] = request.form['tm_vendor_id']
+        if request.form['tm_model_id'] != None and request.form['tm_model_id'] != '':
+            config[scan_name]['tm_model_id'] = request.form['tm_model_id']
+        else:
+            config[scan_name]['tm_model_id'] = request.form['tm_model_id_select']
+        config[scan_name]['tm_vendor_api_key'] = ''
+        config[scan_name]['tm_vendor_api_endpoint'] = ''
+        if request.form['tm_vendor_api_key'] != None and request.form['tm_vendor_api_key'] != '':
+            config[scan_name]['tm_vendor_api_key'] = request.form['tm_vendor_api_key']
+        if request.form['tm_vendor_api_endpoint'] != None and request.form['tm_vendor_api_endpoint'] != '':
+            config[scan_name]['tm_vendor_api_endpoint'] = request.form['tm_vendor_api_endpoint']
     elif scan_type == 'gitlab':
         config[scan_name]['access_token'] = request.form['gitlab_access_token']
         config[scan_name]['server'] = request.form['gitlab_server']
