@@ -2000,6 +2000,12 @@ tr.row-running .run-pill { display: inline-flex; }
   document.getElementById("scheduleTab").click();
   check_run_status();
   setInterval(check_run_status, 5000);
+
+  // Remove notification elements from DOM after they fade out,
+  // so animation-fill-mode:forwards opacity:0 can't bleed to parent elements
+  document.querySelectorAll('.notification').forEach(n => {
+    setTimeout(() => n.remove(), 3500);
+  });
 </script>
 </body>
 </html>
