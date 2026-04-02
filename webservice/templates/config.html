@@ -1,1774 +1,2005 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="icon" href="https://threatworx.io/wp-content/uploads/2022/12/favicon.png" sizes="192x192" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <title>ThreatWorx twigs Discovery App</title>
-		
-<style type="text/css" media="all">
-                    html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
 
-                        margin: 0;
-
-                        padding: 0;
-
-                        border: 0;
-
-                        font-size: 100%;
-
-                        font: inherit;
-
-                        vertical-align: baseline;
-
-                        -webkit-text-size-adjust: none;
-
-                    }
-
-
-
-                    html, body {
-
-                        font-family: 'Helvetica Neue', 'Segoe UI', helvetica, arial, sans-serif;
-
-                        width: 100%;
-
-                        color: #333;
-
-                        font-size: 13px;
-
-                        background: #efefef;
-
-                    }
-
-
-
-                    a, a:visited, a:active {
-
-                        color: #0071b9;
-
-                        text-decoration: none;
-
-                    }
-
-
-
-                    a:hover {
-
-                        color: #0071b9;
-
-                        text-decoration: underline;
-
-                    }
-
-
-
-                    .clear {
-
-                        clear: both;
-
-                        width: 0 !important;
-
-                        height: 0 !important;
-
-                        margin: 0 !important;
-
-                        padding: 0 !important;
-
-                    }
-
-
-
-                    table {
-
-                        table-layout: fixed;
-
-                        width: 100%;
-
-                        border-collapse: collapse;
-
-                        border-spacing: 0;
-
-                    }
-
-		    .selected-row {
-                        background-color: #e0e0e0; /* Light gray background */
-                        font-weight: bold;
-                    }
-
-                    .plugin-row-header {
-
-                        height: 35px;
-
-                        line-height: 35px;
-
-                        background: #f5f5f5;
-
-                        font-size: 12px;
-
-                        border: 1px solid #ddd;
-
-                    }
-
-
-
-                    .plugin-row {
-
-                        height: 40px;
-
-                        border: 1px solid #ddd;
-
-                    }
-
-
-
-                    .plugin-row td {
-
-                        padding: 10px 0;
-
-                        line-height: 20px;
-
-                    }
-
-
-
-                    .table-wrapper.details,
-
-                    .table-wrapper.see-also {
-
-                        margin: 0 0 20px 0;
-
-                    }
-
-
-
-                    .table-wrapper.details > table > tbody > tr > td {
-
-                        padding: 5px 0;
-
-                    }
-
-
-                    tr:hover {
-                      background-color: #e0e0e0; /* Change background color on hover */
-                      cursor: pointer; /* Change cursor to pointer to indicate interactivity */
-                    }
-
-                    .button {
-                      background-color: #04AA6D;
-                      border: none;
-                      color: white;
-                      padding: 10px;
-                      //text-align: center;
-                      display: inline-flex;
-                      align-items: center; 
-                      text-decoration: none;
-                      //display: inline-block;
-                      font-size: 12px;
-                      margin: 4px 2px;
-                      border-radius: 8px;
-                      height: 12px;
-                    }
-
-
-
-                    .button:hover {
-
-                        background: #ccc;
-
-                    }
-
-                    .expand {
-
-                        display: block;
-
-                        float:right;
-
-                        font-size: 12px;
-
-                        color: #0071b9;
-
-                        cursor: pointer;
-
-                        font-weight: normal;
-
-                        line-height: 20px;
-
-                        margin: 0 0 0 10px;
-
-                    }
-
-
-
-                    .expand:hover {
-
-                        text-decoration: underline;
-
-                    }
-
-
-
-                    .expand-spacer {
-
-                        display: block;
-
-                        float:right;
-
-                        font-size: 12px;
-
-                        font-weight: normal;
-
-                        line-height: 20px;
-
-                        margin: 0 0 0 10px;
-
-                    }
-
-
-
-                    .details-header {
-
-                        font-size: 14px;
-
-                        font-weight: bold;
-
-                        padding: 0 0 5px 0;
-
-                        margin: 0 0 5px 0;
-
-                        border-bottom: 1px dotted #ccc;
-
-                    }
-
-
-
-                    .offline {
-
-                        background-image: -webkit-repeating-linear-gradient(135deg, transparent, transparent 5px, rgba(255, 255, 255, .2) 5px, rgba(255, 255, 255, .2) 10px) !important;
-
-                        background-image: repeating-linear-gradient(135deg, transparent, transparent 5px, rgba(255, 255, 255, .2) 5px, rgba(255, 255, 255, .2) 10px) !important;
-
-                    }
-
-
-
-                    .acas-header {
-
-                        padding: 0 10px;
-
-                    }
-
-
-
-                    .acas-header,
-
-                    .acas-footer > h1 {
-
-                        color: #fff;
-
-                        font-weight: bold;
-
-                        font-size: 15px;
-
-                        text-align: center;
-
-                    }
-
-
-
-                    .table-desc > h5 {
-
-                        color: #000;
-
-                        text-align: left;
-
-                        padding: 3px;
-
-                        font-size: 14px;
-
-                        font-weight: 200;
-
-                        letter-spacing: 1px;
-
-                    }
-
-	        .container {
-                        width: 80%;
-                        margin: 0 auto;
-                        padding: 20px;
-                        border: 1px solid #ccc;
-                        border-radius: 5px;
-                }
-
-                .form-group {
-                        margin-bottom: 20px;
-                }
-
-                label {
-                        display: block;
-                        margin-bottom: 10px;
-                        font-weight: bold;
-                }
-
-                input[type=text], input[type=password], input[type=url], input[type=email] {
-                        width: 80%;
-                        padding: 10px;
-                        border-radius: 5px;
-                        border: 1px solid #ccc;
-                        font-size: 16px;
-                        margin-top: 5px;
-                }
-
-                input[type=checkbox], input[type=radio] {
-                        margin-right: 10px;
-                }
-
-                textarea { 
-                        width: 80%;
-                        padding: 10px;
-                        border-radius: 5px;
-                        border: 1px solid #ccc;
-                        font-size: 16px;
-                        margin-top: 5px;
-                }
-
-		.btn {
-                        background-color: #4CAF50;
-                        color: white;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        border: none;
-                        cursor: pointer;
-                        font-size: 16px;
-                }
-
-                .btn:hover {
-                        background-color: #3e8e41;
-                }
-
-		.help-block {
-                    display: block;
-                    margin-top: 5px;
-                    margin-bottom: 10px;
-                    color: #737373;
-                    font-size: 13px;
-                 }
-
-		.custom-select {
-                    min-width: 500px;
-                    position: relative;
+<style type="text/css">
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2230;
+  --surface3: #21293a;
+  --border: #2a3a52;
+  --border-bright: #3a5080;
+  --accent: #00d4ff;
+  --accent2: #0099cc;
+  --accent-glow: rgba(0,212,255,0.15);
+  --accent-glow-strong: rgba(0,212,255,0.3);
+  --text: #e8edf5;
+  --text-muted: #6b7d99;
+  --text-dim: #3a4d66;
+  --success: #00e676;
+  --success-bg: rgba(0,230,118,0.08);
+  --danger: #ff4444;
+  --danger-bg: rgba(255,68,68,0.08);
+  --warn: #ffaa00;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 0 1px var(--border), 0 4px 24px rgba(0,0,0,0.4);
 }
 
-select {
-  appearance: none;
-  /*  safari  */
-  -webkit-appearance: none;
-  /*  other styles for aesthetics */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Subtle grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+a, a:visited, a:active { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+a:hover { color: #fff; text-decoration: none; }
+
+/* ─── LAYOUT ─── */
+#app {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
+
+/* ─── HEADER ─── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-brand img { height: 36px; filter: brightness(1.1); }
+
+.header-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid var(--border-bright);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+}
+
+.header-actions { display: flex; align-items: center; gap: 20px; }
+
+.header-link {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+.header-link:hover { color: var(--accent); }
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.logout-btn:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+
+/* ─── PAGE TITLE ─── */
+.page-title {
+  margin-bottom: 28px;
+}
+
+.page-title h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title h1 .title-icon {
+  width: 32px; height: 32px;
+  background: var(--accent-glow);
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+/* ─── NOTIFICATIONS ─── */
+.notification {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  padding: 14px 20px;
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: notif-in 0.3s ease, notif-out 0.4s ease 3s forwards;
+  max-width: 380px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.notification.error {
+  background: rgba(20,8,8,0.95);
+  border: 1px solid var(--danger);
+  color: #ff8888;
+}
+.notification.success {
+  background: rgba(0,16,10,0.95);
+  border: 1px solid var(--success);
+  color: #66ffaa;
+}
+
+@keyframes notif-in { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+@keyframes notif-out { from { opacity:1; } to { opacity:0; transform: translateY(-10px); } }
+
+/* ─── TABS ─── */
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  position: relative;
+  border-radius: var(--radius) var(--radius) 0 0;
+  transition: color 0.2s, background 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tab-btn:hover { color: var(--text); background: var(--surface); }
+.tab-btn.active { color: var(--accent); }
+.tab-btn.active::after { opacity: 1; }
+
+.tabcontent { display: none; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title i { color: var(--accent); }
+
+/* ─── SCHEDULE TABLE ─── */
+.schedule-table {
   width: 100%;
-  font-size: 1.15rem;
-  padding: 0.675em 6em 0.675em 1em;
-  background-color: #fff;
-  border: 1px solid #caced1;
-  border-radius: 0.25rem;
-  color: #000;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.schedule-table thead tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.schedule-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  padding: 10px 14px;
+  font-family: var(--mono);
+}
+
+.schedule-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
   cursor: pointer;
 }
 
-.custom-select::before,
-.custom-select::after {
-  --size: 0.3rem;
-  content: "";
+.schedule-table tbody tr:hover { background: var(--surface2); }
+.schedule-table tbody tr.selected-row { background: var(--surface3); outline: 1px solid var(--border-bright); }
+.schedule-table tbody tr:last-child { border-bottom: none; }
+
+.schedule-table td {
+  padding: 12px 14px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.schedule-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.schedule-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid var(--border-bright);
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.schedule-freq {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+
+.schedule-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.action-btn {
+  width: 30px; height: 30px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+
+.action-btn:hover { border-color: var(--border); background: var(--surface3); color: var(--text); }
+.action-btn.run:hover { border-color: var(--success); color: var(--success); background: var(--success-bg); }
+.action-btn.stop:hover { border-color: var(--warn); color: var(--warn); background: rgba(255,170,0,0.08); }
+.action-btn.delete:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+.action-btn.view:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+.loading-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* ─── FORM SECTION ─── */
+.form-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.section-heading {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-heading i { color: var(--accent); }
+
+/* ─── FORM CONTROLS ─── */
+.form-group { margin-bottom: 18px; }
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+input[type=text],
+input[type=password],
+input[type=url],
+input[type=email] {
+  width: 100%;
+  max-width: 540px;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: block;
+  margin-bottom: 4px;
+}
+
+input[type=text]:focus,
+input[type=password]:focus,
+input[type=url]:focus,
+input[type=email]:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+input[type=text]::placeholder,
+input[type=password]::placeholder,
+input[type=url]::placeholder,
+input[type=email]::placeholder {
+  color: var(--text-dim);
+}
+
+textarea {
+  width: 100%;
+  max-width: 540px;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: block;
+}
+
+textarea:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.help-block {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+/* Custom select */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 400px;
+}
+
+.select-wrapper::after {
+  content: '';
   position: absolute;
-  right: 1rem;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--text-muted);
   pointer-events: none;
 }
 
-.custom-select::before {
-  border-left: var(--size) solid transparent;
-  border-right: var(--size) solid transparent;
-  border-bottom: var(--size) solid black;
-  top: 40%;
-}
-
-.custom-select::after {
-  border-left: var(--size) solid transparent;
-  border-right: var(--size) solid transparent;
-  border-top: var(--size) solid black;
-  top: 55%;
-}
-
-
-/*=============
-Aesthetics
-=========================*/
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-}
-
-.error-message {
-  position: absolute;
-  top: 5%; 
-  right: 40%; 
-  padding: 20px;
-  background-color: #f44336; 
-  color: white;
-  border-radius: 12px;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-
-  animation:error-message 0.5s 1;
-  -webkit-animation:error-message 0.5s 1;
-  animation-fill-mode: forwards;
-
-  animation-delay:3s;
-  -webkit-animation-delay:3s; /* Safari and Chrome */
-  -webkit-animation-fill-mode: forwards;
-}
-
-@keyframes error-message{
-    from {opacity :1;}
-    to {opacity :0;}
-}
-
-@-webkit-keyframes error-message{
-    from {opacity :1;}
-    to {opacity :0;}
-}
-
-.success-message {
-  position: absolute;
-  top: 5%; 
-  right: 40%; 
-  padding: 20px;
-  background-color: #2bc22d; 
-  color: white;
-  border-radius: 12px;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-
-  animation:success-message 0.5s 1;
-  -webkit-animation:success-message 0.5s 1;
-  animation-fill-mode: forwards;
-
-  animation-delay:3s;
-  -webkit-animation-delay:3s; /* Safari and Chrome */
-  -webkit-animation-fill-mode: forwards;
-}
-
-@keyframes success-message{
-    from {opacity :1;}
-    to {opacity :0;}
-}
-
-@-webkit-keyframes success-message{
-    from {opacity :1;}
-    to {opacity :0;}
-}
-
-// Glowing dot css
-@-webkit-keyframes dot-keyframes {
-  0% {
-    opacity: 0.4;
-    -webkit-transform: scale(1, 1);
-            transform: scale(1, 1);
-  }
-  50% {
-    opacity: 1;
-    -webkit-transform: scale(1.2, 1.2);
-            transform: scale(1.2, 1.2);
-  }
-  100% {
-    opacity: 0.4;
-    -webkit-transform: scale(1, 1);
-            transform: scale(1, 1);
-  }
-}
-
-@keyframes dot-keyframes {
-  0% {
-    opacity: 0.4;
-    -webkit-transform: scale(1, 1);
-            transform: scale(1, 1);
-  }
-  50% {
-    opacity: 1;
-    -webkit-transform: scale(1.2, 1.2);
-            transform: scale(1.2, 1.2);
-  }
-  100% {
-    opacity: 0.4;
-    -webkit-transform: scale(1, 1);
-            transform: scale(1, 1);
-  }
-}
-.loading-dots {
-  text-align: center;
+select {
   width: 100%;
-}
-.loading-dots--dot {
-  -webkit-animation: dot-keyframes 3s infinite ease-in-out;
-          animation: dot-keyframes 3s infinite ease-in-out;
-  background-color: #ff0000;
-  border-radius: 10px;
-  display: inline-block;
-  height: 8px;
-  width: 8px;
-}
-.loading-dots--dot:nth-child(2) {
-  -webkit-animation-delay: 5s;
-          animation-delay: 5s;
-}
-.loading-dots--dot:nth-child(3) {
-  -webkit-animation-delay: 5s;
-          animation-delay: 5s;
-}
-// Glowing dot css
-
-/* Style the tab */
-.tab {
-  width: 80%;
-  margin: 0 auto;
-  //padding: 20px;
-  background-color: #f1f1f1;
-}
-
-.tabcontainer {
-  width: 80%;
-  margin: 0 auto;
-  //padding: 20px;
-}
-
-
-/* Style the buttons that are used to open the tab content */
-.tab button {
-  background-color: inherit;
-  //float: left;
-  border: none;
+  padding: 10px 40px 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  appearance: none;
+  -webkit-appearance: none;
   outline: none;
   cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* Change background color of buttons on hover */
-.tab button:hover {
-  background-color: #ddd;
+select:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-/* Create an active/current tablink class */
-.tab button.active {
-  background-color: #ccc;
+select option { background: #1a2030; color: var(--text); }
+select option:disabled { color: var(--text-dim); }
+
+/* Checkbox */
+.sw-row input[type=checkbox],
+.sw-tag input[type=checkbox] { display: none; }
+
+.sw-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  user-select: none;
+  width: fit-content;
 }
 
-/* Style the tab content */
-.tabcontent {
-  display: none;
+.sw-row-label { font-size: 13px; color: var(--text); }
+
+.sw-track {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 36px; height: 20px;
+  border-radius: 10px;
+  padding: 2px;
+  position: relative;
+  transition: background 0.2s;
+  background: var(--border);
+}
+
+.sw-track.is-on { background: var(--accent); }
+
+.sw-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  position: absolute;
+  left: 2px;
+  transition: left 0.2s, background 0.2s;
+  background: var(--text-muted);
+}
+
+.sw-track.is-on .sw-thumb { left: 18px; background: var(--bg); }
+
+/* ─── BUTTONS ─── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.btn-primary:hover {
+  background: #33ddff;
+  box-shadow: 0 0 20px var(--accent-glow-strong);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active { transform: translateY(0); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover { border-color: var(--border-bright); background: var(--surface2); }
+
+/* ─── DIVIDER ─── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+
+/* ─── CONFIG DIVS ─── */
+#config_div > div[id$="_div"] { display: none; }
+
+/* Discovery type selector area */
+.discovery-select-area {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.discovery-select-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+/* Info link */
+.info-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  transition: color 0.2s;
+}
+.info-link:hover { color: var(--accent); }
+
+/* Schedule row */
+.schedule-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.schedule-row > div { flex: 0 0 auto; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-dim);
+}
+
+.empty-state i { font-size: 36px; margin-bottom: 12px; display: block; }
+.empty-state p { font-size: 14px; }
+
+/* ─── SETTINGS FORM ─── */
+.settings-grid {
+  display: grid;
+  gap: 18px;
+}
+
+/* TrustModel special */
+.tm-logo-link img { filter: brightness(1.2) saturate(0.8); }
+
+/* ─── CHECKBOX GRID ─── */
+.checkbox-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.checkbox-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 12px;
-  //border: 1px solid #ccc;
-  border-top: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  font-size: 12px;
+  color: var(--text-muted);
+  user-select: none;
 }
 
+.checkbox-tag.is-on {
+  border-color: var(--border-bright);
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.checkbox-tag:hover { border-color: var(--border-bright); color: var(--text); }
+.checkbox-tag input { display: none; }
+
+/* Status dot — hidden, kept for JS targeting */
+.loading-dots { display: none; }
+
+/* ─── RUNNING ROW: left border accent ─── */
+@keyframes border-breathe {
+  0%, 100% { box-shadow: inset 3px 0 0 var(--success); }
+  50%       { box-shadow: inset 3px 0 0 color-mix(in srgb, var(--success) 40%, transparent); }
+}
+
+.schedule-table tbody tr.row-running {
+  background: linear-gradient(90deg, rgba(0,230,118,0.05) 0%, transparent 60%);
+  animation: border-breathe 2s ease-in-out infinite;
+}
+
+.schedule-table tbody tr.row-running:hover {
+  background: linear-gradient(90deg, rgba(0,230,118,0.08) 0%, var(--surface2) 60%);
+}
+
+/* ─── RUNNING PILL ─── */
+@keyframes pill-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+.run-pill {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--success);
+  background: rgba(0,230,118,0.08);
+  border: 1px solid rgba(0,230,118,0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  animation: pill-pulse 2s ease-in-out infinite;
+}
+
+.run-pill::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 5px var(--success);
+  flex-shrink: 0;
+}
+
+tr.row-running .run-pill { display: inline-flex; }
+
+/* status cell — keep it centered and fixed width */
+.run-indicator { display: none; }
+
+/* Column widths for schedule table */
+.col-status { width: 40px; }
+.col-name { width: 22%; }
+.col-type { width: 12%; }
+.col-sched { width: 12%; }
+.col-spacer { width: 8%; }
+.col-pill { width: 15%; }
+.col-actions { width: 22%; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
 </style>
-                        </head><body><div id="report" style="width: 1024px; box-sizing: border-box; margin: 0 auto; background: #fff; padding: 0 20px 20px 20px; border-top: #263746 solid 3px; box-shadow: 0 2px 10px rgba(0, 0, 0, .2); margin-bottom: 20px; border-radius: 0 0 3px 3px;">
+</head>
+<body>
 
-                            <header style="width: 100%; border-bottom: 1px dotted #ccc; padding: 20px 0; margin: 0 0 20px 0;"><div style="float: center;"><h1><table><tr>
-<td align="left">
-<img src="https://threatworx.io/wp-content/uploads/2022/12/ThreatWorx-logo-final-horizontal-whitebg.png" height=50 width=250></img>
-</td>
-</td><td align="right"><a title="Logout" href="/logout?auth={{data['authenticator']}}"><i class="fa fa-sign-out fa-2x"></i></a></td></table></h1></div>
-				    
+<div id="app">
 
-<div style="float: right;"><h1 style="font-size: 18px;"></h1><h2 style="color: #999; text-align: right"></h2></div><div class="clear"></div></header><div class="clear"></div>
+  <!-- HEADER -->
+  <header>
+    <div class="header-brand">
+      <img src="https://threatworx.io/wp-content/uploads/2022/12/ThreatWorx-logo-final-horizontal-whitebg.png" alt="ThreatWorx">
+      <span class="header-badge">twigs {{data['discovery_app']['version']}}</span>
+    </div>
+    <div class="header-actions">
+      <a class="header-link" href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">
+        <i class="fa fa-book"></i> User Guide
+      </a>
+      <a class="logout-btn" href="/logout?auth={{data['authenticator']}}">
+        <i class="fa fa-sign-out"></i> Sign out
+      </a>
+    </div>
+  </header>
 
-<h3 style="font-size: 24px; font-weight: bold; display: inline-block;">twigs Discovery App </h3>&nbsp;&nbsp;<h6 style="font-size: 10px; font-weight: bold; display: inline-block;">{{data['discovery_app']['version']}}</h6> <h5 style="font-size: 10px; font-weight: bold; display: inline-block; float: right"><a href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">twigs user guide&nbsp;<i class="fa fa-external-link"></i></a></h5>
-<br>
-<br>
-{% if data['discovery_app']['error_msg'] %}
-<div class="error-message">
-{{data['discovery_app']['error_msg']}}
-<br>
-</div>
-{% endif %}
-{% if data['discovery_app']['success_msg'] %}
-<div class="success-message">
-{{data['discovery_app']['success_msg']}}
-<br>
-</div>
-{% endif %}
-<div class="tabcontainer">
-<div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Schedules')" id="scheduleTab">Discovery Schedules</button>
-  <button class="tablinks" onclick="openTab(event, 'Settings')" id="settingsTab">Settings</button>
-</div>
-</div>
-<div id="Settings" class="tabcontent">
-<form action="/save_creds?auth={{data['authenticator']}}" method="post" id="tw_auth_form">
-<div class="container">
-<div class="form-group">
-<label>ThreatWorx instance authentication</label>
-<br>
-<input type="text" placehelder="Instance FQDN" name="instance" id="instance" value="{{data['threatworx']['instance']}}" required>
-<span class="help-block">FQDN of your ThreatWorx instance e.g. acme.threatworx.io</span>
-<input type="email" placeholder="User / handle" name="handle" id="handle" value="{{data['threatworx']['handle']}}" required>
-<span class="help-block">Valid user/handle on the ThreatWorx instance</span>
-<input type="password" placeholder="API key" name="token" id="token" value="{{data['threatworx']['token']}}" required>
-<span class="help-block">API key for ThreatWorx user</span>
-{% if data['discovery_app']['log_level'] == 'debug' %}
-<input type="checkbox" name="debug_log" id="debug_log" value='on' checked >Enable debug log
-{% else %}
-<input type="checkbox" name="debug_log" id="debug_log" value='on' >Enable debug log
-{% endif %}
-<br>
-<br>
-<button type="submit" class="btn">
- Save 
-</button>
-</div>
-</div>
-</form>
-</div>
-<div id="Schedules" class="tabcontent">
-<div class="container">
-<div class="form-group">
-<label>Active schedules</label>
-<table cellpadding="0" cellspacing="0" id='schedule_table' name='schedule_table'>
-<thead>
-<tr>
-<th width="3%"></th>
-<th width="30%"></th>
-<th width="30%"></th>
-<th width="25%"></th>
-<th width="3%"></th>
-<th width="3%"></th>
-<th width="3%"></th>
-<th width="3%"></th>
-<th width="3%"></th>
-</tr>
-</thead>
-<tbody>
-<tr class="plugin-row-header">
-<td class=""></td>
-<td class="">Name</td>
-<td class="">Type</td>
-<td class="">Schedule</td>
-<td class=""></td>
-<td class="">Actions</td>
-<td class=""></td>
-<td class=""></td>
-<td class=""></td>
-<td class=""></td>
-</tr>
-{% for item in data %}
-{% if item != 'threatworx' and item != 'discovery_app' and item != 'authenticator' %}
-<tr class="plugin-row">
-<td class=""><div title="This discovery is currently running" class="loading-dots" id="loading-dots-{{item}}" style="display: none">
-  <div class="loading-dots--dot"></div>
-</div>
-</td>
-<td class="">{{item}}</td>
-<td class="">{{data[item]['type']}}</td>
-<td class="">{{data[item]['schedule']}}</td>
-<td class=""></td>
-<td class=""><a title="Run this schedule now" href="/run_scan?scan_name={{item}}&scan_type={{data[item]['type']}}&auth={{data['authenticator']}}"><i class="fa fa-play"></i></a></td>
-<td class=""><a title="Stop this discovery run" href="/stop_scan?run_id={{item}}&auth={{data['authenticator']}}"><i class="fa fa-stop"></i></a></td>
-<td class=""><a title="View last log for this discovery (in a new tab)" href="/view_log?scan_name={{item}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-external-link"></i></a></td>
-<!--<td class=""><a title="Edit this discovery configuration" href="javascript:edit_load('{{item}}', {{data[item]}});"><i class="fa fa-pencil-square-o"></i></a></td>-->
-<td class=""><a title="Delete this discovery configuration" onclick="delete_scan('{{item}}','{{data['authenticator']}}')"><i class="fa fa-trash-o"></i></a></td>
-<td class="" style="display: none">{{data[item]}}</td>
-</tr>
-{% endif %}
-{% endfor %}
-</table>
-</div>
-</div>
-<br>
-<form action="/save_scan?auth={{data['authenticator']}}" method="post" id="main_form">
-<div class="container">
-<div class="form-group">
-<select class="custom-select" style="width:250px;" name="scan_type" id="scan_type" onchange="mode_change()">
-<option selected value> -- select a discovery type -- </option>
-<option disabled>──────────────────────</option>
-<option value="trustmodel">AI Evaluation (Powered by TrustModel)</option>
-<option disabled>──────────────────────</option>
-<option value="nmap" >Fingerprint scan (uncredentialed)</option>
-<option value="snmp" >SNMP scan (for network devices)</option>
-<option value="host" >Linux deep discovery using SSH (credentialed)</option>
-<option value="win_host" >Windows deep discovery using WinRM (credentialed)</option>
-<option value="vmware">VMware</option>
-<option value="defender">MS Defender / Office 365</option>
-<option disabled>──────────────────────</option>
-<option value="cisco_meraki" >Cisco Meraki</option>
-<option value="cisco_dna_center" >Cisco Catalyst Center (DNA Center)</option>
-<option value="printer" >Printers</option>
-<option value="cctv" >CCTV Cameras</option>
-<option disabled>──────────────────────</option>
-<option value="github">Github</option>
-<option value="gitlab">Gitlab</option>
-<option value="bitbucket">Bitbucket</option>
-<option value="gitrepo">Generic Git Repository</option>
-<option disabled>──────────────────────</option>
-<option value="gcp">GCP CWP (agentless)</option>
-<option value="gcp-cspm">GCP CSPM</option>
-<option value="gcr">GCR</option>
-<option disabled>──────────────────────</option>
-<option value="aws">AWS CWP (agentless)</option>
-<option value="aws-cspm">AWS CSPM</option>
-<option value="ecr">AWS ECR</option>
-<option disabled>──────────────────────</option>
-<option value="azure">Azure CWP (agentless)</option>
-<option value="azure-cspm">Azure CSPM</option>
-<option value="acr">Azure ACR</option>
-<option disabled>──────────────────────</option>
-<option value="oci">OCI CWP (agentless)</option>
-<option value="oci-cspm">OCI CSPM</option>
-<option value="ocr">OCI OCR</option>
-<option disabled>──────────────────────</option>
-<option value="webapp">Web application (DAST)</option>
-<option disabled>──────────────────────</option>
-<option value="servicenow">Servicenow CMDB</option>
-</select>
-<br>
-<br>
-<input type="text" placeholder="Schedule name" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
-<span class="help-block">A unique name for this discovery schedule. Up to 16 alphanumeric allowed</span>
-<input type="text" placeholder="Asset tags" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
-<span class="help-block">Optional comma separated list of tags to be attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
-<input type="text" placeholder="Organization name" name="org" id="org" pattern="[a-zA-Z0-9_\-]*" value="">
-<span class="help-block">Optional organization / vendor name associated with this discovery schedule. Should already be configured in the ThreatWorx console</span>
-<br>
-<hr style="border: 1px dotted #D3D3D3;">
-<br>
-<!--<div id="nmap_div" style="display: block;">-->
-<div id="config_div">
-<div id="nmap_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="IP addresses, ranges or CIDRs" name="hosts" id="hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
-        <span class="help-block">Comma separated list of IP address, ranges or CIDRs that you would like to discover</span>
-        <input type="checkbox" name="stype_web" value='web' checked="checked">Web Services
-        <input type="checkbox" name="stype_database" value='database'>Databases
-        <input type="checkbox" name="stype_vmware" value='vmware'>VMware Clusters
-        <input type="checkbox" name="stype_os" value='os'>OS Services
-        <input type="checkbox" name="stype_printers" value='printers'>Printers
-        <span class="help-block">Select one or more class of services that you want to discover on your network</span>
-	<input type="text" placeholder="Extra ports" name="extra_ports" id="extra_ports" pattern="[0-9\-,]+">
-	<span class="help-block">Comma separated list of extra ports and port ranges, that you would like include in the scan e.g. 444,9000-9100,..."</span>
-</div>
-<div id="snmp_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="IP addresses, ranges or CIDRs" name="snmp_hosts" id="snmp_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
-        <span class="help-block">Comma separated list of IP address, ranges or CIDRs that you would like to discover using SNMP</span>
-	<input type="text" placeholder="SNMP community string" name="community_str" id="community_str" value="public" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">Optional SNMP community string (defaults to 'public')</span>
-	<input type="text" placeholder="SNMP v3 security name" name="security_name" id="security_name" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">Optional SNMP v3 security name</span>
-</div>
-<div id="printer_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Network printer IPs, ranges or CIDRs" name="printer_hosts" id="printer_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
-        <span class="help-block">Comma separated list of network printer IP address, ranges or CIDRs that you would like to discover</span>
-</div>
-<div id="cctv_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Network CCTV / Camera IPs, ranges or CIDRs" name="cctv_hosts" id="cctv_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
-        <span class="help-block">Comma separated list of network CCTV / Camera device IP address, ranges or CIDRs that you would like to discover</span>
-</div>
+  <!-- NOTIFICATIONS -->
+  {% if data['discovery_app']['error_msg'] %}
+  <div class="notification error">
+    <i class="fa fa-exclamation-circle"></i>
+    {{data['discovery_app']['error_msg']}}
+  </div>
+  {% endif %}
+  {% if data['discovery_app']['success_msg'] %}
+  <div class="notification success">
+    <i class="fa fa-check-circle"></i>
+    {{data['discovery_app']['success_msg']}}
+  </div>
+  {% endif %}
 
-<div id="host_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Host, IP address, range or CIDR" name="host_list" id="host_list" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">Host name, IP address, range or CIDR that you would like to discover</span>
-	<input type="text" placeholder="Service user name" name="user_name" id="user_name" pattern="[a-zA-Z0-9\/\-_]+">
-        <span class="help-block">SSH user name</span>
-	<input type="checkbox" id="su_auth" name="su_auth" onClick="suAuthChange(this);" checked="checked">Use SSH password authentication</input>
-	<input type="password" placeholder="Service user password" name="user_passwd" id="user_passwd">
-	<textarea placeholder="Paste private key contents here" name="user_private_key" id="user_private_key" rows="5" cols="40" style="display: none"></textarea>
-</div>	
-<div id="win_host_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Host, IP address, range or CIDR" name="win_host_list" id="win_host_list" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">Host name, IP address, range or CIDR that you would like to discover</span>
-	<input type="text" placeholder="DOMAIN\username" name="win_user_name" id="win_user_name" pattern="[a-zA-Z0-9\/\\\-_]+">
-	<input type="password" placeholder="password" name="win_user_passwd" id="win_user_passwd">
-        <span class="help-block">Service user credentials for the windows system(s). DOMAIN is optional.</span>
-</div>
-<div id="meraki_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/cisco-meraki-device-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="url" placeholder="https://api.meraki.com/api/v1" name="meraki_base_url" id="meraki_base_url" value="https://api.meraki.com/api/v1">
-        <span class="help-block">Meraki API base url (optional, defaults to https://api.meraki.com/api/v1)</span>
-	<input type="password" placeholder="API Key" name="meraki_api_key" id="meraki_api_key">
-        <span class="help-block">API key</span>
-</div>
-<div id="dna_center_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/cisco-catalyst-center-device-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="url" name="dna_center_url" id="dna_center_url" >
-        <span class="help-block">Cisco Catalyst Center (DNA Center) console URL</span>
-	<input type="text" name="dna_center_user" id="dna_center_user" pattern="[a-zA-Z0-9\/\\\-_]+">
-        <span class="help-block">Authorized user name</span>
-	<input type="password" name="dna_center_password" id="dna_center_password">
-        <span class="help-block">Password</span>
-</div>
-<div id="webapp_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-web-application-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="checkbox" id="webapp_opt" name="webapp_opt" onClick="webappOptChange(this);">Use ZAP plan</input><br>
-        <input type="url" placeholder="Web application URL" name="url" id="url" value="">
-	<textarea placeholder="Paste ZAP plan yaml contents here" name="zap_plan_yaml" id="zap_plan_yaml" rows="5" cols="40" style="display: none"></textarea>
-</div>
-<div id="vmware_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-vmware-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="vCenter host" name="vcenter_host" id="vcenter_host" pattern="[a-zA-Z0-9.\-_]+">
-        <span class="help-block">vCenter host name or IP address</span>
-	<input type="text" placeholder="vCenter user" name="vcenter_user" id="vcenter_user" pattern="[a-zA-Z0-9\/\-_]+">
-        <span class="help-block">vCenter user name</span>
-	<input type="password" placeholder="vCenter password" name="vcenter_passwd" id="vcenter_passwd">
-        <span class="help-block">vCenter user password</span>
-</div>
-<div id="defender_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-o365-defender/"><i class="fa fa-info-circle" alight="right"></i></a>
-        <span class="help-block">Discover assets from Microsoft Defender / Office 365 subscription</span>
-	<input type="text" placeholder="Tenant Id" name="defender_tenant" id="defender_tenant" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">Office 365 tenant Id</span>
-	<input type="text" placeholder="Application Id" name="defender_app_id" id="defender_app_id" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">Office 365 application Id</span>
-	<input type="password" placeholder="Application key" name="defender_app_key" id="defender_app_key">
-        <span class="help-block">Office 365 application secret key</span>
-	<input type="checkbox" name="defender_all_devices" id="defender_all_devices">Discover all active devices</input>
-</div>
-<div id="trustmodel_div" style="display: none;">
-        <a target="_blank" href="https://trustmodel.ai/"><img src="static/trustmodel-logo.png" height=30 width=120></img></a>
-	<br>
-	<input type="text" placeholder="" name="tm_asset_id" id="tm_asset_id" pattern="[a-zA-Z0-9\-_]+">
-        <span class="help-block">A friendly name to track this asset in ThreatWorx</span>
-	<input type="password" placeholder="" name="tm_api_key" id="tm_api_key" pattern="[a-zA-Z0-9.\-_]+">
-        <span class="help-block">TrustModel API Key</span>
-        <select class="custom-select" style="width:250px;" name="tm_vendor_id" id="tm_vendor_id" onchange="tm_vendor_select()">
-            <option disabled>─────── Custom ────────</option>
-            <option id="custom1" selected value="AWS Bedrock" >AWS Bedrock</option>
-            <option id="custom2" value="Azure AI" >Azure AI</option>
-            <option id="custom3" value="Google Vertex AI" >Google Vertex AI</option>
-            <option id="custom4" value="Huggingface" >Huggingface</option>
-            <option id="custom5" value="Ollama" >Ollama</option>
-            <option id="custom6" value="Others" >Other</option>
-            <option disabled>─────── Public ────────</option>
-            <option id="public1" value="anthropic">Anthropic</option>
-            <option id="public2" value="cohere">Cohere</option>
-            <option id="public3" value="deepseek">DeepSeek</option>
-            <option id="public4" value="google_genai">Google Gemini</option>
-            <option id="public5" value="llama">Metal Llama</option>
-            <option id="public6" value="mistralai">MistralAI</option>
-            <option id="public7" value="moonshot">Moonshot AI</option>
-            <option id="public8" value="nvidia">NVIDIA</option>
-            <option id="public9" value="openai">Open AI</option>
-            <option id="public10" value="perplexity">Perplexity</option>
-            <option id="public11" value="qwen">Qwen</option>
-            <option id="public12" value="xai">X AI</option>
-            <option id="public13" value="zai">z.ai</option>
-	</select>
-        <span class="help-block">Model vendor / platform</span>
-	<input type="text" placeholder="" name="tm_model_id" id="tm_model_id">
-        <select class="custom-select" width="250px" name="tm_model_id_select" id="tm_model_id_select" style="display: none;">
-            <option style="display: none;" id="anthropic1" value="claude-haiku-4-5">Claude Haiku 4.5</option>
-            <option style="display: none;" id="anthropic2" value="claude-opus-4-6">Claude Opus 4.6</option>
-            <option style="display: none;" id="anthropic3" value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
-            <option style="display: none;" id="cohere1" value="command-a-03-2025">Command A</option>
-            <option style="display: none;" id="cohere2" value="command-r-08-2024">Command R</option>
-            <option style="display: none;" id="cohere3" value="command-r7b-12-2024">Command R7B</option>
-            <option style="display: none;" id="deepseek1" value="deepseek-chat">Deepseek 3.2</option>
-            <option style="display: none;" id="deepseek2" value="deepseek-reasoner">Deepseek R1</option>
-            <option style="display: none;" id="google_genai1" value="gemini-3.1-flash-lite-preview">Gemini 3.1 Flash Lite (Preview)</option>
-            <option style="display: none;" id="google_genai2" value="gemini-3.1-pro-preview">Gemini 3.1 Pro (Preview)</option>
-            <option style="display: none;" id="google_genai3" value="gemini-3-flash-preview">Gemini 3 Flash (Preview)</option>
-            <option style="display: none;" id="llama1" value="Llama-4-Maverick-17B-128E-Instruct-FP8">Llama 4 Maverick</option>
-            <option style="display: none;" id="llama2" value="Llama-4-Scout-17B-16E-Instruct-FP8">Llama 4 Scout</option>
-            <option style="display: none;" id="mistralai1" value="ministral-8b-2512">Ministral 8B</option>
-            <option style="display: none;" id="mistralai2" value="ministral-14b-2512">Ministral 14B</option>
-            <option style="display: none;" id="mistralai3" value="mistral-large-2512">Ministral Large</option>
-            <option style="display: none;" id="moonshot1" value="kimi-k2.5">Kimi K2.5</option>
-            <option style="display: none;" id="moonshot2" value="kimi-k2-thinking">Kimi K2 Thinking</option>
-            <option style="display: none;" id="nvidia1" value="nemotron-3-nano-30b-a3b">Nemotron 3 Nano 30B A3B</option>
-            <option style="display: none;" id="nvidia2" value="nemotron-nano-9b-v2">Nemotron 3 Nano 9B</option>
-            <option style="display: none;" id="nvidia3" value="llama-3.3-nemotron-super-49b-v1.5">Nemotron 3 Super 49b</option>
-            <option style="display: none;" id="openai1" value="gpt-5.4">GPT 5.4</option>
-            <option style="display: none;" id="perplexity1" value="sonar">Sonar</option>
-            <option style="display: none;" id="perplexity2" value="sonar-pro">Sonar Pro</option>
-            <option style="display: none;" id="perplexity3" value="sonar-reasoning-pro">Sonar Reasoning Pro</option>
-            <option style="display: none;" id="qwen1" value="dashscope/qwen3.5-flash">Qwen 3.5 Flash</option>
-            <option style="display: none;" id="qwen2" value="dashscope/qwen3.5-plus">Qwen 3.5 Plus</option>
-            <option style="display: none;" id="qwen3" value="dashscope/qwen-max">Qwen Max</option>
-            <option style="display: none;" id="xai1" value="grok-4.1-fast">Grok 4.1 Fast</option>
-            <option style="display: none;" id="xai2" value="grok-4.20-beta-0309-reasoning">Grok 4.2 (Beta)</option>
-            <option style="display: none;" id="zai1" value="glm-5">GLM 5</option>
-	</select>
-        <span class="help-block">Model ID / name to evaluate</span>
-	<input type="password" placeholder="" name="tm_vendor_api_key" id="tm_vendor_api_key">
-        <span class="help-block">Vendor API key (BYOK)</span>
-	<input type="url" placeholder="Vendor API endpoint (custom OpenAI compatible API endpoint URL)" name="tm_vendor_api_endpoint" id="tm_vendor_api_endpoint">
-</div>
-<div id="snow_div" style="display: none;">
-        <a target="_blank" style="float: right;" href="https://threatworx.io/docs/servicenow-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-        <span class="help-block">Discover assets from ServiceNow CMDB</span>
-	<input type="text" placeholder="ServiceNow instance" name="snow_instance" id="snow_instance" pattern="[a-zA-Z0-9.\-_]+">
-        <span class="help-block">ServiceNow instance name</span>
-	<input type="checkbox" id="snow_auth" name="snow_auth" onClick="snowAuthChange(this);">Use OAuth</input><br>
-	<input type="text" placeholder="User name" name="snow_user" id="snow_user" pattern="[a-zA-Z0-9.\/\-_]+">
-	<input type="text" placeholder="Client Id" name="snow_client_id" id="snow_client_id" pattern="[a-zA-Z0-9]+" style="display: none">
-        <span class="help-block">ServiceNow user name or client Id</span>
-	<input type="password" placeholder="User password" name="snow_password" id="snow_password" > 
-	<input type="password" placeholder="Client secret" name="snow_client_secret" id="snow_client_secret" style="display: none"> 
-        <span class="help-block">ServiceNow user password or client secret</span>
-</div>
-<div id="github_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/enterprise-github-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Github identity" name="github_identity" id="github_identity" pattern="[a-zA-Z0-9\-_]+">
-        <span class="help-block">Github identity (organization or user name)</span>
-	<input type="password" placeholder="Access token" name="github_access_token" id="github_access_token">
-        <span class="help-block">Access token corresponding to the Github identity with permissions to read repositories and metadata</span>
-	<input type="url" placeholder="https://api.github.com" name="github_url" id="github_url" value='https://api.github.com'>
-        <span class="help-block">Optional API URL of your Github if self hosted. Defaults to 'https://api.github.com'</span>
-	<input type="checkbox" id="gh_sast" name="gh_sast">Run SAST</input>
-	<input type="checkbox" id="gh_secrets" name="gh_secrets">Run secrets scan</input>
-	<input type="checkbox" id="gh_iac" name="gh_iac">Run IaC scan</input>
-	<input type="checkbox" id="gh_nocode" name="gh_nocode">No code sharing</input>
-</div>
-<div id="gitlab_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/enterprise-gitlab-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="password" placeholder="Access token" name="gitlab_access_token" id="gitlab_access_token">
-        <span class="help-block">Gitlab access token with correct permissions to read repositories and metadata</span>
-	<input type="text" placeholder="gitlab.com" name="gitlab_server" id="gitlab_server" pattern="[a-zA-Z0-9.\/\-_]+" value='gitlab.com'>
-        <span class="help-block">Optional FQDN of your Gitlab server if self hosted. Defaults to 'gitlab.com'</span>
-	<input type="checkbox" id="gl_sast" name="gl_sast">Run SAST</input>
-	<input type="checkbox" id="gl_secrets" name="gl_secrets">Run secrets scan</input>
-	<input type="checkbox" id="gl_iac" name="gl_iac">Run IaC scan</input>
-	<input type="checkbox" id="gl_nocode" name="gl_nocode">No code sharing</input>
-</div>
-<div id="bitbucket_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/bitbucket-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Bitbucket user" name="bb_user" id="bb_user" pattern="[a-zA-Z0-9\-_]+">
-        <span class="help-block">Bitbucket user name</span>
-	<input type="password" placeholder="Bitbucket app password" name="bb_app_password" id="bb_app_password">
-        <span class="help-block">Bitbucket app password with correct permissions to read repositories and metadata</span>
-	<input type="url" name="bb_url" id="bb_url">
-        <span class="help-block">Bitbucket API URL for your repositories. Looks like 'https://api.bitbucket.org/2.0/repositories/<myworkspace>/' with your workspace name</span>
-	<input type="checkbox" id="bb_sast" name="bb_sast">Run SAST</input>
-	<input type="checkbox" id="bb_secrets" name="bb_secrets">Run secrets scan</input>
-	<input type="checkbox" id="bb_iac" name="bb_iac">Run IaC scan</input>
-	<input type="checkbox" id="bb_nocode" name="bb_nocode">No code sharing</input>
-</div>
-<div id="gitrepo_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-source-code-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="url" name="git_url" id="git_url">
-        <span class="help-block">HTTP URL of your git repository. Can include authentication information if it is a private repository. For e.g. https://{PAT}@dev.azure.com/{organization}/{project}/_git/{repository}</span>
-	<input type="checkbox" id="g_sast" name="g_sast">Run SAST</input>
-	<input type="checkbox" id="g_secrets" name="g_secrets">Run secrets scan</input>
-	<input type="checkbox" id="g_iac" name="g_iac">Run IaC scan</input>
-	<input type="checkbox" id="g_nocode" name="g_nocode">No code sharing</input>
-</div>
-<div id="gcp_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-gcp-cwp/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<textarea placeholder="Paste private key JSON here" name="gcp_private_key" id="gcp_private_key" rows="10" cols="40"></textarea>
-        <span class="help-block">Private key (JSON) associated with a GCP service account with required privileges</span>
-</div>
-<div id="gcp_cspm_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-gcp-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Asset name" name="gcp_cspm_asset_id" id="gcp_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
-        <span class="help-block">A unique name to track this asset in ThreatWorx</span>
-	<textarea placeholder="Paste private key JSON contents here" name="gcp_cspm_private_key" id="gcp_cspm_private_key" rows="10" cols="40"></textarea>
-        <span class="help-block">Private key (JSON) associated with a GCP service account with required privileges</span>
-</div>
-<div id="gcr_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-gcp-gcr-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="" name="gcr_repo" id="gcr_repo" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">A repository URL in GCR that you want to scan</span>
-	<textarea placeholder="Paste private key JSON here" name="gcr_private_key" id="gcr_private_key" rows="10" cols="40"></textarea>
-        <span class="help-block">Private key (JSON) associated with a GCR service account with required privileges</span>
-</div>
-<div id="aws_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-aws-cwp/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Account id" name="aws_account" id="aws_account" pattern="[0-9]{12}">
-        <span class="help-block">12 digit account id for this AWS subscription</span>
-	<input type="password" placeholder="Access key" name="aws_access_key" id="aws_access_key" pattern="[a-zA-Z0-9\/]+">
-        <span class="help-block">Access key for this AWS subscription</span>
-	<input type="password" placeholder="Secret key" name="aws_secret_key" id="aws_secret_key" ="[a-zA-Z0-9\/]+">
-        <span class="help-block">Secret key for AWS subscription</span>
-	<input type="text" placeholder="S3 bucket" name="aws_s3_bucket" id="aws_s3_bucket" ="[a-zA-Z0-9\-_]+">
-        <span class="help-block">S3 bucket name where the instance inventory is to be pulled from</span>
-	<input type="text" placeholder="Region" name="aws_region" id="aws_region" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">Region where the S3 bucket is located e.g. us-west-1</span>
-</div>
-<div id="aws_cspm_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-aws-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Asset name" name="aws_cspm_asset_id" id="aws_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
-        <span class="help-block">A unique name to track this asset in ThreatWorx</span>
-	<input type="password" placeholder="Access key" name="aws_cspm_access_key" id="aws_cspm_access_key" pattern="[a-zA-Z0-9\/]+">
-        <span class="help-block">Access key for this AWS subscription</span>
-	<input type="password" placeholder="Secret key" name="aws_cspm_secret_key" id="aws_cspm_secret_key" ="[a-zA-Z0-9\/]+">
-        <span class="help-block">Secret key for AWS subscription</span>
-</div>
-<div id="ecr_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-ecr/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Account id" name="ecr_account" id="ecr_account" pattern="[0-9]{12}">
-        <span class="help-block">12 digit AWS account id for this ECR registry</span>
-	<input type="password" placeholder="Access key" name="ecr_access_key" id="ecr_access_key" pattern="[a-zA-Z0-9\/]+">
-        <span class="help-block">Access key for this AWS subscription</span>
-	<input type="password" placeholder="Secret key" name="ecr_secret_key" id="ecr_secret_key" pattern="[a-zA-Z0-9\/]+">
-        <span class="help-block">Secret key for AWS subscription</span>
-	<input type="text" placeholder="Region" name="ecr_region" id="ecr_region" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">Region where the ECR registry is located e.g. us-west-1</span>
-</div>
-<div id="azure_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-azure-cwp/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Service principal" name="azure_sp" id="azure_sp">
-        <span class="help-block">Service principal name for this Azure subscription</span>
-	<input type="password" placeholder="Secret" name="azure_sp_secret" id="azure_sp_secret">
-        <span class="help-block">Azure service principal secret</span>
-	<input type="text" placeholder="Tenant Id" name="azure_tenant" id="azure_tenant" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">Azure tenant Id</span>
-	<input type="text" placeholder="Workspace Id" name="azure_workspace" id="azure_workspace" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">Azure workspace Id where inventory is located</span>
-</div>
-<div id="azure_cspm_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-azure-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Asset name" name="azure_cspm_asset_id" id="azure_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
-        <span class="help-block">A unique name to track this asset in ThreatWorx</span>
-	<input type="text" placeholder="Service principal" name="azure_cspm_sp" id="azure_cspm_sp">
-        <span class="help-block">Service principal name for this Azure subscription</span>
-	<input type="password" placeholder="Secret" name="azure_cspm_sp_secret" id="azure_cspm_sp_secret">
-        <span class="help-block">Azure service principal secret</span>
-	<input type="text" placeholder="Tenant Id" name="azure_cspm_tenant" id="azure_cspm_tenant" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">Azure tenant Id</span>
-</div>
-<div id="acr_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/twigs-azure-cspm/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Service principal" name="acr_sp" id="acr_sp">
-        <span class="help-block">Service principal name for this Azure subscription</span>
-	<input type="password" placeholder="Secret" name="acr_sp_secret" id="acr_sp_secret">
-        <span class="help-block">Azure service principal secret</span>
-	<input type="text" placeholder="Tenant Id" name="acr_tenant" id="acr_tenant" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">Azure tenant Id</span>
-	<input type="text" placeholder="Registry" name="acr_registry" id="acr_registry">
-        <span class="help-block">ACR registry URL</span>
-</div>
-<div id="oci_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/oci-workload-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="User id" name="oci_user" id="oci_user" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">OCI user identifier</span>
-	<input type="text" placeholder="Tenancy id" name="oci_tenancy" id="oci_tenancy" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">OCI tenancy identifier</span>
-	<input type="text" placeholder="Region" name="oci_region" id="oci_region" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">OCI region e.g. us-sanjose-1</span>
-	<textarea placeholder="Paste private key contents here" name="oci_user_private_key" id="oci_user_private_key" rows="10" cols="40" ></textarea>
-        <span class="help-block">Private key associated with the OCI user account with required privileges</span>
-</div>
-<div id="oci_cspm_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/oci-workload-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="Asset name" name="oci_cspm_asset_id" id="oci_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
-        <span class="help-block">A unique name to track this asset in ThreatWorx</span>
-	<input type="text" placeholder="User id" name="oci_cspm_user" id="oci_cspm_user" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">OCI user identifier</span>
-	<input type="text" placeholder="Tenancy id" name="oci_cspm_tenancy" id="oci_cspm_tenancy" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">OCI tenancy identifier</span>
-	<input type="text" placeholder="Region" name="oci_cspm_region" id="oci_cspm_region" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">OCI region e.g. us-sanjose-1</span>
-	<textarea placeholder="Paste private key contents here" name="oci_cspm_user_private_key" id="oci_cspm_user_private_key" rows="10" cols="40" ></textarea>
-        <span class="help-block">Private key associated with the OCI user account with required privileges</span>
-</div>
-<div id="ocr_div" style="display: none;">
-	<a target="_blank" style="float: right;" href="https://threatworx.io/docs/oci-ocr-discovery/"><i class="fa fa-info-circle" alight="right"></i></a>
-	<input type="text" placeholder="User id" name="ocr_user" id="ocr_user" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">OCI user identifier</span>
-	<input type="text" placeholder="Tenancy id" name="ocr_tenancy" id="ocr_tenancy" pattern="[a-zA-Z0-9.\/\-_]+">
-        <span class="help-block">OCI tenancy identifier</span>
-	<input type="text" placeholder="Region" name="ocr_region" id="ocr_region" pattern="[a-zA-Z0-9\-]+">
-        <span class="help-block">OCI region e.g. us-sanjose-1</span>
-	<input type="text" placeholder="Repository" name="ocr_repository" id="ocr_repository">
-        <span class="help-block">Optional OCR repository (all repositoriies in the region will be scanned if empty)</span>
-	<textarea placeholder="Paste private key contents here" name="ocr_user_private_key" id="ocr_user_private_key" rows="10" cols="40" ></textarea>
-        <span class="help-block">Private key associated with the OCI user account with required privileges</span>
-	<input type="text" placeholder="Docker login" name="ocr_docker_login" id="ocr_docker_login" >
-        <span class="help-block">Docker login username for OCR in the format '<tenancy-namespace>/<username>'. Note if your tenancy is federated with Oracle Identity Cloud Service, use the format '<tenancy-namespace>/oracleidentitycloudservice/<username>'</span>
-	<input type="text" placeholder="Docker password" name="ocr_docker_passwd" id="ocr_docker_passwd" >
-        <span class="help-block">Password / Auth Token for docker login</span>
-</div>
-</div><!--end of config divs-->
-<br>
-<hr style="border: 1px dotted #D3D3D3;">
-<br>
-<select class="custom-select" style="width:200px;" name="schedule" id="schedule">
-<option value="@hourly">Hourly</option>
-<option value="@daily">Daily</option>
-<option value="@weekly">Weekly</option>
-<option value="@monthly">Monthly</option>
-</select>
-<span class="help-block">Select a cadence for this schedule</span>
-<input type="checkbox" name="run_now" id="run_now">Run now</input>
-<span class="help-block">Run this schedule now</span>
-<br>
-<button type="submit" class="btn" name="submitbtn" id=submitbtn"> Add </button>
-</div>
-</div>
+  <!-- PAGE TITLE -->
+  <div class="page-title">
+    <h1>
+      <span class="title-icon"><i class="fa fa-radar"></i><i class="fa fa-crosshairs"></i></span>
+      Discovery App
+    </h1>
+  </div>
 
-<br>
-</form>
-</div>
-        <script>
-	function toggle_api_key() {
-            var x = document.getElementById("token");
-            var e = document.getElementById("eyecon");
-            if (x.type === "password") {
-              x.type = "text";
-              e.className = "fa fa-eye-slash"
-            } else {
-              x.type = "password";
-              e.className = "fa fa-eye"
-            }
-        } 
-        function mode_change() {
-		// Hide all config divs
-	        var config_div = document.getElementById("config_div")	
-		config_div.querySelectorAll('div').forEach(div=> {
-                    div.style.display = 'none';
-                });
+  <!-- TABS -->
+  <div class="tab-nav">
+    <button class="tab-btn" onclick="openTab(event, 'Schedules')" id="scheduleTab">
+      <i class="fa fa-clock-o"></i>&nbsp; Discovery Schedules
+    </button>
+    <button class="tab-btn" onclick="openTab(event, 'Settings')" id="settingsTab">
+      <i class="fa fa-cog"></i>&nbsp; Settings
+    </button>
+  </div>
 
-		// reset all inputs and textareas
-		config_div.querySelectorAll('input').forEach(input=> {
-                    input.value = '';
-		    input.required = false;
-                });
-		config_div.querySelectorAll('textarea').forEach(textarea=> {
-                    textarea.value = '';
-		    textarea.required = false;
-                });
+  <!-- SETTINGS TAB -->
+  <div id="Settings" class="tabcontent">
+    <form action="/save_creds?auth={{data['authenticator']}}" method="post" id="tw_auth_form">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-key"></i> ThreatWorx Instance Authentication
+        </div>
+        <div class="settings-grid">
+          <div class="form-group">
+            <label>Instance FQDN</label>
+            <input type="text" placeholder="e.g. acme.threatworx.io" name="instance" id="instance" value="{{data['threatworx']['instance']}}" required>
+            <span class="help-block">Fully qualified domain name of your ThreatWorx instance</span>
+          </div>
+          <div class="form-group">
+            <label>User / Handle</label>
+            <input type="email" placeholder="user@example.com" name="handle" id="handle" value="{{data['threatworx']['handle']}}" required>
+            <span class="help-block">Valid user or handle registered on the ThreatWorx instance</span>
+          </div>
+          <div class="form-group">
+            <label>API Key</label>
+            <input type="password" placeholder="••••••••••••••••" name="token" id="token" value="{{data['threatworx']['token']}}" required>
+            <span class="help-block">API key associated with your ThreatWorx user account</span>
+          </div>
+          <div>
+            <label class="sw-row" onclick="toggleSwRow(this)">
+              {% if data['discovery_app']['log_level'] == 'debug' %}
+              <input type="checkbox" name="debug_log" id="debug_log" value='on' checked>
+              <span class="sw-track is-on"><span class="sw-thumb"></span></span>
+              {% else %}
+              <input type="checkbox" name="debug_log" id="debug_log" value='on'>
+              <span class="sw-track"><span class="sw-thumb"></span></span>
+              {% endif %}
+              <span class="sw-row-label">Enable debug logging</span>
+            </label>
+          </div>
+        </div>
+        <br>
+        <button type="submit" class="btn-primary">
+          <i class="fa fa-save"></i> Save Settings
+        </button>
+      </div>
+    </form>
+  </div>
 
-	        document.getElementById("scan_name").value = ''; 
-	        document.getElementById("tags").value = ''; 
-	        document.getElementById("org").value = '';
-	        document.getElementById("schedule").disabled = false; 
-	        document.getElementById("schedule").selectedIndex = 0; 
-	        document.getElementById("run_now").checked = false; 
-		// enable config div based on scan type
-		var x = document.getElementById("scan_type").value;
-		if (x == "nmap") {
-	            document.getElementById("nmap_div").style.display = 'block';
-	            document.getElementById("hosts").required = true;
-		}
-		if (x == "snmp") {
-	            document.getElementById("snmp_div").style.display = 'block';
-	            document.getElementById("snmp_hosts").required = true;
-		}
-		if (x == "printer") {
-	            document.getElementById("printer_div").style.display = 'block';
-	            document.getElementById("printer_hosts").required = true;
-		}
-		if (x == "cctv") {
-	            document.getElementById("cctv_div").style.display = 'block';
-	            document.getElementById("cctv_hosts").required = true;
-		}
-		else if (x == "webapp") {
-		    document.getElementById("webapp_div").style.display = 'block';
-	            document.getElementById("url").required = true;
-		}
-		else if (x == "host") {
-	            document.getElementById("host_div").style.display = 'block';
-	            document.getElementById("host_list").required = true; 
-	            document.getElementById("user_name").required = true; 
-	            document.getElementById("user_passwd").required = true; 
-		}
-		else if (x == "win_host") {
-	            document.getElementById("win_host_div").style.display = 'block';
-	            document.getElementById("win_host_list").required = true; 
-	            document.getElementById("win_user_name").required = true; 
-	            document.getElementById("win_user_passwd").required = true; 
-		}
-		else if (x == "vmware") {
-	            document.getElementById("vmware_div").style.display = 'block';
-	            document.getElementById("vcenter_host").required = true; 
-	            document.getElementById("vcenter_user").required = true; 
-	            document.getElementById("vcenter_passwd").required = true; 
-		}
-		else if (x == "cisco_meraki") {
-	            document.getElementById("meraki_div").style.display = 'block';
-	            document.getElementById("meraki_api_key").required = true; 
-		}
-		else if (x == "cisco_dna_center") {
-	            document.getElementById("dna_center_div").style.display = 'block';
-	            document.getElementById("dna_center_url").required = true; 
-	            document.getElementById("dna_center_user").required = true; 
-	            document.getElementById("dna_center_password").required = true; 
-		}
-		else if (x == "defender") {
-	            document.getElementById("defender_div").style.display = 'block';
-	            document.getElementById("defender_tenant").required = true; 
-	            document.getElementById("defender_app_id").required = true; 
-	            document.getElementById("defender_app_key").required = true; 
-		}
-		else if (x == "servicenow") {
-	            document.getElementById("snow_div").style.display = 'block';
-	            document.getElementById("snow_instance").required = true; 
-	            document.getElementById("snow_user").required = true; 
-	            document.getElementById("snow_password").required = true; 
-		}
-		else if (x == "trustmodel") {
-	            document.getElementById("trustmodel_div").style.display = 'block';
-	            document.getElementById("tm_asset_id").required = true; 
-	            document.getElementById("tm_api_key").required = true; 
-	            document.getElementById("tm_vendor_id").required = true; 
-	            document.getElementById("tm_model_id").required = true; 
-	            document.getElementById("schedule").disabled = true; 
-	            document.getElementById("schedule").selectedIndex = -1; 
-	            document.getElementById("run_now").checked = true; 
-		}
-		else if (x == "gitlab") {
-	            document.getElementById("gitlab_div").style.display = 'block';
-	            document.getElementById("gitlab_access_token").required = true; 
-		}
-		else if (x == "github") {
-	            document.getElementById("github_div").style.display = 'block';
-	            document.getElementById("github_identity").required = true; 
-	            document.getElementById("github_access_token").required = true; 
-		}
-		else if (x == "bitbucket") {
-	            document.getElementById("bitbucket_div").style.display = 'block';
-	            document.getElementById("bb_user").required = true; 
-	            document.getElementById("bb_app_password").required = true; 
-	            document.getElementById("bb_url").required = true; 
-		}
-		else if (x == "gitrepo") {
-	            document.getElementById("gitrepo_div").style.display = 'block';
-	            document.getElementById("git_url").required = true; 
-		}
-		else if (x == "gcp") {
-	            document.getElementById("gcp_div").style.display = 'block';
-	            document.getElementById("gcp_private_key").required = true; 
-		}
-		else if (x == "gcp-cspm") {
-	            document.getElementById("gcp_cspm_div").style.display = 'block';
-	            document.getElementById("gcp_cspm_private_key").required = true; 
-	            document.getElementById("gcp_cspm_asset_id").required = true; 
-		}
-		else if (x == "gcr") {
-	            document.getElementById("gcr_div").style.display = 'block';
-	            document.getElementById("gcr_private_key").required = true; 
-	            document.getElementById("gcr_repo").required = true; 
-		}
-		else if (x == "aws") {
-	            document.getElementById("aws_div").style.display = 'block';
-	            document.getElementById("aws_account").required = true; 
-	            document.getElementById("aws_access_key").required = true; 
-	            document.getElementById("aws_secret_key").required = true; 
-	            document.getElementById("aws_s3_bucket").required = true; 
-	            document.getElementById("aws_region").required = true; 
-		}
-		else if (x == "aws-cspm") {
-	            document.getElementById("aws_cspm_div").style.display = 'block';
-	            document.getElementById("aws_cspm_access_key").required = true; 
-	            document.getElementById("aws_cspm_secret_key").required = true; 
-	            document.getElementById("aws_cspm_asset_id").required = true; 
-		}
-		else if (x == "ecr") {
-	            document.getElementById("ecr_div").style.display = 'block';
-	            document.getElementById("ecr_account").required = true; 
-	            document.getElementById("ecr_access_key").required = true; 
-	            document.getElementById("ecr_secret_key").required = true; 
-	            document.getElementById("ecr_region").required = true; 
-		}
-		else if (x == "azure") {
-	            document.getElementById("azure_div").style.display = 'block';
-	            document.getElementById("azure_sp").required = true; 
-	            document.getElementById("azure_sp_secret").required = true; 
-	            document.getElementById("azure_tenant").required = true; 
-	            document.getElementById("azure_workspace").required = true; 
-		}
-		else if (x == "azure-cspm") {
-	            document.getElementById("azure_cspm_div").style.display = 'block';
-	            document.getElementById("azure_cspm_asset_id").required = true; 
-	            document.getElementById("azure_cspm_sp").required = true; 
-	            document.getElementById("azure_cspm_sp_secret").required = true; 
-	            document.getElementById("azure_cspm_tenant").required = true; 
-		}
-		else if (x == "acr") {
-	            document.getElementById("acr_div").style.display = 'block';
-	            document.getElementById("acr_registry").required = true; 
-	            document.getElementById("acr_sp").required = true; 
-	            document.getElementById("acr_sp_secret").required = true; 
-	            document.getElementById("acr_tenant").required = true; 
-		}
-		else if (x == "oci") {
-	            document.getElementById("oci_div").style.display = 'block';
-	            document.getElementById("oci_user").required = true; 
-	            document.getElementById("oci_tenancy").required = true; 
-	            document.getElementById("oci_region").required = true; 
-	            document.getElementById("oci_user_private_key").required = true; 
-		}
-		else if (x == "oci-cspm") {
-	            document.getElementById("oci_cspm_div").style.display = 'block';
-	            document.getElementById("oci_cspm_asset_id").required = true; 
-	            document.getElementById("oci_cspm_user").required = true; 
-	            document.getElementById("oci_cspm_tenancy").required = true; 
-	            document.getElementById("oci_cspm_region").required = true; 
-	            document.getElementById("oci_cspm_user_private_key").required = true; 
-		}
-		else if (x == "ocr") {
-	            document.getElementById("ocr_div").style.display = 'block';
-	            document.getElementById("ocr_user").required = true; 
-	            document.getElementById("ocr_tenancy").required = true; 
-	            document.getElementById("ocr_region").required = true; 
-	            document.getElementById("ocr_user_private_key").required = true; 
-	            document.getElementById("ocr_docker_login").required = true; 
-	            document.getElementById("ocr_docker_passwd").required = true; 
-		}
-	}
+  <!-- SCHEDULES TAB -->
+  <div id="Schedules" class="tabcontent">
 
-        function suAuthChange(myCheck) {
-		if (myCheck.checked) {
-			document.getElementById('user_private_key').style.display = 'none';
-			document.getElementById('user_private_key').required = false;
-			document.getElementById('user_passwd').style.display = 'block';
-			document.getElementById('user_passwd').required = true;
-		} else {
-			document.getElementById('user_passwd').style.display = 'none';
-			document.getElementById('user_passwd').required = false;
-			document.getElementById('user_private_key').style.display = 'block';
-			document.getElementById('user_private_key').required = true;
-		}
+    <!-- Active Schedules Table -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><i class="fa fa-list-ul"></i> Active Schedules</span>
+      </div>
+
+      <table class="schedule-table" id="schedule_table" name="schedule_table">
+        <thead>
+          <tr>
+            <th class="col-status"></th>
+            <th class="col-name">Name</th>
+            <th class="col-type">Type</th>
+            <th class="col-pill"></th>
+            <th class="col-sched">Schedule</th>
+            <th class="col-spacer"></th>
+            <th class="col-actions">Actions</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set has_schedules = [] %}
+          {% for item in data %}
+          {% if item != 'threatworx' and item != 'discovery_app' and item != 'authenticator' %}
+          {% set _ = has_schedules.append(1) %}
+          <tr class="plugin-row" id="loading-dots-{{item}}">
+            <td>
+              <div class="run-indicator" title="Discovery running"></div>
+            </td>
+            <td><span class="schedule-name">{{item}}</span></td>
+            <td><div style="display:flex; align-items:center; gap:8px;"><span class="schedule-type">{{data[item]['type']}}</span>
+            <td><span class="run-pill">RUNNING</span></div></td></td>
+            <td><span class="schedule-freq">{{data[item]['schedule']}}</span></td>
+            <td></td>
+            <td>
+              <div class="schedule-actions">
+                <a class="action-btn run" title="Run now" href="/run_scan?scan_name={{item}}&scan_type={{data[item]['type']}}&auth={{data['authenticator']}}"><i class="fa fa-play"></i></a>
+                <a class="action-btn stop" title="Stop run" href="/stop_scan?run_id={{item}}&auth={{data['authenticator']}}"><i class="fa fa-stop"></i></a>
+                <a class="action-btn view" title="View last log" href="/view_log?scan_name={{item}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-file-text-o"></i></a>
+                <a class="action-btn delete" title="Delete schedule" onclick="delete_scan('{{item}}','{{data['authenticator']}}')"><i class="fa fa-trash-o"></i></a>
+              </div>
+            </td>
+            <td style="display:none">{{data[item]}}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+          {% if not has_schedules %}
+          <tr style="cursor:default">
+            <td colspan="7">
+              <div class="empty-state">
+                <i class="fa fa-inbox"></i>
+                <p>No discovery schedules configured yet.<br>Add one below to get started.</p>
+              </div>
+            </td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Add Schedule Form -->
+    <form action="/save_scan?auth={{data['authenticator']}}" method="post" id="main_form">
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-plus-circle"></i> Add Discovery Schedule
+        </div>
+
+        <!-- Discovery Type -->
+        <div class="form-group">
+          <label>Discovery Type</label>
+          <div class="select-wrapper" style="max-width: 340px;">
+            <select name="scan_type" id="scan_type" onchange="mode_change()">
+              <option selected value> — select a type — </option>
+              <option disabled>──── AI-SPM  ────</option>
+              <option value="trustmodel">AI Model Evaluation (Powered by TrustModel)</option>
+              <option disabled>──── Network ────</option>
+              <option value="nmap">Fingerprint scan (uncredentialed)</option>
+              <option value="snmp">SNMP scan (network devices)</option>
+              <option value="host">Linux deep discovery via SSH</option>
+              <option value="win_host">Windows deep discovery via WinRM</option>
+              <option value="vmware">VMware</option>
+              <option value="defender">MS Defender / Office 365</option>
+              <option disabled>──── IoT / OT ────</option>
+              <option value="cisco_meraki">Cisco Meraki</option>
+              <option value="cisco_dna_center">Cisco Catalyst Center (DNA Center)</option>
+              <option value="printer">Printers</option>
+              <option value="cctv">CCTV Cameras</option>
+              <option disabled>──── Source Code ────</option>
+              <option value="github">Github</option>
+              <option value="gitlab">Gitlab</option>
+              <option value="bitbucket">Bitbucket</option>
+              <option value="gitrepo">Generic Git Repository</option>
+              <option disabled>──── GCP ────</option>
+              <option value="gcp">GCP CWP (agentless)</option>
+              <option value="gcp-cspm">GCP CSPM</option>
+              <option value="gcr">GCR</option>
+              <option disabled>──── AWS ────</option>
+              <option value="aws">AWS CWP (agentless)</option>
+              <option value="aws-cspm">AWS CSPM</option>
+              <option value="ecr">AWS ECR</option>
+              <option disabled>──── Azure ────</option>
+              <option value="azure">Azure CWP (agentless)</option>
+              <option value="azure-cspm">Azure CSPM</option>
+              <option value="acr">Azure ACR</option>
+              <option disabled>──── OCI ────</option>
+              <option value="oci">OCI CWP (agentless)</option>
+              <option value="oci-cspm">OCI CSPM</option>
+              <option value="ocr">OCI OCR</option>
+              <option disabled>──── Web ────</option>
+              <option value="webapp">Web application (DAST)</option>
+              <option disabled>──── CMDB ────</option>
+              <option value="servicenow">Servicenow CMDB</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Common Fields -->
+        <div class="form-group">
+          <label>Schedule Name</label>
+          <input type="text" placeholder="e.g. prod-linux-scan" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
+          <span class="help-block">Unique identifier for this schedule — up to 16 alphanumeric characters</span>
+        </div>
+
+        <div class="form-group">
+          <label>Asset Tags <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+          <input type="text" placeholder="e.g. production,linux,web" name="tags" id="tags" pattern="[a-zA-Z0-9_\-,]*" value="">
+          <span class="help-block">Comma-separated tags attached to discovered assets. Alphanumeric, '_' and '-' allowed</span>
+        </div>
+
+        <div class="form-group">
+          <label>Organization <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+          <input type="text" placeholder="e.g. acme-corp" name="org" id="org" pattern="[a-zA-Z0-9_\-]*" value="">
+          <span class="help-block">Organization or vendor name already configured in ThreatWorx console</span>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Config Divs -->
+        <div id="config_div">
+
+          <div id="nmap_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Hosts / Ranges / CIDRs</label>
+              <input type="text" placeholder="192.168.1.0/24, 10.0.0.1-10.0.0.50" name="hosts" id="hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
+              <span class="help-block">Comma-separated IP addresses, ranges, or CIDRs to discover</span>
+            </div>
+            <div class="form-group">
+              <label>Service Classes</label>
+              <div class="checkbox-grid">
+                <label class="checkbox-tag is-on" onclick="toggleTag(this)"><input type="checkbox" name="stype_web" value='web' checked><span class="sw-track is-on"><span class="sw-thumb"></span></span>Web Services</label>
+                <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" name="stype_database" value='database'><span class="sw-track"><span class="sw-thumb"></span></span>Databases</label>
+                <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" name="stype_vmware" value='vmware'><span class="sw-track"><span class="sw-thumb"></span></span>VMware Clusters</label>
+                <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" name="stype_os" value='os'><span class="sw-track"><span class="sw-thumb"></span></span>OS Services</label>
+                <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" name="stype_printers" value='printers'><span class="sw-track"><span class="sw-thumb"></span></span>Printers</label>
+              </div>
+              <span class="help-block">Select one or more service classes to discover</span>
+            </div>
+            <div class="form-group">
+              <label>Extra Ports <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+              <input type="text" placeholder="e.g. 444,9000-9100" name="extra_ports" id="extra_ports" pattern="[0-9\-,]+">
+              <span class="help-block">Comma-separated extra ports and port ranges to include in scan</span>
+            </div>
+          </div>
+
+          <div id="snmp_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Hosts / Ranges / CIDRs</label>
+              <input type="text" placeholder="192.168.1.0/24" name="snmp_hosts" id="snmp_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
+              <span class="help-block">Comma-separated IP addresses, ranges, or CIDRs for SNMP discovery</span>
+            </div>
+            <div class="form-group">
+              <label>Community String</label>
+              <input type="text" placeholder="public" name="community_str" id="community_str" value="public" pattern="[a-zA-Z0-9.\/\-_]+">
+              <span class="help-block">SNMP community string (defaults to 'public')</span>
+            </div>
+            <div class="form-group">
+              <label>SNMP v3 Security Name <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+              <input type="text" placeholder="security-name" name="security_name" id="security_name" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+          </div>
+
+          <div id="printer_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Printer IPs / Ranges / CIDRs</label>
+              <input type="text" placeholder="192.168.1.0/24" name="printer_hosts" id="printer_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
+              <span class="help-block">Comma-separated network printer IP addresses, ranges, or CIDRs</span>
+            </div>
+          </div>
+
+          <div id="cctv_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>CCTV / Camera IPs / Ranges / CIDRs</label>
+              <input type="text" placeholder="192.168.2.0/24" name="cctv_hosts" id="cctv_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
+              <span class="help-block">Comma-separated CCTV / camera device IP addresses, ranges, or CIDRs</span>
+            </div>
+          </div>
+
+          <div id="host_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Host / IP / Range / CIDR</label>
+              <input type="text" placeholder="10.0.0.1 or 10.0.0.0/24" name="host_list" id="host_list" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>SSH Username</label>
+              <input type="text" placeholder="ubuntu" name="user_name" id="user_name" pattern="[a-zA-Z0-9\/\-_]+">
+            </div>
+            <label class="sw-row" style="margin-bottom: 10px;" onclick="toggleSwRow(this); suAuthChange(this.querySelector('input'));">
+              <input type="checkbox" id="su_auth" name="su_auth" checked="checked">
+              <span class="sw-track is-on"><span class="sw-thumb"></span></span>
+              <span class="sw-row-label">Use SSH password authentication</span>
+            </label>
+            <input type="password" placeholder="SSH password" name="user_passwd" id="user_passwd">
+            <textarea placeholder="Paste private key contents here" name="user_private_key" id="user_private_key" rows="5" style="display: none"></textarea>
+          </div>
+
+          <div id="win_host_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Host / IP / Range / CIDR</label>
+              <input type="text" placeholder="192.168.1.10" name="win_host_list" id="win_host_list" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" placeholder="DOMAIN\username" name="win_user_name" id="win_user_name" pattern="[a-zA-Z0-9\/\\\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" placeholder="••••••••" name="win_user_passwd" id="win_user_passwd">
+              <span class="help-block">DOMAIN is optional in the username field</span>
+            </div>
+          </div>
+
+          <div id="meraki_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/cisco-meraki-device-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Meraki API Base URL</label>
+              <input type="url" placeholder="https://api.meraki.com/api/v1" name="meraki_base_url" id="meraki_base_url" value="https://api.meraki.com/api/v1">
+            </div>
+            <div class="form-group">
+              <label>API Key</label>
+              <input type="password" placeholder="••••••••" name="meraki_api_key" id="meraki_api_key">
+            </div>
+          </div>
+
+          <div id="dna_center_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/cisco-catalyst-center-device-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Cisco Catalyst Center URL</label>
+              <input type="url" name="dna_center_url" id="dna_center_url">
+            </div>
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" name="dna_center_user" id="dna_center_user" pattern="[a-zA-Z0-9\/\\\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" name="dna_center_password" id="dna_center_password">
+            </div>
+          </div>
+
+          <div id="webapp_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-web-application-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <label class="sw-row" style="margin-bottom: 12px;" onclick="toggleSwRow(this); webappOptChange(this.querySelector('input'));">
+              <input type="checkbox" id="webapp_opt" name="webapp_opt">
+              <span class="sw-track"><span class="sw-thumb"></span></span>
+              <span class="sw-row-label">Use ZAP plan</span>
+            </label>
+            <div class="form-group">
+              <input type="url" placeholder="https://example.com" name="url" id="url" value="">
+              <textarea placeholder="Paste ZAP plan YAML here" name="zap_plan_yaml" id="zap_plan_yaml" rows="5" style="display: none"></textarea>
+            </div>
+          </div>
+
+          <div id="vmware_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-vmware-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>vCenter Host</label>
+              <input type="text" placeholder="vcenter.example.com" name="vcenter_host" id="vcenter_host" pattern="[a-zA-Z0-9.\-_]+">
+            </div>
+            <div class="form-group">
+              <label>vCenter User</label>
+              <input type="text" placeholder="administrator@vsphere.local" name="vcenter_user" id="vcenter_user" pattern="[a-zA-Z0-9\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>vCenter Password</label>
+              <input type="password" placeholder="••••••••" name="vcenter_passwd" id="vcenter_passwd">
+            </div>
+          </div>
+
+          <div id="defender_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-o365-defender/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <span class="help-block" style="margin-bottom: 16px;">Discover assets from Microsoft Defender / Office 365 subscription</span>
+            <div class="form-group">
+              <label>Tenant ID</label>
+              <input type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="defender_tenant" id="defender_tenant" pattern="[a-zA-Z0-9\-]+">
+            </div>
+            <div class="form-group">
+              <label>Application ID</label>
+              <input type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="defender_app_id" id="defender_app_id" pattern="[a-zA-Z0-9\-]+">
+            </div>
+            <div class="form-group">
+              <label>Application Secret Key</label>
+              <input type="password" placeholder="••••••••" name="defender_app_key" id="defender_app_key">
+            </div>
+            <label class="sw-row" onclick="toggleSwRow(this)">
+              <input type="checkbox" name="defender_all_devices" id="defender_all_devices">
+              <span class="sw-track"><span class="sw-thumb"></span></span>
+              <span class="sw-row-label">Discover all active devices</span>
+            </label>
+          </div>
+
+          <div id="trustmodel_div">
+            <div style="margin-bottom: 16px;">
+	      <label>Powered By </label>
+              <a class="tm-logo-link" target="_blank" href="https://trustmodel.ai/">
+                <img style="filter: invert(100%);" src="static/trustmodel-logo.png" height=28 width=110 alt="TrustModel">
+              </a>
+            </div>
+            <div class="form-group">
+              <label>Asset Name</label>
+              <input type="text" placeholder="my-gpt4-eval" name="tm_asset_id" id="tm_asset_id" pattern="[a-zA-Z0-9\-_]+">
+              <span class="help-block">A friendly name to track this asset in ThreatWorx</span>
+            </div>
+            <div class="form-group">
+              <label>TrustModel API Key</label>
+              <input type="password" placeholder="••••••••" name="tm_api_key" id="tm_api_key">
+            </div>
+            <div class="form-group">
+              <label>Model Vendor / Platform</label>
+              <div class="select-wrapper" style="max-width: 340px;">
+                <select name="tm_vendor_id" id="tm_vendor_id" onchange="tm_vendor_select()">
+                  <option disabled>─────── Custom ───────</option>
+                  <option id="custom1" selected value="AWS Bedrock">AWS Bedrock</option>
+                  <option id="custom2" value="Azure AI">Azure AI</option>
+                  <option id="custom3" value="Google Vertex AI">Google Vertex AI</option>
+                  <option id="custom4" value="Huggingface">Huggingface</option>
+                  <option id="custom5" value="Ollama">Ollama</option>
+                  <option id="custom6" value="Others">Other</option>
+                  <option disabled>─────── Public ───────</option>
+                  <option id="public1" value="anthropic">Anthropic</option>
+                  <option id="public2" value="cohere">Cohere</option>
+                  <option id="public3" value="deepseek">DeepSeek</option>
+                  <option id="public4" value="google_genai">Google Gemini</option>
+                  <option id="public5" value="llama">Meta Llama</option>
+                  <option id="public6" value="mistralai">MistralAI</option>
+                  <option id="public7" value="moonshot">Moonshot AI</option>
+                  <option id="public8" value="nvidia">NVIDIA</option>
+                  <option id="public9" value="openai">Open AI</option>
+                  <option id="public10" value="perplexity">Perplexity</option>
+                  <option id="public11" value="qwen">Qwen</option>
+                  <option id="public12" value="xai">X AI</option>
+                  <option id="public13" value="zai">z.ai</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Model ID</label>
+              <input type="text" placeholder="model-name" name="tm_model_id" id="tm_model_id">
+              <div class="select-wrapper" style="max-width: 340px; display: none;" id="tm_model_id_select_wrapper">
+                <select name="tm_model_id_select" id="tm_model_id_select">
+                  <option style="display:none" id="anthropic1" value="claude-haiku-4-5">Claude Haiku 4.5</option>
+                  <option style="display:none" id="anthropic2" value="claude-opus-4-6">Claude Opus 4.6</option>
+                  <option style="display:none" id="anthropic3" value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+                  <option style="display:none" id="cohere1" value="command-a-03-2025">Command A</option>
+                  <option style="display:none" id="cohere2" value="command-r-08-2024">Command R</option>
+                  <option style="display:none" id="cohere3" value="command-r7b-12-2024">Command R7B</option>
+                  <option style="display:none" id="deepseek1" value="deepseek-chat">Deepseek 3.2</option>
+                  <option style="display:none" id="deepseek2" value="deepseek-reasoner">Deepseek R1</option>
+                  <option style="display:none" id="google_genai1" value="gemini-3.1-flash-lite-preview">Gemini 3.1 Flash Lite</option>
+                  <option style="display:none" id="google_genai2" value="gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
+                  <option style="display:none" id="google_genai3" value="gemini-3-flash-preview">Gemini 3 Flash</option>
+                  <option style="display:none" id="llama1" value="Llama-4-Maverick-17B-128E-Instruct-FP8">Llama 4 Maverick</option>
+                  <option style="display:none" id="llama2" value="Llama-4-Scout-17B-16E-Instruct-FP8">Llama 4 Scout</option>
+                  <option style="display:none" id="mistralai1" value="ministral-8b-2512">Ministral 8B</option>
+                  <option style="display:none" id="mistralai2" value="ministral-14b-2512">Ministral 14B</option>
+                  <option style="display:none" id="mistralai3" value="mistral-large-2512">Ministral Large</option>
+                  <option style="display:none" id="moonshot1" value="kimi-k2.5">Kimi K2.5</option>
+                  <option style="display:none" id="moonshot2" value="kimi-k2-thinking">Kimi K2 Thinking</option>
+                  <option style="display:none" id="nvidia1" value="nemotron-3-nano-30b-a3b">Nemotron 3 Nano 30B</option>
+                  <option style="display:none" id="nvidia2" value="nemotron-nano-9b-v2">Nemotron 3 Nano 9B</option>
+                  <option style="display:none" id="nvidia3" value="llama-3.3-nemotron-super-49b-v1.5">Nemotron 3 Super 49B</option>
+                  <option style="display:none" id="openai1" value="gpt-5.4">GPT 5.4</option>
+                  <option style="display:none" id="perplexity1" value="sonar">Sonar</option>
+                  <option style="display:none" id="perplexity2" value="sonar-pro">Sonar Pro</option>
+                  <option style="display:none" id="perplexity3" value="sonar-reasoning-pro">Sonar Reasoning Pro</option>
+                  <option style="display:none" id="qwen1" value="dashscope/qwen3.5-flash">Qwen 3.5 Flash</option>
+                  <option style="display:none" id="qwen2" value="dashscope/qwen3.5-plus">Qwen 3.5 Plus</option>
+                  <option style="display:none" id="qwen3" value="dashscope/qwen-max">Qwen Max</option>
+                  <option style="display:none" id="xai1" value="grok-4.1-fast">Grok 4.1 Fast</option>
+                  <option style="display:none" id="xai2" value="grok-4.20-beta-0309-reasoning">Grok 4.2 (Beta)</option>
+                  <option style="display:none" id="zai1" value="glm-5">GLM 5</option>
+                </select>
+              </div>
+              <span class="help-block">Model ID / name to evaluate</span>
+            </div>
+            <div class="form-group">
+              <label>Vendor API Key <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(BYOK)</span></label>
+              <input type="password" placeholder="••••••••" name="tm_vendor_api_key" id="tm_vendor_api_key">
+            </div>
+            <div class="form-group">
+              <input type="url" placeholder="Custom OpenAI-compatible endpoint URL" name="tm_vendor_api_endpoint" id="tm_vendor_api_endpoint">
+              <span class="help-block">Vendor API endpoint (custom OpenAI-compatible URL)</span>
+            </div>
+          </div>
+
+          <div id="snow_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/servicenow-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <span class="help-block" style="margin-bottom: 16px;">Discover assets from ServiceNow CMDB</span>
+            <div class="form-group">
+              <label>ServiceNow Instance</label>
+              <input type="text" placeholder="myinstance.service-now.com" name="snow_instance" id="snow_instance" pattern="[a-zA-Z0-9.\-_]+">
+            </div>
+            <label class="sw-row" style="margin-bottom: 12px;" onclick="toggleSwRow(this); snowAuthChange(this.querySelector('input'));">
+              <input type="checkbox" id="snow_auth" name="snow_auth">
+              <span class="sw-track"><span class="sw-thumb"></span></span>
+              <span class="sw-row-label">Use OAuth</span>
+            </label>
+            <div class="form-group">
+              <input type="text" placeholder="Username" name="snow_user" id="snow_user" pattern="[a-zA-Z0-9.\/\-_]+">
+              <input type="text" placeholder="Client ID" name="snow_client_id" id="snow_client_id" pattern="[a-zA-Z0-9]+" style="display:none">
+              <span class="help-block">Username or Client ID</span>
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="Password" name="snow_password" id="snow_password">
+              <input type="password" placeholder="Client Secret" name="snow_client_secret" id="snow_client_secret" style="display:none">
+              <span class="help-block">Password or Client Secret</span>
+            </div>
+          </div>
+
+          <div id="github_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/enterprise-github-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Github Identity</label>
+              <input type="text" placeholder="org-name or username" name="github_identity" id="github_identity" pattern="[a-zA-Z0-9\-_]+">
+              <span class="help-block">Github organization or user name</span>
+            </div>
+            <div class="form-group">
+              <label>Access Token</label>
+              <input type="password" placeholder="ghp_••••••••" name="github_access_token" id="github_access_token">
+              <span class="help-block">Token with permissions to read repositories and metadata</span>
+            </div>
+            <div class="form-group">
+              <label>API URL <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional, for self-hosted)</span></label>
+              <input type="url" placeholder="https://api.github.com" name="github_url" id="github_url" value='https://api.github.com'>
+            </div>
+            <div class="checkbox-grid" style="margin-bottom: 8px;">
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gh_sast" name="gh_sast"><span class="sw-track"><span class="sw-thumb"></span></span>Run SAST</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gh_secrets" name="gh_secrets"><span class="sw-track"><span class="sw-thumb"></span></span>Secrets Scan</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gh_iac" name="gh_iac"><span class="sw-track"><span class="sw-thumb"></span></span>IaC Scan</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gh_nocode" name="gh_nocode"><span class="sw-track"><span class="sw-thumb"></span></span>No Code Sharing</label>
+            </div>
+          </div>
+
+          <div id="gitlab_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/enterprise-gitlab-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Access Token</label>
+              <input type="password" placeholder="glpat-••••••••" name="gitlab_access_token" id="gitlab_access_token">
+              <span class="help-block">Token with permissions to read repositories and metadata</span>
+            </div>
+            <div class="form-group">
+              <label>Gitlab Server <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional, for self-hosted)</span></label>
+              <input type="text" placeholder="gitlab.com" name="gitlab_server" id="gitlab_server" pattern="[a-zA-Z0-9.\/\-_]+" value='gitlab.com'>
+            </div>
+            <div class="checkbox-grid" style="margin-bottom: 8px;">
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gl_sast" name="gl_sast"><span class="sw-track"><span class="sw-thumb"></span></span>Run SAST</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gl_secrets" name="gl_secrets"><span class="sw-track"><span class="sw-thumb"></span></span>Secrets Scan</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gl_iac" name="gl_iac"><span class="sw-track"><span class="sw-thumb"></span></span>IaC Scan</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gl_nocode" name="gl_nocode"><span class="sw-track"><span class="sw-thumb"></span></span>No Code Sharing</label>
+            </div>
+          </div>
+
+          <div id="bitbucket_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/bitbucket-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Bitbucket User</label>
+              <input type="text" placeholder="username" name="bb_user" id="bb_user" pattern="[a-zA-Z0-9\-_]+">
+            </div>
+            <div class="form-group">
+              <label>App Password</label>
+              <input type="password" placeholder="••••••••" name="bb_app_password" id="bb_app_password">
+              <span class="help-block">App password with permissions to read repositories and metadata</span>
+            </div>
+            <div class="form-group">
+              <label>Bitbucket API URL</label>
+              <input type="url" placeholder="https://api.bitbucket.org/2.0/repositories/myworkspace/" name="bb_url" id="bb_url">
+            </div>
+            <div class="checkbox-grid">
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="bb_sast" name="bb_sast"><span class="sw-track"><span class="sw-thumb"></span></span>Run SAST</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="bb_secrets" name="bb_secrets"><span class="sw-track"><span class="sw-thumb"></span></span>Secrets Scan</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="bb_iac" name="bb_iac"><span class="sw-track"><span class="sw-thumb"></span></span>IaC Scan</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="bb_nocode" name="bb_nocode"><span class="sw-track"><span class="sw-thumb"></span></span>No Code Sharing</label>
+            </div>
+          </div>
+
+          <div id="gitrepo_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-source-code-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Git Repository URL</label>
+              <input type="url" placeholder="https://{PAT}@dev.azure.com/{org}/{project}/_git/{repo}" name="git_url" id="git_url">
+              <span class="help-block">HTTP URL — can include authentication for private repositories</span>
+            </div>
+            <div class="checkbox-grid">
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="g_sast" name="g_sast"><span class="sw-track"><span class="sw-thumb"></span></span>Run SAST</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="g_secrets" name="g_secrets"><span class="sw-track"><span class="sw-thumb"></span></span>Secrets Scan</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="g_iac" name="g_iac"><span class="sw-track"><span class="sw-thumb"></span></span>IaC Scan</label>
+              <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="g_nocode" name="g_nocode"><span class="sw-track"><span class="sw-thumb"></span></span>No Code Sharing</label>
+            </div>
+          </div>
+
+          <div id="gcp_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-gcp-cwp/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>GCP Service Account Private Key (JSON)</label>
+              <textarea placeholder='{"type": "service_account", "project_id": "...", ...}' name="gcp_private_key" id="gcp_private_key" rows="8"></textarea>
+              <span class="help-block">Paste the JSON private key for a GCP service account with required privileges</span>
+            </div>
+          </div>
+
+          <div id="gcp_cspm_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-gcp-cspm/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Asset Name</label>
+              <input type="text" placeholder="gcp-prod" name="gcp_cspm_asset_id" id="gcp_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
+            </div>
+            <div class="form-group">
+              <label>GCP Service Account Private Key (JSON)</label>
+              <textarea placeholder='{"type": "service_account", ...}' name="gcp_cspm_private_key" id="gcp_cspm_private_key" rows="8"></textarea>
+            </div>
+          </div>
+
+          <div id="gcr_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-gcp-gcr-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>GCR Repository URL</label>
+              <input type="text" placeholder="gcr.io/my-project/my-repo" name="gcr_repo" id="gcr_repo" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Service Account Private Key (JSON)</label>
+              <textarea placeholder='{"type": "service_account", ...}' name="gcr_private_key" id="gcr_private_key" rows="8"></textarea>
+            </div>
+          </div>
+
+          <div id="aws_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-aws-cwp/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Account ID</label>
+              <input type="text" placeholder="123456789012" name="aws_account" id="aws_account" pattern="[0-9]{12}">
+              <span class="help-block">12-digit AWS account ID</span>
+            </div>
+            <div class="form-group">
+              <label>Access Key</label>
+              <input type="password" placeholder="AKIA••••••••" name="aws_access_key" id="aws_access_key" pattern="[a-zA-Z0-9\/]+">
+            </div>
+            <div class="form-group">
+              <label>Secret Key</label>
+              <input type="password" placeholder="••••••••" name="aws_secret_key" id="aws_secret_key">
+            </div>
+            <div class="form-group">
+              <label>S3 Bucket</label>
+              <input type="text" placeholder="my-inventory-bucket" name="aws_s3_bucket" id="aws_s3_bucket">
+            </div>
+            <div class="form-group">
+              <label>Region</label>
+              <input type="text" placeholder="us-west-1" name="aws_region" id="aws_region" pattern="[a-zA-Z0-9\-]+">
+            </div>
+          </div>
+
+          <div id="aws_cspm_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-aws-cspm/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Asset Name</label>
+              <input type="text" placeholder="aws-prod" name="aws_cspm_asset_id" id="aws_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Access Key</label>
+              <input type="password" placeholder="AKIA••••••••" name="aws_cspm_access_key" id="aws_cspm_access_key">
+            </div>
+            <div class="form-group">
+              <label>Secret Key</label>
+              <input type="password" placeholder="••••••••" name="aws_cspm_secret_key" id="aws_cspm_secret_key">
+            </div>
+          </div>
+
+          <div id="ecr_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-ecr/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>AWS Account ID</label>
+              <input type="text" placeholder="123456789012" name="ecr_account" id="ecr_account" pattern="[0-9]{12}">
+            </div>
+            <div class="form-group">
+              <label>Access Key</label>
+              <input type="password" placeholder="AKIA••••••••" name="ecr_access_key" id="ecr_access_key">
+            </div>
+            <div class="form-group">
+              <label>Secret Key</label>
+              <input type="password" placeholder="••••••••" name="ecr_secret_key" id="ecr_secret_key">
+            </div>
+            <div class="form-group">
+              <label>Region</label>
+              <input type="text" placeholder="us-west-1" name="ecr_region" id="ecr_region" pattern="[a-zA-Z0-9\-]+">
+            </div>
+          </div>
+
+          <div id="azure_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-azure-cwp/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Service Principal</label>
+              <input type="text" placeholder="my-service-principal" name="azure_sp" id="azure_sp">
+            </div>
+            <div class="form-group">
+              <label>Secret</label>
+              <input type="password" placeholder="••••••••" name="azure_sp_secret" id="azure_sp_secret">
+            </div>
+            <div class="form-group">
+              <label>Tenant ID</label>
+              <input type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="azure_tenant" id="azure_tenant" pattern="[a-zA-Z0-9\-]+">
+            </div>
+            <div class="form-group">
+              <label>Workspace ID</label>
+              <input type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="azure_workspace" id="azure_workspace" pattern="[a-zA-Z0-9\-]+">
+            </div>
+          </div>
+
+          <div id="azure_cspm_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-azure-cspm/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Asset Name</label>
+              <input type="text" placeholder="azure-prod" name="azure_cspm_asset_id" id="azure_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Service Principal</label>
+              <input type="text" name="azure_cspm_sp" id="azure_cspm_sp">
+            </div>
+            <div class="form-group">
+              <label>Secret</label>
+              <input type="password" placeholder="••••••••" name="azure_cspm_sp_secret" id="azure_cspm_sp_secret">
+            </div>
+            <div class="form-group">
+              <label>Tenant ID</label>
+              <input type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="azure_cspm_tenant" id="azure_cspm_tenant" pattern="[a-zA-Z0-9\-]+">
+            </div>
+          </div>
+
+          <div id="acr_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-azure-cspm/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Service Principal</label>
+              <input type="text" name="acr_sp" id="acr_sp">
+            </div>
+            <div class="form-group">
+              <label>Secret</label>
+              <input type="password" placeholder="••••••••" name="acr_sp_secret" id="acr_sp_secret">
+            </div>
+            <div class="form-group">
+              <label>Tenant ID</label>
+              <input type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="acr_tenant" id="acr_tenant" pattern="[a-zA-Z0-9\-]+">
+            </div>
+            <div class="form-group">
+              <label>Registry URL</label>
+              <input type="text" placeholder="myregistry.azurecr.io" name="acr_registry" id="acr_registry">
+            </div>
+          </div>
+
+          <div id="oci_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/oci-workload-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>User ID</label>
+              <input type="text" placeholder="ocid1.user.oc1..." name="oci_user" id="oci_user" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Tenancy ID</label>
+              <input type="text" placeholder="ocid1.tenancy.oc1..." name="oci_tenancy" id="oci_tenancy" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Region</label>
+              <input type="text" placeholder="us-sanjose-1" name="oci_region" id="oci_region" pattern="[a-zA-Z0-9\-]+">
+            </div>
+            <div class="form-group">
+              <label>Private Key</label>
+              <textarea placeholder="Paste private key contents here" name="oci_user_private_key" id="oci_user_private_key" rows="8"></textarea>
+            </div>
+          </div>
+
+          <div id="oci_cspm_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/oci-workload-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>Asset Name</label>
+              <input type="text" placeholder="oci-prod" name="oci_cspm_asset_id" id="oci_cspm_asset_id" pattern="[a-zA-Z0-9\-_]+">
+            </div>
+            <div class="form-group">
+              <label>User ID</label>
+              <input type="text" placeholder="ocid1.user.oc1..." name="oci_cspm_user" id="oci_cspm_user" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Tenancy ID</label>
+              <input type="text" placeholder="ocid1.tenancy.oc1..." name="oci_cspm_tenancy" id="oci_cspm_tenancy" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Region</label>
+              <input type="text" placeholder="us-sanjose-1" name="oci_cspm_region" id="oci_cspm_region" pattern="[a-zA-Z0-9\-]+">
+            </div>
+            <div class="form-group">
+              <label>Private Key</label>
+              <textarea placeholder="Paste private key contents here" name="oci_cspm_user_private_key" id="oci_cspm_user_private_key" rows="8"></textarea>
+            </div>
+          </div>
+
+          <div id="ocr_div">
+            <a class="info-link" target="_blank" href="https://threatworx.io/docs/oci-ocr-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
+            <div class="form-group">
+              <label>User ID</label>
+              <input type="text" placeholder="ocid1.user.oc1..." name="ocr_user" id="ocr_user" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Tenancy ID</label>
+              <input type="text" placeholder="ocid1.tenancy.oc1..." name="ocr_tenancy" id="ocr_tenancy" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>Region</label>
+              <input type="text" placeholder="us-sanjose-1" name="ocr_region" id="ocr_region" pattern="[a-zA-Z0-9\-]+">
+            </div>
+            <div class="form-group">
+              <label>Repository <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional — all repos scanned if empty)</span></label>
+              <input type="text" placeholder="my-repo" name="ocr_repository" id="ocr_repository">
+            </div>
+            <div class="form-group">
+              <label>Private Key</label>
+              <textarea placeholder="Paste private key contents here" name="ocr_user_private_key" id="ocr_user_private_key" rows="8"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Docker Login</label>
+              <input type="text" placeholder="tenancy-namespace/username" name="ocr_docker_login" id="ocr_docker_login">
+              <span class="help-block">Format: &lt;tenancy-namespace&gt;/&lt;username&gt; or &lt;tenancy-namespace&gt;/oracleidentitycloudservice/&lt;username&gt;</span>
+            </div>
+            <div class="form-group">
+              <label>Docker Password / Auth Token</label>
+              <input type="text" placeholder="auth-token" name="ocr_docker_passwd" id="ocr_docker_passwd">
+            </div>
+          </div>
+
+        </div><!-- end config_div -->
+
+        <hr class="divider">
+
+        <!-- Schedule & Submit -->
+        <div class="schedule-row">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Cadence</label>
+            <div class="select-wrapper" style="max-width: 200px;">
+              <select name="schedule" id="schedule">
+                <option value="@hourly">Hourly</option>
+                <option value="@daily">Daily</option>
+                <option value="@weekly">Weekly</option>
+                <option value="@monthly">Monthly</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: flex; align-items: flex-end; padding-bottom: 2px;">
+            <label class="sw-row" style="margin-bottom: 0;" onclick="toggleSwRow(this)">
+              <input type="checkbox" name="run_now" id="run_now">
+              <span class="sw-track"><span class="sw-thumb"></span></span>
+              <span class="sw-row-label">Run immediately after saving</span>
+            </label>
+          </div>
+        </div>
+
+        <br>
+        <button type="submit" class="btn-primary" name="submitbtn" id="submitbtn">
+          <i class="fa fa-plus"></i> Add Schedule
+        </button>
+
+      </div>
+    </form>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+  // ─── SWITCH HELPERS ───
+  function toggleSwRow(label) {
+    const cb = label.querySelector('input[type=checkbox]');
+    const track = label.querySelector('.sw-track');
+    cb.checked = !cb.checked;
+    track.classList.toggle('is-on', cb.checked);
+  }
+
+  function toggleTag(label) {
+    const cb = label.querySelector('input[type=checkbox]');
+    const track = label.querySelector('.sw-track');
+    cb.checked = !cb.checked;
+    track.classList.toggle('is-on', cb.checked);
+    label.classList.toggle('is-on', cb.checked);
+  }
+
+  // Sync a switch to a given checked state.
+  // Pass an id string, or null + a direct element as third arg (for name-selected inputs).
+  function setSw(id, checked, el) {
+    const cb = el || document.getElementById(id);
+    if (!cb) return;
+    cb.checked = checked;
+    const label = cb.closest('label');
+    if (!label) return;
+    const track = label.querySelector('.sw-track');
+    if (track) track.classList.toggle('is-on', checked);
+    if (label.classList.contains('checkbox-tag')) label.classList.toggle('is-on', checked);
+  }
+
+  // ─── TAB LOGIC ───
+  function openTab(evt, name) {
+    document.querySelectorAll('.tabcontent').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(name).style.display = 'block';
+    evt.currentTarget.classList.add('active');
+  }
+
+  // ─── MODE CHANGE ───
+  function mode_change() {
+    const config_div = document.getElementById("config_div");
+    // Only hide direct _div children — not nested form-group divs inside them
+    config_div.querySelectorAll(':scope > div[id$="_div"]').forEach(div => div.style.display = 'none');
+    config_div.querySelectorAll('input').forEach(input => { input.value = ''; input.required = false; });
+    config_div.querySelectorAll('textarea').forEach(ta => { ta.value = ''; ta.required = false; });
+    // Reset all switch visuals in config_div
+    config_div.querySelectorAll('.sw-track').forEach(t => t.classList.remove('is-on'));
+    config_div.querySelectorAll('.checkbox-tag').forEach(t => t.classList.remove('is-on'));
+    document.getElementById("scan_name").value = '';
+    document.getElementById("tags").value = '';
+    document.getElementById("org").value = '';
+    document.getElementById("schedule").disabled = false;
+    document.getElementById("schedule").selectedIndex = 0;
+    setSw('run_now', false);
+
+    const x = document.getElementById("scan_type").value;
+    const show = id => document.getElementById(id).style.display = 'block';
+    const req = id => document.getElementById(id).required = true;
+
+    if (x === "nmap") { show("nmap_div"); req("hosts"); }
+    else if (x === "snmp") { show("snmp_div"); req("snmp_hosts"); }
+    else if (x === "printer") { show("printer_div"); req("printer_hosts"); }
+    else if (x === "cctv") { show("cctv_div"); req("cctv_hosts"); }
+    else if (x === "webapp") { show("webapp_div"); req("url"); }
+    else if (x === "host") { show("host_div"); req("host_list"); req("user_name"); req("user_passwd"); }
+    else if (x === "win_host") { show("win_host_div"); req("win_host_list"); req("win_user_name"); req("win_user_passwd"); }
+    else if (x === "vmware") { show("vmware_div"); req("vcenter_host"); req("vcenter_user"); req("vcenter_passwd"); }
+    else if (x === "cisco_meraki") { show("meraki_div"); req("meraki_api_key"); }
+    else if (x === "cisco_dna_center") { show("dna_center_div"); req("dna_center_url"); req("dna_center_user"); req("dna_center_password"); }
+    else if (x === "defender") { show("defender_div"); req("defender_tenant"); req("defender_app_id"); req("defender_app_key"); }
+    else if (x === "servicenow") { show("snow_div"); req("snow_instance"); req("snow_user"); req("snow_password"); }
+    else if (x === "trustmodel") {
+      show("trustmodel_div"); req("tm_asset_id"); req("tm_api_key"); req("tm_vendor_id"); req("tm_model_id");
+      document.getElementById("schedule").disabled = true;
+      document.getElementById("schedule").selectedIndex = -1;
+      setSw('run_now', true);
+    }
+    else if (x === "gitlab") { show("gitlab_div"); req("gitlab_access_token"); }
+    else if (x === "github") { show("github_div"); req("github_identity"); req("github_access_token"); }
+    else if (x === "bitbucket") { show("bitbucket_div"); req("bb_user"); req("bb_app_password"); req("bb_url"); }
+    else if (x === "gitrepo") { show("gitrepo_div"); req("git_url"); }
+    else if (x === "gcp") { show("gcp_div"); req("gcp_private_key"); }
+    else if (x === "gcp-cspm") { show("gcp_cspm_div"); req("gcp_cspm_private_key"); req("gcp_cspm_asset_id"); }
+    else if (x === "gcr") { show("gcr_div"); req("gcr_private_key"); req("gcr_repo"); }
+    else if (x === "aws") { show("aws_div"); req("aws_account"); req("aws_access_key"); req("aws_secret_key"); req("aws_s3_bucket"); req("aws_region"); }
+    else if (x === "aws-cspm") { show("aws_cspm_div"); req("aws_cspm_access_key"); req("aws_cspm_secret_key"); req("aws_cspm_asset_id"); }
+    else if (x === "ecr") { show("ecr_div"); req("ecr_account"); req("ecr_access_key"); req("ecr_secret_key"); req("ecr_region"); }
+    else if (x === "azure") { show("azure_div"); req("azure_sp"); req("azure_sp_secret"); req("azure_tenant"); req("azure_workspace"); }
+    else if (x === "azure-cspm") { show("azure_cspm_div"); req("azure_cspm_asset_id"); req("azure_cspm_sp"); req("azure_cspm_sp_secret"); req("azure_cspm_tenant"); }
+    else if (x === "acr") { show("acr_div"); req("acr_registry"); req("acr_sp"); req("acr_sp_secret"); req("acr_tenant"); }
+    else if (x === "oci") { show("oci_div"); req("oci_user"); req("oci_tenancy"); req("oci_region"); req("oci_user_private_key"); }
+    else if (x === "oci-cspm") { show("oci_cspm_div"); req("oci_cspm_asset_id"); req("oci_cspm_user"); req("oci_cspm_tenancy"); req("oci_cspm_region"); req("oci_cspm_user_private_key"); }
+    else if (x === "ocr") { show("ocr_div"); req("ocr_user"); req("ocr_tenancy"); req("ocr_region"); req("ocr_user_private_key"); req("ocr_docker_login"); req("ocr_docker_passwd"); }
+  }
+
+  function suAuthChange(myCheck) {
+    if (myCheck.checked) {
+      document.getElementById('user_private_key').style.display = 'none';
+      document.getElementById('user_private_key').required = false;
+      document.getElementById('user_passwd').style.display = 'block';
+      document.getElementById('user_passwd').required = true;
+    } else {
+      document.getElementById('user_passwd').style.display = 'none';
+      document.getElementById('user_passwd').required = false;
+      document.getElementById('user_private_key').style.display = 'block';
+      document.getElementById('user_private_key').required = true;
+    }
+  }
+
+  function snowAuthChange(myCheck) {
+    if (myCheck.checked) {
+      document.getElementById('snow_user').style.display = 'none';
+      document.getElementById('snow_password').style.display = 'none';
+      document.getElementById('snow_user').required = false;
+      document.getElementById('snow_password').required = false;
+      document.getElementById('snow_client_id').style.display = 'block';
+      document.getElementById('snow_client_secret').style.display = 'block';
+      document.getElementById('snow_client_id').required = true;
+      document.getElementById('snow_client_secret').required = true;
+    } else {
+      document.getElementById('snow_user').style.display = 'block';
+      document.getElementById('snow_password').style.display = 'block';
+      document.getElementById('snow_user').required = true;
+      document.getElementById('snow_password').required = true;
+      document.getElementById('snow_client_id').style.display = 'none';
+      document.getElementById('snow_client_secret').style.display = 'none';
+      document.getElementById('snow_client_id').required = false;
+      document.getElementById('snow_client_secret').required = false;
+    }
+  }
+
+  function webappOptChange(myCheck) {
+    if (myCheck.checked) {
+      document.getElementById('url').style.display = 'none';
+      document.getElementById('url').required = false;
+      document.getElementById('zap_plan_yaml').style.display = 'block';
+      document.getElementById('zap_plan_yaml').required = true;
+    } else {
+      document.getElementById('zap_plan_yaml').style.display = 'none';
+      document.getElementById('zap_plan_yaml').required = false;
+      document.getElementById('url').style.display = 'block';
+      document.getElementById('url').required = true;
+    }
+  }
+
+  function tm_vendor_select() {
+    const selectElement = document.getElementById('tm_vendor_id');
+    const selectedOption = selectElement.selectedOptions[0];
+    if (selectedOption.id.startsWith('custom')) {
+      document.getElementById('tm_vendor_api_key').required = true;
+      document.getElementById('tm_vendor_api_endpoint').style.display = 'block';
+      document.getElementById('tm_vendor_api_endpoint').required = true;
+      document.getElementById('tm_model_id').style.display = 'block';
+      document.getElementById('tm_model_id').required = true;
+      document.getElementById('tm_model_id').value = '';
+      document.getElementById('tm_model_id_select').style.display = 'none';
+      document.getElementById('tm_model_id_select').required = false;
+      if (document.getElementById('tm_model_id_select_wrapper'))
+        document.getElementById('tm_model_id_select_wrapper').style.display = 'none';
+    } else {
+      document.getElementById('tm_vendor_api_key').required = false;
+      document.getElementById('tm_vendor_api_endpoint').style.display = 'none';
+      document.getElementById('tm_vendor_api_endpoint').required = false;
+      document.getElementById('tm_model_id').style.display = 'none';
+      document.getElementById('tm_model_id').required = false;
+      if (document.getElementById('tm_model_id_select_wrapper'))
+        document.getElementById('tm_model_id_select_wrapper').style.display = 'block';
+      document.getElementById('tm_model_id_select').style.display = 'block';
+      document.getElementById('tm_model_id_select').required = true;
+      const mselect = document.getElementById("tm_model_id_select");
+      for (let i = 0; i < mselect.options.length; i++) {
+        const model_option = mselect.options[i];
+        if (model_option.id.startsWith(selectedOption.value)) {
+          model_option.style.display = 'block';
+          model_option.selected = true;
+        } else {
+          model_option.style.display = 'none';
         }
+      }
+    }
+  }
 
-        function snowAuthChange(myCheck) {
-		if (myCheck.checked) {
-			document.getElementById('snow_user').style.display = 'none';
-			document.getElementById('snow_password').style.display = 'none';
-			document.getElementById('snow_user').required = false;
-			document.getElementById('snow_password').required = false;
-			document.getElementById('snow_client_id').style.display = 'block';
-			document.getElementById('snow_client_secret').style.display = 'block';
-			document.getElementById('snow_client_id').required = true;
-			document.getElementById('snow_client_secret').required = true;
-		} else {
-			document.getElementById('snow_user').style.display = 'block';
-			document.getElementById('snow_password').style.display = 'block';
-			document.getElementById('snow_user').required = true;
-			document.getElementById('snow_password').required = true;
-			document.getElementById('snow_client_id').style.display = 'none';
-			document.getElementById('snow_client_secret').style.display = 'none';
-			document.getElementById('snow_client_id').required = false;
-			document.getElementById('snow_client_secret').required = false;
-		}
-        }
+  function edit_load(scan_name, scan_obj) {
+    const mySelect = document.getElementById('scan_type');
+    mySelect.scrollIntoView({ behavior: 'smooth' });
+    const event = new Event('change');
+    mySelect.value = scan_obj['type'];
+    mySelect.dispatchEvent(event);
+    document.getElementById("scan_name").value = scan_name;
+    document.getElementById("tags").value = scan_obj['tags'];
+    document.getElementById("org").value = scan_obj['org'] || '';
+    document.getElementById("schedule").value = scan_obj['schedule'];
+    const x = scan_obj['type'];
+    if (x === "nmap") {
+      document.getElementById("hosts").value = scan_obj['hosts'];
+      document.querySelectorAll('[name^="stype_"]').forEach(item => {
+        const sname = item.name.replace('stype_','');
+        setSw(null, scan_obj['services'].includes(sname), item);
+      });
+      if (scan_obj['extra_ports']) document.getElementById("extra_ports").value = scan_obj['extra_ports'];
+    } else if (x === "snmp") {
+      document.getElementById("snmp_hosts").value = scan_obj['snmp_hosts'];
+      document.getElementById("community_str").value = scan_obj['community_str'];
+      document.getElementById("security_name").value = scan_obj['security_name'];
+    } else if (x === "printer") { document.getElementById("printer_hosts").value = scan_obj['printer_hosts']; }
+    else if (x === "cctv") { document.getElementById("cctv_hosts").value = scan_obj['cctv_hosts']; }
+    else if (x === "webapp") { document.getElementById("url").value = scan_obj['url']; }
+    else if (x === "host") {
+      document.getElementById("host_list").value = scan_obj['original_host_list'];
+      document.getElementById("user_name").value = scan_obj['user_name'];
+      if (scan_obj['user_passwd']) document.getElementById("user_passwd").value = scan_obj['user_passwd'];
+      if (scan_obj['user_private_key']) document.getElementById("user_private_key").value = scan_obj['user_private_key'];
+    } else if (x === "win_host") {
+      document.getElementById("win_host_list").value = scan_obj['original_win_host_list'];
+      document.getElementById("win_user_name").value = scan_obj['win_user_name'];
+      document.getElementById("win_user_passwd").value = scan_obj['win_user_passwd'];
+    } else if (x === "vmware") {
+      document.getElementById("vcenter_host").value = scan_obj['vcenter_host'];
+      document.getElementById("vcenter_user").value = scan_obj['vcenter_user'];
+      document.getElementById("vcenter_passwd").value = scan_obj['vcenter_passwd'];
+    } else if (x === "cisco_meraki") {
+      document.getElementById("meraki_base_url").value = scan_obj['meraki_base_url'];
+      document.getElementById("meraki_api_key").value = scan_obj['meraki_api_key'];
+    } else if (x === "cisco_dna_center") {
+      document.getElementById("dna_center_url").value = scan_obj['dna_center_url'];
+      document.getElementById("dna_center_user").value = scan_obj['dna_center_user'];
+      document.getElementById("dna_center_password").value = scan_obj['dna_center_password'];
+    } else if (x === "defender") {
+      document.getElementById("defender_tenant").value = scan_obj['tenant_id'];
+      document.getElementById("defender_app_id").value = scan_obj['app_id'];
+      document.getElementById("defender_app_key").value = scan_obj['app_key'];
+      setSw('defender_all_devices', scan_obj['all_devices'] === 'on');
+    } else if (x === "servicenow") {
+      document.getElementById("snow_instance").value = scan_obj['snow_instance'];
+      if (scan_obj['snow_client_id']) {
+        setSw('snow_auth', true);
+        snowAuthChange(document.getElementById('snow_auth'));
+        document.getElementById("snow_client_id").value = scan_obj['snow_client_id'];
+        document.getElementById("snow_client_secret").value = scan_obj['snow_client_secret'];
+      } else {
+        setSw('snow_auth', false);
+        snowAuthChange(document.getElementById('snow_auth'));
+        document.getElementById("snow_user").value = scan_obj['snow_user'];
+        document.getElementById("snow_password").value = scan_obj['snow_password'];
+      }
+    } else if (x === "trustmodel") {
+      document.getElementById("tm_asset_id").value = scan_obj['tm_asset_id'];
+      document.getElementById("tm_api_key").value = scan_obj['tm_api_key'];
+      document.getElementById("tm_vendor_id").value = scan_obj['tm_vendor_id'];
+      document.getElementById("tm_model_id").value = scan_obj['tm_model_id'];
+      document.getElementById("tm_vendor_api_key").value = scan_obj['tm_vendor_api_key'] || '';
+      document.getElementById("tm_vendor_api_endpoint").value = scan_obj['tm_vendor_api_endpoint'] || '';
+    } else if (x === "gitlab") {
+      document.getElementById("gitlab_access_token").value = scan_obj['access_token'];
+      document.getElementById("gitlab_server").value = scan_obj['server'];
+      ['sast','secrets','iac','nocode'].forEach(k => setSw('gl_'+k, scan_obj[k]==='on'));
+    } else if (x === "github") {
+      document.getElementById("github_identity").value = scan_obj['identity'];
+      document.getElementById("github_access_token").value = scan_obj['access_token'];
+      document.getElementById("github_url").value = scan_obj['api_url'];
+      ['sast','secrets','iac','nocode'].forEach(k => setSw('gh_'+k, scan_obj[k]==='on'));
+    } else if (x === "bitbucket") {
+      document.getElementById("bb_user").value = scan_obj['user'];
+      document.getElementById("bb_app_password").value = scan_obj['app_password'];
+      document.getElementById("bb_url").value = scan_obj['url'];
+      ['sast','secrets','iac','nocode'].forEach(k => setSw('bb_'+k, scan_obj[k]==='on'));
+    } else if (x === "gitrepo") {
+      document.getElementById("git_url").value = scan_obj['git_url'];
+      ['sast','secrets','iac','nocode'].forEach(k => setSw('g_'+k, scan_obj[k]==='on'));
+    } else if (x === "gcp") { if (scan_obj['private_key']) document.getElementById("gcp_private_key").value = scan_obj['private_key']; }
+    else if (x === "gcp-cspm") {
+      if (scan_obj['private_key']) document.getElementById("gcp_cspm_private_key").value = scan_obj['private_key'];
+      if (scan_obj['asset_id']) document.getElementById("gcp_cspm_asset_id").value = scan_obj['asset_id'];
+    } else if (x === "gcr") {
+      if (scan_obj['private_key']) document.getElementById("gcr_private_key").value = scan_obj['private_key'];
+      document.getElementById("gcr_repo").value = scan_obj['gcr_repo'];
+    } else if (x === "aws") {
+      document.getElementById("aws_account").value = scan_obj['aws_account'];
+      document.getElementById("aws_access_key").value = scan_obj['aws_access_key'];
+      document.getElementById("aws_secret_key").value = scan_obj['aws_secret_key'];
+      document.getElementById("aws_s3_bucket").value = scan_obj['aws_s3_bucket'];
+      document.getElementById("aws_region").value = scan_obj['aws_region'];
+    } else if (x === "aws-cspm") {
+      document.getElementById("aws_cspm_access_key").value = scan_obj['aws_access_key'];
+      document.getElementById("aws_cspm_secret_key").value = scan_obj['aws_secret_key'];
+      document.getElementById("aws_cspm_asset_id").value = scan_obj['asset_id'];
+    } else if (x === "ecr") {
+      document.getElementById("ecr_account").value = scan_obj['ecr_account'];
+      document.getElementById("ecr_access_key").value = scan_obj['ecr_access_key'];
+      document.getElementById("ecr_secret_key").value = scan_obj['ecr_secret_key'];
+      document.getElementById("ecr_region").value = scan_obj['ecr_region'];
+    } else if (x === "azure") {
+      document.getElementById("azure_sp").value = scan_obj['azure_sp'];
+      document.getElementById("azure_sp_secret").value = scan_obj['azure_sp_secret'];
+      document.getElementById("azure_tenant").value = scan_obj['azure_tenant'];
+      document.getElementById("azure_workspace").value = scan_obj['azure_workspace'];
+    } else if (x === "azure-cspm") {
+      document.getElementById("azure_cspm_asset_id").value = scan_obj['azure_cspm_asset_id'];
+      document.getElementById("azure_cspm_sp").value = scan_obj['azure_cspm_sp'];
+      document.getElementById("azure_cspm_sp_secret").value = scan_obj['azure_cspm_sp_secret'];
+      document.getElementById("azure_cspm_tenant").value = scan_obj['azure_cspm_tenant'];
+    } else if (x === "acr") {
+      document.getElementById("acr_registry").value = scan_obj['acr_registry'];
+      document.getElementById("acr_sp").value = scan_obj['acr_sp'];
+      document.getElementById("acr_sp_secret").value = scan_obj['acr_sp_secret'];
+      document.getElementById("acr_tenant").value = scan_obj['acr_tenant'];
+    } else if (x === "oci") {
+      ['oci_user','oci_tenancy','oci_region','oci_user_private_key'].forEach(id => { if (scan_obj[id]) document.getElementById(id).value = scan_obj[id]; });
+    } else if (x === "oci-cspm") {
+      if (scan_obj['asset_id']) document.getElementById("oci_cspm_asset_id").value = scan_obj['asset_id'];
+      ['oci_cspm_user','oci_cspm_tenancy','oci_cspm_region','oci_cspm_user_private_key'].forEach(id => { if (scan_obj[id]) document.getElementById(id).value = scan_obj[id]; });
+    } else if (x === "ocr") {
+      const map = {user:'ocr_user',tenancy:'ocr_tenancy',region:'ocr_region',private_key:'ocr_user_private_key',docker_login:'ocr_docker_login',docker_passwd:'ocr_docker_passwd',repository:'ocr_repository'};
+      Object.entries(map).forEach(([k,id]) => { if (scan_obj[k]) document.getElementById(id).value = scan_obj[k]; });
+    }
+  }
 
-        function webappOptChange(myCheck) {
-		if (myCheck.checked) {
-			document.getElementById('url').style.display = 'none';
-			document.getElementById('url').required = false;
-			document.getElementById('zap_plan_yaml').style.display = 'block';
-			document.getElementById('zap_plan_yaml').required = true;
-		} else {
-			document.getElementById('zap_plan_yaml').style.display = 'none';
-			document.getElementById('zap_plan_yaml').required = false;
-			document.getElementById('url').style.display = 'block';
-			document.getElementById('url').required = true;
-		}
-        }
-
-        function edit_load(scan_name, scan_obj) {
-		const mySelect = document.getElementById('scan_type');
-                mySelect.scrollIntoView({ behavior: 'smooth' });
-		const event = new Event('change');
-		mySelect.value = scan_obj['type'];
-                mySelect.dispatchEvent(event);
-		//console.log(JSON.stringify(scan_obj, null, 2));
-
-	        document.getElementById("scan_name").value = scan_name;
-	        document.getElementById("tags").value = scan_obj['tags'];
-		if (scan_obj['org'])
-	            document.getElementById("org").value = scan_obj['org'];
-		else
-	            document.getElementById("org").value = '';
-	        document.getElementById("schedule").value = scan_obj['schedule'];
-
-		// populate config div from scan_obj 
-		var x = scan_obj['type'];
-		if (x == "nmap") {
-	            document.getElementById("hosts").value = scan_obj['hosts'];
-		    const items = document.querySelectorAll('[name^="stype_"]');
-                    items.forEach(item => {
-			sname = item.name.replace('stype_','');
-		        if(scan_obj['services'].includes(sname)) 
-			    item.checked = true;
-			else
-			    item.checked = false;
-                    });
-		    if (scan_obj['extra_ports']) document.getElementById("extra_ports").value = scan_obj['extra_ports'];
-		}
-		if (x == "snmp") {
-	            document.getElementById("snmp_hosts").value = scan_obj['snmp_hosts'];
-	            document.getElementById("community_str").value = scan_obj['community_str'];
-	            document.getElementById("security_name").value = scan_obj['security_name'];
-		}
-		if (x == "printer") {
-	            document.getElementById("printer_hosts").value = scan_obj['printer_hosts'];
-		}
-		if (x == "cctv") {
-	            document.getElementById("cctv_hosts").value = scan_obj['cctv_hosts'];
-		}
-		else if (x == "webapp") {
-	            document.getElementById("url").value = scan_obj['url'];
-		}
-		else if (x == "host") {
-	            document.getElementById("host_list").value = scan_obj['original_host_list']; 
-	            document.getElementById("user_name").value = scan_obj['user_name'];
-		    if (scan_obj['user_passwd']) document.getElementById("user_passwd").value = scan_obj['user_passwd'];
-		    if (scan_obj['user_private_key']) document.getElementById("user_private_key").value = scan_obj['user_private_key'];
-		}
-		else if (x == "win_host") {
-	            document.getElementById("win_host_list").value = scan_obj['original_win_host_list']; 
-	            document.getElementById("win_user_name").value = scan_obj['win_user_name'];
-	            document.getElementById("win_user_passwd").value = scan_obj['win_user_passwd'];
-		}
-		else if (x == "vmware") {
-	            document.getElementById("vcenter_host").value = scan_obj['vcenter_host']; 
-	            document.getElementById("vcenter_user").value = scan_obj['vcenter_user']; 
-	            document.getElementById("vcenter_passwd").value = scan_obj['vcenter_passwd']; 
-		}
-		else if (x == "cisco_meraki") {
-	            document.getElementById("meraki_base_url").value = scan_obj['meraki_base_url'];
-	            document.getElementById("meraki_api_key").value = scan_obj['meraki_api_key'];
-		}
-		else if (x == "cisco_dna_center") {
-	            document.getElementById("dna_center_url").value = scan_obj['dna_center_url']; 
-	            document.getElementById("dna_center_user").value = scan_obj['dna_center_user']; 
-	            document.getElementById("dna_center_password").value = scan_obj['dna_center_password']; 
-		}
-		else if (x == "defender") {
-	            document.getElementById("defender_tenant").value = scan_obj['tenant_id']; 
-	            document.getElementById("defender_app_id").value = scan_obj['app_id']; 
-	            document.getElementById("defender_app_key").value = scan_obj['app_key']; 
-		    if (scan_obj['all_devices'] == 'on') 
-			document.getElementById("defender_all_devices").checked = true;
-		    else
-			document.getElementById("defender_all_devices").checked = false;
-		}
-		else if (x == "servicenow") {
-	            document.getElementById("snow_instance").value = scan_obj['snow_instance']; 
-		    if (scan_obj['snow_client_id']) {
-		        document.getElementById("snow_auth").checked = true;
-		        document.getElementById("snow_client_id").value = scan_obj['snow_client_id'];
-		        document.getElementById("snow_client_secret").value = scan_obj['snow_client_secret'];
-		    } else {
-		        document.getElementById("snow_auth").checked = false;
-	                document.getElementById("snow_user").value = scan_obj['snow_user']; 
-	                document.getElementById("snow_password").value = scan_obj['snow_password']; 
-	            }
-		}
-		else if (x == "trustmodel") {
-	            document.getElementById("tm_asset_id").value = scan_obj['tm_asset_id']; 
-	            document.getElementById("tm_api_key").value = scan_obj['tm_api_key']; 
-	            document.getElementById("tm_vendor_id").value = scan_obj['tm_vendor_id']; 
-	            document.getElementById("tm_model_id").value = scan_obj['tm_model_id']; 
-		    if (scan_obj['tm_vendor_api_key']) {
-	                document.getElementById("tm_vendor_api_key").value = scan_obj['tm_vendor_api_key']; 
-		    } else {
-	                document.getElementById("tm_vendor_api_key").value = "";
-	            }
-		    if (scan_obj['tm_vendor_api_endpoint']) {
-	                document.getElementById("tm_vendor_api_endpoint").value = scan_obj['tm_vendor_api_endpoint']; 
-		    } else {
-	                document.getElementById("tm_vendor_api_endpoint").value = "";
-	            }
-		}
-		else if (x == "gitlab") {
-	            document.getElementById("gitlab_access_token").value = scan_obj['access_token']; 
-	            document.getElementById("gitlab_server").value = scan_obj['server']; 
-		    if (scan_obj['sast'] == 'on') 
-			document.getElementById("gl_sast").checked = true;
-		    else
-			document.getElementById("gl_sast").checked = false;
-		    if (scan_obj['secrets'] == 'on') 
-			document.getElementById("gl_secrets").checked = true;
-		    else
-			document.getElementById("gl_secrets").checked = false;
-		    if (scan_obj['iac'] == 'on') 
-			document.getElementById("gl_iac").checked = true;
-		    else
-			document.getElementById("gl_iac").checked = false;
-		    if (scan_obj['nocode'] == 'on') 
-			document.getElementById("gl_nocode").checked = true;
-		    else
-			document.getElementById("gl_nocode").checked = false;
-		}
-		else if (x == "github") {
-	            document.getElementById("github_identity").value = scan_obj['identity']; 
-	            document.getElementById("github_access_token").value = scan_obj['access_token']; 
-	            document.getElementById("github_url").value = scan_obj['api_url']; 
-		    if (scan_obj['sast'] == 'on') 
-			document.getElementById("gh_sast").checked = true;
-		    else
-			document.getElementById("gh_sast").checked = false;
-		    if (scan_obj['secrets'] == 'on') 
-			document.getElementById("gh_secrets").checked = true;
-		    else
-			document.getElementById("gh_secrets").checked = false;
-		    if (scan_obj['iac'] == 'on') 
-			document.getElementById("gh_iac").checked = true;
-		    else
-			document.getElementById("gh_iac").checked = false;
-		    if (scan_obj['nocode'] == 'on') 
-			document.getElementById("gh_nocode").checked = true;
-		    else
-			document.getElementById("gh_nocode").checked = false;
-		}
-		else if (x == "bitbucket") {
-	            document.getElementById("bb_user").value = scan_obj['user']; 
-	            document.getElementById("bb_app_password").value = scan_obj['app_password']; 
-	            document.getElementById("bb_url").value = scan_obj['url']; 
-		    if (scan_obj['sast'] == 'on') 
-			document.getElementById("bb_sast").checked = true;
-		    else
-			document.getElementById("bb_sast").checked = false;
-		    if (scan_obj['secrets'] == 'on') 
-			document.getElementById("bb_secrets").checked = true;
-		    else
-			document.getElementById("bb_secrets").checked = false;
-		    if (scan_obj['iac'] == 'on') 
-			document.getElementById("bb_iac").checked = true;
-		    else
-			document.getElementById("bb_iac").checked = false;
-		    if (scan_obj['nocode'] == 'on') 
-			document.getElementById("bb_nocode").checked = true;
-		    else
-			document.getElementById("bb_nocode").checked = false;
-		}
-		else if (x == "gitrepo") {
-	            document.getElementById("git_url").value = scan_obj['git_url']; 
-		    if (scan_obj['sast'] == 'on') 
-			document.getElementById("g_sast").checked = true;
-		    else
-			document.getElementById("g_sast").checked = false;
-		    if (scan_obj['secrets'] == 'on') 
-			document.getElementById("g_secrets").checked = true;
-		    else
-			document.getElementById("g_secrets").checked = false;
-		    if (scan_obj['iac'] == 'on') 
-			document.getElementById("g_iac").checked = true;
-		    else
-			document.getElementById("g_iac").checked = false;
-		    if (scan_obj['nocode'] == 'on') 
-			document.getElementById("g_nocode").checked = true;
-		    else
-			document.getElementById("g_nocode").checked = false;
-		}
-		else if (x == "gcp") {
-		    if (scan_obj['private_key']) document.getElementById("gcp_private_key").value = scan_obj['private_key'];
-		}
-		else if (x == "gcp-cspm") {
-		    if (scan_obj['private_key']) document.getElementById("gcp_cspm_private_key").value = scan_obj['private_key'];
-		    if (scan_obj['asset_id']) document.getElementById("gcp_cspm_asset_id").value = scan_obj['asset_id'];
-		}
-		else if (x == "gcr") {
-		    if (scan_obj['private_key']) document.getElementById("gcr_private_key").value = scan_obj['private_key'];
-	            document.getElementById("gcr_repo").value = scan_obj['gcr_repo']; 
-		}
-		else if (x == "aws") {
-	            document.getElementById("aws_account").value = scan_obj['aws_account']; 
-	            document.getElementById("aws_access_key").value = scan_obj['aws_access_key']; 
-	            document.getElementById("aws_secret_key").value = scan_obj['aws_secret_key']; 
-	            document.getElementById("aws_s3_bucket").value = scan_obj['aws_s3_bucket']; 
-	            document.getElementById("aws_region").value = scan_obj['aws_region']; 
-		}
-		else if (x == "aws-cspm") {
-	            document.getElementById("aws_cspm_access_key").value = scan_obj['aws_access_key']; 
-	            document.getElementById("aws_cspm_secret_key").value = scan_obj['aws_secret_key']; 
-	            document.getElementById("aws_cspm_asset_id").value = scan_obj['asset_id']; 
-		}
-		else if (x == "ecr") {
-	            document.getElementById("ecr_account").value = scan_obj['ecr_account']; 
-	            document.getElementById("ecr_access_key").value = scan_obj['ecr_access_key']; 
-	            document.getElementById("ecr_secret_key").value = scan_obj['ecr_secret_key']; 
-	            document.getElementById("ecr_region").value = scan_obj['ecr_region']; 
-		}
-		else if (x == "azure") {
-	            document.getElementById("azure_sp").value = scan_obj['azure_sp']; 
-	            document.getElementById("azure_sp_secret").value = scan_obj['azure_sp_secret']; 
-	            document.getElementById("azure_tenant").value = scan_obj['azure_tenant']; 
-	            document.getElementById("azure_workspace").value = scan_obj['azure_workspace']; 
-		}
-		else if (x == "azure-cspm") {
-	            document.getElementById("azure_cspm_asset_id").value = scan_obj['azure_cspm_asset_id']; 
-	            document.getElementById("azure_cspm_sp").value = scan_obj['azure_cspm_sp']; 
-	            document.getElementById("azure_cspm_sp_secret").value = scan_obj['azure_cspm_sp_secret']; 
-	            document.getElementById("azure_cspm_tenant").value = scan_obj['azure_cspm_tenant']; 
-		}
-		else if (x == "acr") {
-	            document.getElementById("acr_registry").value = scan_obj['acr_registry']; 
-	            document.getElementById("acr_sp").value = scan_obj['acr_sp']; 
-	            document.getElementById("acr_sp_secret").value = scan_obj['acr_sp_secret']; 
-	            document.getElementById("acr_tenant").value = scan_obj['acr_tenant']; 
-		}
-		else if (x == "oci") {
-	            if (scan_obj['oci_user']) document.getElementById("oci_user").value = scan_obj['oci_user']; 
-	            if (scan_obj['oci_tenancy']) document.getElementById("oci_tenancy").value = scan_obj['oci_tenancy']; 
-	            if (scan_obj['oci_region']) document.getElementById("oci_region").value = scan_obj['oci_region']; 
-	            if (scan_obj['oci_user_private_key']) document.getElementById("oci_user_private_key").value = scan_obj['oci_user_private_key']; 
-		}
-		else if (x == "oci-cspm") {
-	            if (scan_obj['asset_id']) document.getElementById("oci_cspm_asset_id").value = scan_obj['asset_id']; 
-	            if (scan_obj['oci_cspm_user']) document.getElementById("oci_cspm_user").value = scan_obj['oci_cspm_user']; 
-	            if (scan_obj['oci_cspm_tenancy']) document.getElementById("oci_cspm_tenancy").value = scan_obj['oci_cspm_tenancy']; 
-	            if (scan_obj['oci_cspm_region']) document.getElementById("oci_cspm_region").value = scan_obj['oci_cspm_region']; 
-	            if (scan_obj['oci_cspm_user_private_key']) document.getElementById("oci_cspm_user_private_key").value = scan_obj['oci_cspm_user_private_key']; 
-		}
-		else if (x == "ocr") {
-	            if (scan_obj['user']) document.getElementById("ocr_user").value = scan_obj['user']; 
-	            if (scan_obj['tenancy']) document.getElementById("ocr_tenancy").value = scan_obj['tenancy']; 
-	            if (scan_obj['region']) document.getElementById("ocr_region").value = scan_obj['region']; 
-	            if (scan_obj['private_key']) document.getElementById("ocr_user_private_key").value = scan_obj['private_key']; 
-	            if (scan_obj['docker_login']) document.getElementById("ocr_docker_login").value = scan_obj['docker_login']; 
-	            if (scan_obj['docker_passwd']) document.getElementById("ocr_docker_passwd").value = scan_obj['docker_passwd']; 
-	            if (scan_obj['repository']) document.getElementById("ocr_repository").value = scan_obj['repository']; 
-		}
-	}
-
-        function tm_vendor_select() {
-	    const selectElement = document.getElementById('tm_vendor_id');
-	    const selectedOption = selectElement.selectedOptions[0];
-            console.log(selectedOption.id);
-            console.log(selectedOption.value);
-	    if (selectedOption.id.startsWith('custom')) {
-		// Make vendor api key and endpoint mandatory
-	        document.getElementById('tm_vendor_api_key').required = true;
-	        document.getElementById('tm_vendor_api_endpoint').style.display = 'block';
-	        document.getElementById('tm_vendor_api_endpoint').required = true;
-
-		// Enable model id text box and disable selector dropbox
-	        document.getElementById('tm_model_id').style.display = 'block';
-	        document.getElementById('tm_model_id').required = true;
-	        document.getElementById('tm_model_id').value = '';
-	        document.getElementById('tm_model_id_select').style.display = 'none';
-	        document.getElementById('tm_model_id_select').required = false;
-	    } else {
-		// Make vendor api key and endpoint optional and hide endpoint
-	        document.getElementById('tm_vendor_api_key').required = false;
-	        document.getElementById('tm_vendor_api_endpoint').style.display = 'none';
-	        document.getElementById('tm_vendor_api_endpoint').required = false;
-
-		// Enable selector dropbox and disable model id text box
-	        document.getElementById('tm_model_id').style.display = 'none';
-	        document.getElementById('tm_model_id').required = false;
-	        document.getElementById('tm_model_id_select').style.display = 'block';
-	        document.getElementById('tm_model_id_select').required = true;
-
-		// Enable model id options based on vendor
-		const mselect = document.getElementById("tm_model_id_select");
-		//mselect.selectedIndex = -1;
-		for (let i = 0; i < mselect.options.length; i++) {
-	            const model_option = mselect.options[i];
-		    if (model_option.id.startsWith(selectedOption.value)) {
-                        model_option.style.display = 'block';
-                        model_option.selected = true;
-		    } else {
-                        model_option.style.display = 'none';
-		    }
-                }
-            }
-	}
-
-	function check_run_status() {
-		alldivs = document.querySelectorAll("[id*=loading-dots-]");
-		var div_array = [...alldivs];
-		var xmlHttp = new XMLHttpRequest();
-                xmlHttp.open( "GET", "/run_status?auth={{data['authenticator']}}", true ); // false for synchronous request
-                xmlHttp.send( null );
-		xmlHttp.onreadystatechange = function() {
-                    if (xmlHttp.readyState === 4) { // Request finished and response is ready
-                        if (xmlHttp.status === 200) { // HTTP status OK
-                            response = xmlHttp.responseText;
-		            //console.log(response);
-		            jsonlist = JSON.parse(response);
-		            div_array.forEach(div => {
-		                div.style.display = 'none';
-		                for (let index = 0; index < jsonlist.length; ++index) {
-                                    const element = jsonlist[index];
-			            if (div.id.endsWith('-'+element)) {
-			                div.style.display = 'block';
-                                    }
-                                }
-		            });
-			}
-		    }
-	        };
-	}
-
-	const table = document.getElementById('schedule_table');
-        let selectedRow = null; // Keep track of the currently selected row
-
-        table.addEventListener('click', function(event) {
-            const clickedRow = event.target.closest('tr'); // Find the closest 'tr' ancestor
-
-            if (clickedRow && clickedRow.parentNode.tagName === 'TBODY') { // Ensure its a data row, not header
-            // Remove 'selected-row' class from previously selected row (if any)
-            if (selectedRow) {
-              selectedRow.classList.remove('selected-row');
-            }
-
-            // Add 'selected-row' class to the newly clicked row
-            clickedRow.classList.add('selected-row');
-            selectedRow = clickedRow; // Update the selectedRow variable
-
-            // Get cell values
-            const cells = clickedRow.querySelectorAll('td');
-            //cells.forEach(cell => console.log(cell.textContent));
-            scan_obj = JSON.parse(cells[9].textContent.replace(/'/g,'"'));
-            edit_load(cells[1].textContent, scan_obj);
-          }
+  function check_run_status() {
+    const allRows = document.querySelectorAll("[id^='loading-dots-']");
+    const xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", "/run_status?auth={{data['authenticator']}}", true);
+    xmlHttp.send(null);
+    xmlHttp.onreadystatechange = function() {
+      if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+        const jsonlist = JSON.parse(xmlHttp.responseText);
+        allRows.forEach(row => {
+          const isRunning = jsonlist.some(el => row.id === 'loading-dots-' + el);
+          row.classList.toggle('row-running', isRunning);
         });
+      }
+    };
+  }
 
-        function delete_scan(item, authenticator) {
-          if (confirm("Are you sure you want to delete this?")) {
-            console.log("Confirmed");
-	    const apiUrl = "/delete_scan?scan_name=" + item + "&auth=" + authenticator;
+  // ─── TABLE ROW CLICK ───
+  const table = document.getElementById('schedule_table');
+  let selectedRow = null;
+  table.addEventListener('click', function(event) {
+    const clickedRow = event.target.closest('tr');
+    if (clickedRow && clickedRow.parentNode.tagName === 'TBODY') {
+      if (selectedRow) selectedRow.classList.remove('selected-row');
+      clickedRow.classList.add('selected-row');
+      selectedRow = clickedRow;
+      const cells = clickedRow.querySelectorAll('td');
+      const scan_obj = JSON.parse(cells[7].textContent.replace(/'/g, '"'));
+      edit_load(cells[1].textContent.trim(), scan_obj);
+    }
+  });
 
-            fetch(apiUrl)
-              .then(response => {
-                // Check if the network response was ok (status in the 200-299 range)
-                if (!response.ok) {
-                  throw new Error('Network response was not ok: ' + response.statusText);
-                }
-		window.location.reload();
-                return response.text(); 
-              })
-              .catch(error => {
-                // Handle any errors that occurred during the fetch operation
-                console.error('Error:', error);
-              });
-          }
-	}
+  function delete_scan(item, authenticator) {
+    if (confirm("Delete schedule \"" + item + "\"? This cannot be undone.")) {
+      fetch("/delete_scan?scan_name=" + item + "&auth=" + authenticator)
+        .then(response => { if (!response.ok) throw new Error(response.statusText); window.location.reload(); })
+        .catch(error => console.error('Error:', error));
+    }
+  }
 
-        function openTab(evt, cityName) {
-          // Declare all variables
-          var i, tabcontent, tablinks;
-
-          // Get all elements with class="tabcontent" and hide them
-          tabcontent = document.getElementsByClassName("tabcontent");
-          for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-          }
-
-          // Get all elements with class="tablinks" and remove the class "active"
-          tablinks = document.getElementsByClassName("tablinks");
-          for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-          }
-
-          // Show the current tab, and add an "active" class to the button that opened the tab
-          document.getElementById(cityName).style.display = "block";
-          evt.currentTarget.className += " active";
-        }
-
-        document.getElementById("scheduleTab").click();
-        check_run_status();
-	setInterval(check_run_status, 5000);
-        </script>
+  // ─── INIT ───
+  document.getElementById("scheduleTab").click();
+  check_run_status();
+  setInterval(check_run_status, 5000);
+</script>
 </body>
 </html>

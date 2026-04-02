@@ -1,475 +1,379 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="icon" href="https://threatworx.io/wp-content/uploads/2022/12/favicon.png" sizes="192x192" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <title>ThreatWorx twigs Discovery App</title>
-		
-<style type="text/css" media="all">
-                    html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
 
-                        margin: 0;
-
-                        padding: 0;
-
-                        border: 0;
-
-                        font-size: 100%;
-
-                        font: inherit;
-
-                        vertical-align: baseline;
-
-                        -webkit-text-size-adjust: none;
-
-                    }
-
-
-
-                    html, body {
-
-                        font-family: 'Helvetica Neue', 'Segoe UI', helvetica, arial, sans-serif;
-
-                        width: 100%;
-
-                        color: #333;
-
-                        font-size: 13px;
-
-                        background: #efefef;
-
-                    }
-
-
-
-                    a, a:visited, a:active {
-
-                        color: #0071b9;
-
-                        text-decoration: none;
-
-                    }
-
-
-
-                    a:hover {
-
-                        color: #0071b9;
-
-                        text-decoration: underline;
-
-                    }
-
-
-
-                    .clear {
-
-                        clear: both;
-
-                        width: 0 !important;
-
-                        height: 0 !important;
-
-                        margin: 0 !important;
-
-                        padding: 0 !important;
-
-                    }
-
-
-
-                    table {
-
-                        table-layout: fixed;
-
-                        width: 100%;
-
-                        border-collapse: collapse;
-
-                        border-spacing: 0;
-
-                    }
-
-
-
-                    .plugin-row-header {
-
-                        height: 35px;
-
-                        line-height: 35px;
-
-                        background: #f5f5f5;
-
-                        font-size: 12px;
-
-                        border: 1px solid #ddd;
-
-                    }
-
-
-
-                    .plugin-row {
-
-                        height: 40px;
-
-                        border: 1px solid #ddd;
-
-                    }
-
-
-
-                    .plugin-row td {
-
-                        padding: 10px 0;
-
-                        line-height: 20px;
-
-                    }
-
-
-
-                    .table-wrapper.details,
-
-                    .table-wrapper.see-also {
-
-                        margin: 0 0 20px 0;
-
-                    }
-
-
-
-                    .table-wrapper.details > table > tbody > tr > td {
-
-                        padding: 5px 0;
-
-                    }
-
-
-
-                    .button {
-                      background-color: #04AA6D;
-                      border: none;
-                      color: white;
-                      padding: 10px;
-                      //text-align: center;
-                      display: inline-flex;
-                      align-items: center; 
-                      text-decoration: none;
-                      //display: inline-block;
-                      font-size: 12px;
-                      margin: 4px 2px;
-                      border-radius: 8px;
-                      height: 12px;
-                    }
-
-
-
-                    .button:hover {
-
-                        background: #ccc;
-
-                    }
-
-
-
-                    .expand {
-
-                        display: block;
-
-                        float:right;
-
-                        font-size: 12px;
-
-                        color: #0071b9;
-
-                        cursor: pointer;
-
-                        font-weight: normal;
-
-                        line-height: 20px;
-
-                        margin: 0 0 0 10px;
-
-                    }
-
-
-
-                    .expand:hover {
-
-                        text-decoration: underline;
-
-                    }
-
-
-
-                    .expand-spacer {
-
-                        display: block;
-
-                        float:right;
-
-                        font-size: 12px;
-
-                        font-weight: normal;
-
-                        line-height: 20px;
-
-                        margin: 0 0 0 10px;
-
-                    }
-
-
-
-                    .details-header {
-
-                        font-size: 14px;
-
-                        font-weight: bold;
-
-                        padding: 0 0 5px 0;
-
-                        margin: 0 0 5px 0;
-
-                        border-bottom: 1px dotted #ccc;
-
-                    }
-
-
-
-                    .offline {
-
-                        background-image: -webkit-repeating-linear-gradient(135deg, transparent, transparent 5px, rgba(255, 255, 255, .2) 5px, rgba(255, 255, 255, .2) 10px) !important;
-
-                        background-image: repeating-linear-gradient(135deg, transparent, transparent 5px, rgba(255, 255, 255, .2) 5px, rgba(255, 255, 255, .2) 10px) !important;
-
-                    }
-
-
-
-                    .acas-header {
-
-                        padding: 0 10px;
-
-                    }
-
-
-
-                    .acas-header,
-
-                    .acas-footer > h1 {
-
-                        color: #fff;
-
-                        font-weight: bold;
-
-                        font-size: 15px;
-
-                        text-align: center;
-
-                    }
-
-
-
-                    .table-desc > h5 {
-
-                        color: #000;
-
-                        text-align: left;
-
-                        padding: 3px;
-
-                        font-size: 14px;
-
-                        font-weight: 200;
-
-                        letter-spacing: 1px;
-
-                    }
-
-	        .container {
-                        width: 80%;
-                        margin: 0 auto;
-                        padding: 20px;
-                        border: 1px solid #ccc;
-                        border-radius: 5px;
-                }
-
-                .form-group {
-                        margin-bottom: 20px;
-                }
-
-                label {
-                        display: block;
-                        margin-bottom: 10px;
-                        font-weight: bold;
-                }
-
-                input[type=text], input[type=password], input[type=url], input[type=email] {
-                        width: 80%;
-                        padding: 10px;
-                        border-radius: 5px;
-                        border: 1px solid #ccc;
-                        font-size: 16px;
-                        margin-top: 5px;
-                }
-
-                input[type=checkbox] {
-                        margin-right: 10px;
-                }
-
-		.btn {
-                        background-color: #4CAF50;
-                        color: white;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        border: none;
-                        cursor: pointer;
-                        font-size: 16px;
-                }
-
-                .btn:hover {
-                        background-color: #3e8e41;
-                }
-
-		.help-block {
-                    display: block;
-                    margin-top: 5px;
-                    margin-bottom: 10px;
-                    color: #737373;
-                    font-size: 13px;
-                 }
-
-		.custom-select {
-  min-width: 350px;
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2230;
+  --border: #2a3a52;
+  --border-bright: #3a5080;
+  --accent: #00d4ff;
+  --accent2: #0099cc;
+  --accent-glow: rgba(0,212,255,0.12);
+  --accent-glow-strong: rgba(0,212,255,0.28);
+  --text: #e8edf5;
+  --text-muted: #6b7d99;
+  --text-dim: #3a4d66;
+  --danger: #ff4444;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --radius: 8px;
+  --radius-lg: 14px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Radial glow behind the card */
+body::after {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, rgba(0,212,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── NOTIFICATION ─── */
+.notification {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  padding: 14px 20px;
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: notif-in 0.3s ease, notif-out 0.4s ease 3s forwards;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  border: 1px solid var(--danger);
+  background: rgba(20,8,8,0.95);
+  color: #ff8888;
+}
+
+@keyframes notif-in { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+@keyframes notif-out { from { opacity:1; } to { opacity:0; transform: translateY(-10px); } }
+
+/* ─── LOGIN CARD ─── */
+.login-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+}
+
+/* Brand top */
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 36px;
+  gap: 16px;
+}
+
+.brand img {
+  height: 38px;
+  filter: brightness(1.1);
+}
+
+.brand-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+}
+
+.brand-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px 32px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle top accent line */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.7;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+/* ─── FORM ─── */
+.form-group {
+  margin-bottom: 24px;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.input-wrapper {
   position: relative;
 }
 
-select {
-  appearance: none;
-  /*  safari  */
-  -webkit-appearance: none;
-  /*  other styles for aesthetics */
-  width: 100%;
-  font-size: 1.15rem;
-  padding: 0.675em 6em 0.675em 1em;
-  background-color: #fff;
-  border: 1px solid #caced1;
-  border-radius: 0.25rem;
-  color: #000;
-  cursor: pointer;
-}
-
-.custom-select::before,
-.custom-select::after {
-  --size: 0.3rem;
-  content: "";
+.input-wrapper i.prefix {
   position: absolute;
-  right: 1rem;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: 14px;
   pointer-events: none;
+  transition: color 0.2s;
 }
 
-.custom-select::before {
-  border-left: var(--size) solid transparent;
-  border-right: var(--size) solid transparent;
-  border-bottom: var(--size) solid black;
-  top: 40%;
+input[type=password] {
+  width: 100%;
+  padding: 12px 44px 12px 42px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.05em;
 }
 
-.custom-select::after {
-  border-left: var(--size) solid transparent;
-  border-right: var(--size) solid transparent;
-  border-top: var(--size) solid black;
-  top: 55%;
+input[type=password]:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-
-/*=============
-Aesthetics
-=========================*/
-
-* {
-  box-sizing: border-box;
+input[type=password]:focus + .input-wrapper i.prefix,
+.input-wrapper:focus-within i.prefix {
+  color: var(--accent);
 }
 
-body {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-}
+input[type=password]::placeholder { color: var(--text-dim); }
 
-.error-message {
+.toggle-pw {
   position: absolute;
-  bottom: 5%; 
-  right: 40%; 
-  padding: 20px;
-  background-color: #f44336; 
-  color: white;
-  border-radius: 12px;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  transition: color 0.2s;
+  line-height: 1;
+}
+.toggle-pw:hover { color: var(--text-muted); }
 
-  animation:error-message 0.5s 1;
-  -webkit-animation:error-message 0.5s 1;
-  animation-fill-mode: forwards;
-
-  animation-delay:3s;
-  -webkit-animation-delay:3s; /* Safari and Chrome */
-  -webkit-animation-fill-mode: forwards;
+/* ─── SUBMIT BUTTON ─── */
+.btn-login {
+  width: 100%;
+  padding: 13px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
 }
 
-@keyframes error-message{
-    from {opacity :1;}
-    to {opacity :0;}
+.btn-login:hover {
+  background: #33ddff;
+  box-shadow: 0 0 28px var(--accent-glow-strong);
+  transform: translateY(-1px);
 }
 
-@-webkit-keyframes error-message{
-    from {opacity :1;}
-    to {opacity :0;}
+.btn-login:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
+
+/* ─── FOOTER ─── */
+.login-footer {
+  margin-top: 28px;
+  text-align: center;
+}
+
+.login-footer a {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+
+.login-footer a:hover { color: var(--accent); }
+
+/* ─── SECURITY BADGE ─── */
+.security-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+.security-badge i { font-size: 10px; }
 </style>
-                        </head><body><div id="report" style="width: 1024px; box-sizing: border-box; margin: 0 auto; background: #fff; padding: 0 20px 20px 20px; border-top: #263746 solid 3px; box-shadow: 0 2px 10px rgba(0, 0, 0, .2); margin-bottom: 20px; border-radius: 0 0 3px 3px;">
+</head>
+<body>
 
-                            <header style="width: 100%; border-bottom: 1px dotted #ccc; padding: 20px 0; margin: 0 0 20px 0;"><div style="float: center;"><h1><table><tr>
-<td align="left">
-<img src="https://threatworx.io/wp-content/uploads/2022/12/ThreatWorx-logo-final-horizontal-whitebg.png" height=50 width=250></img>
-</td>
-</td></table></h1></div>
-				    
-
-<div style="float: right;"><h1 style="font-size: 18px;"></h1><h2 style="color: #999; text-align: right"></h2></div><div class="clear"></div></header><div class="clear"></div>
-
-<h3 style="font-size: 24px; font-weight: bold;">twigs Discovery App</h3>
-<br>
-<h6 style="font-size: 12px; font-style: italic;">A simple, intuitive application to schedule and manage twigs discovery runs</h3>
-<br>
 {% if data['discovery_app']['error_msg'] %}
-<div class="error-message">
-{{data['discovery_app']['error_msg']}}
-<br>
+<div class="notification">
+  <i class="fa fa-exclamation-circle"></i>
+  {{data['discovery_app']['error_msg']}}
 </div>
 {% endif %}
-<form action="/authenticate" method="post" id="main_form">
-<div class="container">
-<div class="form-group">
-<br>
-<input type="password" name="password" id="password" required>
-<span class="help-block">Enter app password</span>
-<br>
-<button type="submit" class="btn">
- Login 
-</div>
+
+<div class="login-wrapper">
+
+  <!-- Brand -->
+  <div class="brand">
+    <img src="https://threatworx.io/wp-content/uploads/2022/12/ThreatWorx-logo-final-horizontal-whitebg.png" alt="ThreatWorx">
+    <span class="brand-label">twigs Discovery App</span>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+    <div class="card-title">Welcome back</div>
+    <div class="card-subtitle">Enter your app password to access the discovery console.</div>
+
+    <form action="/authenticate" method="post" id="main_form">
+      <div class="form-group">
+        <label for="password">App Password</label>
+        <div class="input-wrapper">
+          <i class="fa fa-lock prefix"></i>
+          <input type="password" name="password" id="password" placeholder="••••••••••••" required autofocus>
+          <!--<button type="button" class="toggle-pw" onclick="togglePw(this)" tabindex="-1" title="Show / hide password">
+            <i class="fa fa-eye" id="pw-eye"></i>
+	  </button>-->
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login">
+        <i class="fa fa-sign-in"></i> Sign In
+      </button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="login-footer">
+    <a href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">
+      <i class="fa fa-book"></i> twigs user guide
+    </a>
+  </div>
+
+  <div class="security-badge">
+    <i class="fa fa-shield"></i> ThreatWorx Exposure Management Platform
+  </div>
+
 </div>
 
-<br>
-</form>
-        <script>
-        function submitForm() {
-            const form = document.getElementById('main_form');
-            form.addEventListener('submit', (event) => {
-              event.preventDefault();
-              // Perform validation and processing here
-            });
-            form.submit();
-        }
-        </script>
+<script>
+  function togglePw(btn) {
+    const input = document.getElementById('password');
+    const eye = document.getElementById('pw-eye');
+    if (input.type === 'password') {
+      input.type = 'text';
+      eye.className = 'fa fa-eye-slash';
+    } else {
+      input.type = 'password';
+      eye.className = 'fa fa-eye';
+    }
+  }
+
+  document.getElementById('main_form').addEventListener('submit', function(e) {
+    const btn = this.querySelector('.btn-login');
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Signing in…';
+    btn.disabled = true;
+  });
+</script>
 </body>
 </html>
