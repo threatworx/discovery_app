@@ -31,8 +31,27 @@
   --radius-lg: 12px;
   --mono: 'IBM Plex Mono', monospace;
   --sans: 'IBM Plex Sans', sans-serif;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
-  --shadow-glow: 0 0 0 1px var(--border), 0 4px 24px rgba(0,0,0,0.4);
+}
+
+[data-theme="light"] {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --surface2: #e8edf5;
+  --surface3: #dde3ed;
+  --border: #cbd5e1;
+  --border-bright: #94a3b8;
+  --accent: #0077aa;
+  --accent2: #005f8a;
+  --accent-glow: rgba(0,119,170,0.10);
+  --accent-glow-strong: rgba(0,119,170,0.22);
+  --text: #1a2233;
+  --text-muted: #4a5a72;
+  --text-dim: #94a3b8;
+  --success: #00875a;
+  --success-bg: rgba(0,135,90,0.08);
+  --danger: #cc2222;
+  --danger-bg: rgba(204,34,34,0.08);
+  --warn: #b45309;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,25 +63,24 @@ html, body {
   font-size: 14px;
   line-height: 1.6;
   min-height: 100vh;
+  transition: background 0.25s, color 0.25s;
 }
 
-/* Subtle grid background */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+    linear-gradient(var(--accent-glow) 1px, transparent 1px),
+    linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
 }
 
 a, a:visited, a:active { color: var(--accent); text-decoration: none; transition: color 0.2s; }
-a:hover { color: #fff; text-decoration: none; }
+a:hover { color: var(--accent2); text-decoration: none; }
 
-/* ─── LAYOUT ─── */
 #app {
   position: relative;
   z-index: 1;
@@ -81,13 +99,9 @@ header {
   margin-bottom: 32px;
 }
 
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.header-brand img { height: 36px; filter: brightness(1.1); }
+.header-brand { display: flex; align-items: center; gap: 16px; }
+.header-brand img { height: 36px; }
+[data-theme="dark"] .header-brand img { filter: brightness(1.1); }
 
 .header-badge {
   font-family: var(--mono);
@@ -100,7 +114,7 @@ header {
   letter-spacing: 0.08em;
 }
 
-.header-actions { display: flex; align-items: center; gap: 20px; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
 
 .header-link {
   font-size: 12px;
@@ -128,10 +142,27 @@ header {
 }
 .logout-btn:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
 
-/* ─── PAGE TITLE ─── */
-.page-title {
-  margin-bottom: 28px;
+/* ─── THEME TOGGLE ─── */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  user-select: none;
 }
+.theme-toggle:hover { border-color: var(--border-bright); color: var(--text); }
+.theme-toggle i { font-size: 12px; }
+
+/* ─── PAGE TITLE ─── */
+.page-title { margin-bottom: 28px; }
 
 .page-title h1 {
   font-size: 26px;
@@ -168,19 +199,11 @@ header {
   gap: 10px;
   animation: notif-in 0.3s ease, notif-out 0.4s ease 3s forwards;
   max-width: 380px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
 }
 
-.notification.error {
-  background: rgba(20,8,8,0.95);
-  border: 1px solid var(--danger);
-  color: #ff8888;
-}
-.notification.success {
-  background: rgba(0,16,10,0.95);
-  border: 1px solid var(--success);
-  color: #66ffaa;
-}
+.notification.error { background: var(--surface); border: 1px solid var(--danger); color: var(--danger); }
+.notification.success { background: var(--surface); border: 1px solid var(--success); color: var(--success); }
 
 @keyframes notif-in { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
 @keyframes notif-out { from { opacity:1; } to { opacity:0; transform: translateY(-10px); } }
@@ -191,7 +214,6 @@ header {
   gap: 4px;
   margin-bottom: 24px;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 0;
 }
 
 .tab-btn {
@@ -222,7 +244,6 @@ header {
 .tab-btn:hover { color: var(--text); background: var(--surface); }
 .tab-btn.active { color: var(--accent); }
 .tab-btn.active::after { opacity: 1; }
-
 .tabcontent { display: none; }
 
 /* ─── CARDS ─── */
@@ -232,6 +253,7 @@ header {
   border-radius: var(--radius-lg);
   padding: 24px;
   margin-bottom: 20px;
+  transition: background 0.25s, border-color 0.25s;
 }
 
 .card-header {
@@ -251,19 +273,11 @@ header {
   align-items: center;
   gap: 8px;
 }
-
 .card-title i { color: var(--accent); }
 
 /* ─── SCHEDULE TABLE ─── */
-.schedule-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.schedule-table thead tr {
-  border-bottom: 1px solid var(--border);
-}
+.schedule-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.schedule-table thead tr { border-bottom: 1px solid var(--border); }
 
 .schedule-table th {
   text-align: left;
@@ -286,18 +300,9 @@ header {
 .schedule-table tbody tr.selected-row { background: var(--surface3); outline: 1px solid var(--border-bright); }
 .schedule-table tbody tr:last-child { border-bottom: none; }
 
-.schedule-table td {
-  padding: 12px 14px;
-  font-size: 13px;
-  vertical-align: middle;
-}
+.schedule-table td { padding: 12px 14px; font-size: 13px; vertical-align: middle; }
 
-.schedule-name {
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--text);
-  font-weight: 500;
-}
+.schedule-name { font-family: var(--mono); font-size: 13px; color: var(--text); font-weight: 500; }
 
 .schedule-type {
   display: inline-flex;
@@ -312,17 +317,9 @@ header {
   border-radius: 4px;
 }
 
-.schedule-freq {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: var(--mono);
-}
+.schedule-freq { font-size: 12px; color: var(--text-muted); font-family: var(--mono); }
 
-.schedule-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+.schedule-actions { display: flex; align-items: center; gap: 4px; }
 
 .action-btn {
   width: 30px; height: 30px;
@@ -339,16 +336,9 @@ header {
 
 .action-btn:hover { border-color: var(--border); background: var(--surface3); color: var(--text); }
 .action-btn.run:hover { border-color: var(--success); color: var(--success); background: var(--success-bg); }
-.action-btn.stop:hover { border-color: var(--warn); color: var(--warn); background: rgba(255,170,0,0.08); }
+.action-btn.stop:hover { border-color: var(--warn); color: var(--warn); background: rgba(180,83,9,0.08); }
 .action-btn.delete:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
 .action-btn.view:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
-
-.loading-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--danger);
-  animation: pulse 1.5s ease-in-out infinite;
-}
 
 @keyframes pulse {
   0%, 100% { opacity: 0.4; transform: scale(1); }
@@ -362,6 +352,7 @@ header {
   border-radius: var(--radius-lg);
   padding: 28px;
   margin-bottom: 20px;
+  transition: background 0.25s, border-color 0.25s;
 }
 
 .section-heading {
@@ -377,7 +368,6 @@ header {
   align-items: center;
   gap: 8px;
 }
-
 .section-heading i { color: var(--accent); }
 
 /* ─── FORM CONTROLS ─── */
@@ -407,7 +397,7 @@ input[type=email] {
   font-family: var(--sans);
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.25s;
   display: block;
   margin-bottom: 4px;
 }
@@ -423,9 +413,7 @@ input[type=email]:focus {
 input[type=text]::placeholder,
 input[type=password]::placeholder,
 input[type=url]::placeholder,
-input[type=email]::placeholder {
-  color: var(--text-dim);
-}
+input[type=email]::placeholder { color: var(--text-dim); }
 
 textarea {
   width: 100%;
@@ -439,14 +427,11 @@ textarea {
   font-size: 12px;
   outline: none;
   resize: vertical;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.25s;
   display: block;
 }
 
-textarea:focus {
-  border-color: var(--accent2);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
+textarea:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px var(--accent-glow); }
 
 .help-block {
   font-size: 12px;
@@ -456,7 +441,6 @@ textarea:focus {
   line-height: 1.5;
 }
 
-/* Custom select */
 .select-wrapper {
   position: relative;
   display: inline-block;
@@ -490,18 +474,14 @@ select {
   -webkit-appearance: none;
   outline: none;
   cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.25s;
 }
 
-select:focus {
-  border-color: var(--accent2);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-select option { background: #1a2030; color: var(--text); }
+select:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px var(--accent-glow); }
+select option { background: var(--surface); color: var(--text); }
 select option:disabled { color: var(--text-dim); }
 
-/* Checkbox */
+/* ─── TOGGLE SWITCHES ─── */
 .sw-row input[type=checkbox],
 .sw-tag input[type=checkbox] { display: none; }
 
@@ -561,60 +541,16 @@ select option:disabled { color: var(--text-dim); }
 }
 
 .btn-primary:hover {
-  background: #33ddff;
+  filter: brightness(1.1);
   box-shadow: 0 0 20px var(--accent-glow-strong);
   transform: translateY(-1px);
 }
-
 .btn-primary:active { transform: translateY(0); }
 
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 24px;
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-family: var(--sans);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
+.divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 
-.btn-secondary:hover { border-color: var(--border-bright); background: var(--surface2); }
-
-/* ─── DIVIDER ─── */
-.divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 24px 0;
-}
-
-/* ─── CONFIG DIVS ─── */
 #config_div > div[id$="_div"] { display: none; }
 
-/* Discovery type selector area */
-.discovery-select-area {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  margin-bottom: 20px;
-}
-
-.discovery-select-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 10px;
-}
-
-/* Info link */
 .info-link {
   display: inline-flex;
   align-items: center;
@@ -626,42 +562,18 @@ select option:disabled { color: var(--text-dim); }
 }
 .info-link:hover { color: var(--accent); }
 
-/* Schedule row */
-.schedule-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 32px;
-  flex-wrap: wrap;
-}
-
+.schedule-row { display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
 .schedule-row > div { flex: 0 0 auto; }
 
-/* ─── EMPTY STATE ─── */
-.empty-state {
-  text-align: center;
-  padding: 48px 24px;
-  color: var(--text-dim);
-}
-
+.empty-state { text-align: center; padding: 48px 24px; color: var(--text-dim); }
 .empty-state i { font-size: 36px; margin-bottom: 12px; display: block; }
 .empty-state p { font-size: 14px; }
 
-/* ─── SETTINGS FORM ─── */
-.settings-grid {
-  display: grid;
-  gap: 18px;
-}
-
-/* TrustModel special */
+.settings-grid { display: grid; gap: 18px; }
 .tm-logo-link img { filter: brightness(1.2) saturate(0.8); }
 
 /* ─── CHECKBOX GRID ─── */
-.checkbox-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 8px;
-}
+.checkbox-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
 
 .checkbox-tag {
   display: inline-flex;
@@ -678,38 +590,28 @@ select option:disabled { color: var(--text-dim); }
   user-select: none;
 }
 
-.checkbox-tag.is-on {
-  border-color: var(--border-bright);
-  background: var(--accent-glow);
-  color: var(--accent);
-}
-
+.checkbox-tag.is-on { border-color: var(--border-bright); background: var(--accent-glow); color: var(--accent); }
 .checkbox-tag:hover { border-color: var(--border-bright); color: var(--text); }
 .checkbox-tag input { display: none; }
 
-/* Status dot — hidden, kept for JS targeting */
 .loading-dots { display: none; }
 
-/* ─── RUNNING ROW: left border accent ─── */
+/* ─── RUNNING ROW ─── */
 @keyframes border-breathe {
   0%, 100% { box-shadow: inset 3px 0 0 var(--success); }
-  50%       { box-shadow: inset 3px 0 0 color-mix(in srgb, var(--success) 40%, transparent); }
+  50%       { box-shadow: inset 3px 0 0 rgba(0,135,90,0.3); }
 }
 
 .schedule-table tbody tr.row-running {
-  background: linear-gradient(90deg, rgba(0,230,118,0.05) 0%, transparent 60%);
+  background: linear-gradient(90deg, var(--success-bg) 0%, transparent 60%);
   animation: border-breathe 2s ease-in-out infinite;
 }
 
 .schedule-table tbody tr.row-running:hover {
-  background: linear-gradient(90deg, rgba(0,230,118,0.08) 0%, var(--surface2) 60%);
+  background: linear-gradient(90deg, var(--success-bg) 0%, var(--surface2) 60%);
 }
 
-/* ─── RUNNING PILL ─── */
-@keyframes pill-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.55; }
-}
+@keyframes pill-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 
 .run-pill {
   display: none;
@@ -720,7 +622,7 @@ select option:disabled { color: var(--text-dim); }
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--success);
-  background: rgba(0,230,118,0.08);
+  background: var(--success-bg);
   border: 1px solid rgba(0,230,118,0.3);
   padding: 2px 8px;
   border-radius: 4px;
@@ -733,16 +635,12 @@ select option:disabled { color: var(--text-dim); }
   width: 5px; height: 5px;
   border-radius: 50%;
   background: var(--success);
-  box-shadow: 0 0 5px var(--success);
   flex-shrink: 0;
 }
 
 tr.row-running .run-pill { display: inline-flex; }
-
-/* status cell — keep it centered and fixed width */
 .run-indicator { display: none; }
 
-/* Column widths for schedule table */
 .col-status { width: 40px; }
 .col-name { width: 22%; }
 .col-type { width: 12%; }
@@ -751,7 +649,6 @@ tr.row-running .run-pill { display: inline-flex; }
 .col-pill { width: 15%; }
 .col-actions { width: 22%; }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -769,6 +666,10 @@ tr.row-running .run-pill { display: inline-flex; }
       <span class="header-badge">twigs {{data['discovery_app']['version']}}</span>
     </div>
     <div class="header-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
+        <i class="fa fa-moon-o" id="theme-icon"></i>
+        <span id="theme-label">Dark</span>
+      </button>
       <a class="header-link" href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">
         <i class="fa fa-book"></i> User Guide
       </a>
@@ -795,7 +696,7 @@ tr.row-running .run-pill { display: inline-flex; }
   <!-- PAGE TITLE -->
   <div class="page-title">
     <h1>
-      <span class="title-icon"><i class="fa fa-radar"></i><i class="fa fa-crosshairs"></i></span>
+      <span class="title-icon"><i class="fa fa-crosshairs"></i></span>
       Discovery App
     </h1>
   </div>
@@ -857,7 +758,6 @@ tr.row-running .run-pill { display: inline-flex; }
   <!-- SCHEDULES TAB -->
   <div id="Schedules" class="tabcontent">
 
-    <!-- Active Schedules Table -->
     <div class="card">
       <div class="card-header">
         <span class="card-title"><i class="fa fa-list-ul"></i> Active Schedules</span>
@@ -886,8 +786,8 @@ tr.row-running .run-pill { display: inline-flex; }
               <div class="run-indicator" title="Discovery running"></div>
             </td>
             <td><span class="schedule-name">{{item}}</span></td>
-	    <td><div style="display:flex; align-items:center; gap:8px;"><span class="schedule-type">{{data[item]['type']}}</span></td>
-            <td><span class="run-pill">RUNNING</span></div></td>
+            <td><span class="schedule-type">{{data[item]['type']}}</span></td>
+            <td><span class="run-pill">RUNNING</span></td>
             <td><span class="schedule-freq">{{data[item]['schedule']}}</span></td>
             <td></td>
             <td>
@@ -904,7 +804,7 @@ tr.row-running .run-pill { display: inline-flex; }
           {% endfor %}
           {% if not has_schedules %}
           <tr style="cursor:default">
-            <td colspan="7">
+            <td colspan="8">
               <div class="empty-state">
                 <i class="fa fa-inbox"></i>
                 <p>No discovery schedules configured yet.<br>Add one below to get started.</p>
@@ -918,13 +818,11 @@ tr.row-running .run-pill { display: inline-flex; }
 
     <!-- Add Schedule Form -->
     <form action="/save_scan?auth={{data['authenticator']}}" method="post" id="main_form">
-
       <div class="form-section">
         <div class="section-heading">
           <i class="fa fa-plus-circle"></i> Add Discovery Schedule
         </div>
 
-        <!-- Discovery Type -->
         <div class="form-group">
           <label>Discovery Type</label>
           <div class="select-wrapper" style="max-width: 340px;">
@@ -973,7 +871,6 @@ tr.row-running .run-pill { display: inline-flex; }
           </div>
         </div>
 
-        <!-- Common Fields -->
         <div class="form-group">
           <label>Schedule Name</label>
           <input type="text" placeholder="e.g. prod-linux-scan" name="scan_name" id="scan_name" required pattern="[a-zA-Z0-9]{1,16}">
@@ -994,7 +891,6 @@ tr.row-running .run-pill { display: inline-flex; }
 
         <hr class="divider">
 
-        <!-- Config Divs -->
         <div id="config_div">
 
           <div id="nmap_div">
@@ -1175,7 +1071,7 @@ tr.row-running .run-pill { display: inline-flex; }
 
           <div id="trustmodel_div">
             <div style="margin-bottom: 16px;">
-	      <label>Powered By </label>
+              <label>Powered By </label>
               <a class="tm-logo-link" target="_blank" href="https://trustmodel.ai/">
                 <img style="filter: invert(100%);" src="static/trustmodel-logo.png" height=28 width=110 alt="TrustModel">
               </a>
@@ -1607,7 +1503,6 @@ tr.row-running .run-pill { display: inline-flex; }
 
         <hr class="divider">
 
-        <!-- Schedule & Submit -->
         <div class="schedule-row">
           <div class="form-group" style="margin-bottom: 0;">
             <label>Cadence</label>
@@ -1641,6 +1536,32 @@ tr.row-running .run-pill { display: inline-flex; }
 </div><!-- #app -->
 
 <script>
+  // ─── THEME ───
+  // Apply before render to avoid flash of wrong theme
+  const savedTheme = localStorage.getItem('tw_theme') || 'dark';
+  applyTheme(savedTheme);
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const icon = document.getElementById('theme-icon');
+    const label = document.getElementById('theme-label');
+    if (!icon) return;
+    if (theme === 'light') {
+      icon.className = 'fa fa-sun-o';
+      label.textContent = 'Light';
+    } else {
+      icon.className = 'fa fa-moon-o';
+      label.textContent = 'Dark';
+    }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('tw_theme', next);
+  }
+
   // ─── SWITCH HELPERS ───
   function toggleSwRow(label) {
     const cb = label.querySelector('input[type=checkbox]');
@@ -1657,8 +1578,6 @@ tr.row-running .run-pill { display: inline-flex; }
     label.classList.toggle('is-on', cb.checked);
   }
 
-  // Sync a switch to a given checked state.
-  // Pass an id string, or null + a direct element as third arg (for name-selected inputs).
   function setSw(id, checked, el) {
     const cb = el || document.getElementById(id);
     if (!cb) return;
@@ -1681,11 +1600,9 @@ tr.row-running .run-pill { display: inline-flex; }
   // ─── MODE CHANGE ───
   function mode_change() {
     const config_div = document.getElementById("config_div");
-    // Only hide direct _div children — not nested form-group divs inside them
     config_div.querySelectorAll(':scope > div[id$="_div"]').forEach(div => div.style.display = 'none');
     config_div.querySelectorAll('input').forEach(input => { input.value = ''; input.required = false; });
     config_div.querySelectorAll('textarea').forEach(ta => { ta.value = ''; ta.required = false; });
-    // Reset all switch visuals in config_div
     config_div.querySelectorAll('.sw-track').forEach(t => t.classList.remove('is-on'));
     config_div.querySelectorAll('.checkbox-tag').forEach(t => t.classList.remove('is-on'));
     document.getElementById("scan_name").value = '';
@@ -2001,8 +1918,7 @@ tr.row-running .run-pill { display: inline-flex; }
   check_run_status();
   setInterval(check_run_status, 5000);
 
-  // Remove notification elements from DOM after they fade out,
-  // so animation-fill-mode:forwards opacity:0 can't bleed to parent elements
+  // Remove notifications after fade to prevent opacity bleed
   document.querySelectorAll('.notification').forEach(n => {
     setTimeout(() => n.remove(), 3500);
   });

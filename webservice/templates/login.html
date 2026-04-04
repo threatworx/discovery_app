@@ -11,7 +11,6 @@
 :root {
   --bg: #0d1117;
   --surface: #161b22;
-  --surface2: #1c2230;
   --border: #2a3a52;
   --border-bright: #3a5080;
   --accent: #00d4ff;
@@ -28,6 +27,21 @@
   --radius-lg: 14px;
 }
 
+[data-theme="light"] {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --border: #cbd5e1;
+  --border-bright: #94a3b8;
+  --accent: #0077aa;
+  --accent2: #005f8a;
+  --accent-glow: rgba(0,119,170,0.10);
+  --accent-glow-strong: rgba(0,119,170,0.22);
+  --text: #1a2233;
+  --text-muted: #4a5a72;
+  --text-dim: #94a3b8;
+  --danger: #cc2222;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
@@ -40,22 +54,21 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  transition: background 0.25s, color 0.25s;
 }
 
-/* Grid background */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    linear-gradient(var(--accent-glow) 1px, transparent 1px),
+    linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
 }
 
-/* Radial glow behind the card */
 body::after {
   content: '';
   position: fixed;
@@ -64,10 +77,33 @@ body::after {
   transform: translate(-50%, -60%);
   width: 600px;
   height: 400px;
-  background: radial-gradient(ellipse at center, rgba(0,212,255,0.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
+
+/* ─── THEME TOGGLE ─── */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  user-select: none;
+}
+.theme-toggle:hover { border-color: var(--border-bright); color: var(--text); }
+.theme-toggle i { font-size: 13px; }
 
 /* ─── NOTIFICATION ─── */
 .notification {
@@ -83,10 +119,10 @@ body::after {
   align-items: center;
   gap: 10px;
   animation: notif-in 0.3s ease, notif-out 0.4s ease 3s forwards;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
   border: 1px solid var(--danger);
-  background: rgba(20,8,8,0.95);
-  color: #ff8888;
+  background: var(--surface);
+  color: var(--danger);
 }
 
 @keyframes notif-in { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
@@ -101,7 +137,6 @@ body::after {
   padding: 24px;
 }
 
-/* Brand top */
 .brand {
   display: flex;
   flex-direction: column;
@@ -110,16 +145,10 @@ body::after {
   gap: 16px;
 }
 
-.brand img {
-  height: 38px;
-  filter: brightness(1.1);
-}
+.brand img { height: 38px; }
 
-.brand-divider {
-  width: 1px;
-  height: 20px;
-  background: var(--border);
-}
+[data-theme="light"] .brand img { filter: none; }
+[data-theme="dark"] .brand img { filter: brightness(1.1); }
 
 .brand-label {
   font-family: var(--mono);
@@ -129,18 +158,17 @@ body::after {
   text-transform: uppercase;
 }
 
-/* Card */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 36px 32px 32px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px var(--border);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
   position: relative;
   overflow: hidden;
+  transition: background 0.25s, border-color 0.25s;
 }
 
-/* Subtle top accent line */
 .card::before {
   content: '';
   position: absolute;
@@ -165,10 +193,7 @@ body::after {
   line-height: 1.5;
 }
 
-/* ─── FORM ─── */
-.form-group {
-  margin-bottom: 24px;
-}
+.form-group { margin-bottom: 24px; }
 
 label {
   display: block;
@@ -180,9 +205,7 @@ label {
   margin-bottom: 8px;
 }
 
-.input-wrapper {
-  position: relative;
-}
+.input-wrapper { position: relative; }
 
 .input-wrapper i.prefix {
   position: absolute;
@@ -205,7 +228,7 @@ input[type=password] {
   font-family: var(--sans);
   font-size: 15px;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.25s;
   letter-spacing: 0.05em;
 }
 
@@ -214,11 +237,7 @@ input[type=password]:focus {
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-input[type=password]:focus + .input-wrapper i.prefix,
-.input-wrapper:focus-within i.prefix {
-  color: var(--accent);
-}
-
+.input-wrapper:focus-within i.prefix { color: var(--accent); }
 input[type=password]::placeholder { color: var(--text-dim); }
 
 .toggle-pw {
@@ -237,7 +256,6 @@ input[type=password]::placeholder { color: var(--text-dim); }
 }
 .toggle-pw:hover { color: var(--text-muted); }
 
-/* ─── SUBMIT BUTTON ─── */
 .btn-login {
   width: 100%;
   padding: 13px;
@@ -259,17 +277,13 @@ input[type=password]::placeholder { color: var(--text-dim); }
 }
 
 .btn-login:hover {
-  background: #33ddff;
+  filter: brightness(1.1);
   box-shadow: 0 0 28px var(--accent-glow-strong);
   transform: translateY(-1px);
 }
 
-.btn-login:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
+.btn-login:active { transform: translateY(0); box-shadow: none; }
 
-/* ─── FOOTER ─── */
 .login-footer {
   margin-top: 28px;
   text-align: center;
@@ -284,10 +298,8 @@ input[type=password]::placeholder { color: var(--text-dim); }
   gap: 6px;
   transition: color 0.2s;
 }
-
 .login-footer a:hover { color: var(--accent); }
 
-/* ─── SECURITY BADGE ─── */
 .security-badge {
   display: flex;
   align-items: center;
@@ -299,11 +311,16 @@ input[type=password]::placeholder { color: var(--text-dim); }
   color: var(--text-dim);
   letter-spacing: 0.08em;
 }
-
 .security-badge i { font-size: 10px; }
 </style>
 </head>
 <body>
+
+<!-- Theme toggle -->
+<button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
+  <i class="fa fa-moon-o" id="theme-icon"></i>
+  <span id="theme-label">Dark</span>
+</button>
 
 {% if data['discovery_app']['error_msg'] %}
 <div class="notification">
@@ -314,13 +331,11 @@ input[type=password]::placeholder { color: var(--text-dim); }
 
 <div class="login-wrapper">
 
-  <!-- Brand -->
   <div class="brand">
     <img src="https://threatworx.io/wp-content/uploads/2022/12/ThreatWorx-logo-final-horizontal-whitebg.png" alt="ThreatWorx">
     <span class="brand-label">twigs Discovery App</span>
   </div>
 
-  <!-- Card -->
   <div class="card">
     <div class="card-title">Welcome back</div>
     <div class="card-subtitle">Enter your app password to access the discovery console.</div>
@@ -333,7 +348,7 @@ input[type=password]::placeholder { color: var(--text-dim); }
           <input type="password" name="password" id="password" placeholder="••••••••••••" required autofocus>
           <!--<button type="button" class="toggle-pw" onclick="togglePw(this)" tabindex="-1" title="Show / hide password">
             <i class="fa fa-eye" id="pw-eye"></i>
-	  </button>-->
+          </button>-->
         </div>
       </div>
 
@@ -343,7 +358,6 @@ input[type=password]::placeholder { color: var(--text-dim); }
     </form>
   </div>
 
-  <!-- Footer -->
   <div class="login-footer">
     <a href="https://threatworx.io/docs-category/twigs-user-guide/" target="_blank">
       <i class="fa fa-book"></i> twigs user guide
@@ -357,6 +371,32 @@ input[type=password]::placeholder { color: var(--text-dim); }
 </div>
 
 <script>
+  // ─── THEME ───
+  // Read persisted preference, fall back to dark
+  const savedTheme = localStorage.getItem('tw_theme') || 'dark';
+  applyTheme(savedTheme);
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const icon = document.getElementById('theme-icon');
+    const label = document.getElementById('theme-label');
+    if (theme === 'light') {
+      icon.className = 'fa fa-sun-o';
+      label.textContent = 'Light';
+    } else {
+      icon.className = 'fa fa-moon-o';
+      label.textContent = 'Dark';
+    }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('tw_theme', next);
+  }
+
+  // ─── FORM ───
   function togglePw(btn) {
     const input = document.getElementById('password');
     const eye = document.getElementById('pw-eye');
@@ -373,6 +413,11 @@ input[type=password]::placeholder { color: var(--text-dim); }
     const btn = this.querySelector('.btn-login');
     btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Signing in…';
     btn.disabled = true;
+  });
+
+  // Remove notification after fade
+  document.querySelectorAll('.notification').forEach(n => {
+    setTimeout(() => n.remove(), 3500);
   });
 </script>
 </body>
