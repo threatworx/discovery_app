@@ -173,6 +173,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + " --iac_checks"
         if config[scan_name]['nocode'] == 'on':
             twigs_cmd = twigs_cmd + " --no_code"
+        if 'key_file' in config[scan_name] and config[scan_name]['key_file'] != '':
+            twigs_cmd = twigs_cmd + " --ssh_private_key "+CONFIG_PATH+config[scan_name]['key_file']
     elif scan_type == 'bitbucket':
         twigs_cmd = twigs_cmd + " bitbucket --bb_user "+config[scan_name]['user']+" --bb_app_password "+config[scan_name]['app_password'] + " --bb_repo_url "+config[scan_name]['url']
         if config[scan_name]['sast'] == 'on':
@@ -284,7 +286,7 @@ def reload_config():
         twigs_cmd = create_twigs_cmd(config, s, config[s]['type'])
         create_cron_entry(config, s, twigs_cmd)
 
-def create_key_file(scan_name, private_key):
+def create_key_file(scan_name, private_key, permissions=0o644):
     global CONFIG_PATH
 
     pk_file_name = None
@@ -292,7 +294,7 @@ def create_key_file(scan_name, private_key):
         pk_file_name = CONFIG_PATH+scan_name+'.key'
         with open(pk_file_name, mode='w') as pk_file:
             pk_file.write(private_key)
-    os.chmod(pk_file_name, 0o644)
+    os.chmod(pk_file_name, permissions)
     return os.path.basename(pk_file_name)
 
 def create_host_csv(scan_name, hostname, user, passwd, private_key):
@@ -538,6 +540,9 @@ def add_scan(config, request):
             config[scan_name]['iac'] = 'on'
         if 'g_nocode' in request.form:
             config[scan_name]['nocode'] = 'on'
+        if 'ssh_private_key' in request.form and request.form['ssh_private_key'] != '':
+            ssh_private_key = request.form['ssh_private_key'].replace('\r\n','\n') + '\n'
+            config[scan_name]['key_file'] = create_key_file(scan_name, ssh_private_key, 0o600)
     elif scan_type == 'gcp':
         config[scan_name]['private_key'] = request.form['gcp_private_key']
         config[scan_name]['key_file'] = create_key_file(scan_name, request.form['gcp_private_key'])
