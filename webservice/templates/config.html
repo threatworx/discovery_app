@@ -1239,6 +1239,12 @@ tr.row-running .run-pill { display: inline-flex; }
               <label>Gitlab Server <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional, for self-hosted)</span></label>
               <input type="text" placeholder="gitlab.com" name="gitlab_server" id="gitlab_server" pattern="[a-zA-Z0-9.\/\-_]+" value='gitlab.com'>
             </div>
+            <div class="form-group">
+              <label>
+                SSH Private Key <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional private key to access git repository over ssh only)</span>
+              </label>
+              <textarea name="gl_ssh_private_key" id="gl_ssh_private_key" rows="6"></textarea>
+            </div>
             <div class="checkbox-grid" style="margin-bottom: 8px;">
               <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gl_sast" name="gl_sast"><span class="sw-track"><span class="sw-thumb"></span></span>Run SAST</label>
               <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="gl_secrets" name="gl_secrets"><span class="sw-track"><span class="sw-thumb"></span></span>Secrets Scan</label>
@@ -1274,16 +1280,14 @@ tr.row-running .run-pill { display: inline-flex; }
           <div id="gitrepo_div">
             <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-source-code-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
             <div class="form-group">
-              <label>Git Repository URL</label>
+              <label>Git Repository URL <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(http/ssh - can include authentication for private repositories)</span></label>
               <input type="text" placeholder="https://{PAT}@dev.azure.com/{org}/{project}/_git/{repo}" name="git_url" id="git_url">
-              <span class="help-block">GIT URL (https/ssh) — can include authentication for private repositories</span>
             </div>
             <div class="form-group">
               <label>
-                SSH Private Key
+                SSH Private Key <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional private key to access git repository over ssh only)</span>
               </label>
               <textarea name="ssh_private_key" id="ssh_private_key" rows="6"></textarea>
-              <span class="help-block">Optional private key to access the git repository over ssh only.</span>
             </div>
             <div class="checkbox-grid">
               <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" id="g_sast" name="g_sast"><span class="sw-track"><span class="sw-thumb"></span></span>Run SAST</label>

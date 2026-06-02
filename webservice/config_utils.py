@@ -153,6 +153,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + " --iac_checks"
         if config[scan_name]['nocode'] == 'on':
             twigs_cmd = twigs_cmd + " --no_code"
+        if 'gl_key_file' in config[scan_name] and config[scan_name]['gl_key_file'] != '':
+            twigs_cmd = twigs_cmd + " --ssh_private_key "+CONFIG_PATH+config[scan_name]['gl_key_file']
     elif scan_type == 'github':
         twigs_cmd = twigs_cmd + " github --gh_identity "+config[scan_name]['identity']+" --gh_access_token "+config[scan_name]['access_token'] + " --gh_api_url "+config[scan_name]['api_url']
         if config[scan_name]['sast'] == 'on':
@@ -494,6 +496,9 @@ def add_scan(config, request):
             config[scan_name]['iac'] = 'on'
         if 'gl_nocode' in request.form:
             config[scan_name]['nocode'] = 'on'
+        if 'gl_ssh_private_key' in request.form and request.form['gl_ssh_private_key'] != '':
+            ssh_private_key = request.form['gl_ssh_private_key'].replace('\r\n','\n') + '\n'
+            config[scan_name]['gl_key_file'] = create_key_file(scan_name, ssh_private_key, 0o600)
     elif scan_type == 'github':
         config[scan_name]['access_token'] = request.form['github_access_token']
         config[scan_name]['identity'] = request.form['github_identity']
