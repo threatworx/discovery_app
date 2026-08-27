@@ -815,7 +815,7 @@ tr.row-running .run-pill { display: inline-flex; }
                 <a class="action-btn delete" title="Delete schedule" onclick="delete_scan('{{item}}','{{data['authenticator']}}')"><i class="fa fa-trash-o"></i></a>
               </div>
             </td>
-            <td style="display:none">{{data[item]}}</td>
+            <td style="display:none">{{escaped_data[item]}}</td>
           </tr>
           {% endif %}
           {% endfor %}
@@ -1929,7 +1929,7 @@ tr.row-running .run-pill { display: inline-flex; }
       clickedRow.classList.add('selected-row');
       selectedRow = clickedRow;
       const cells = clickedRow.querySelectorAll('td');
-      const scan_obj = JSON.parse(cells[7].textContent.replace(/'/g, '"'));
+      const scan_obj = JSON.parse(cells[7].textContent);
       edit_load(cells[1].textContent.trim(), scan_obj);
     }
   });

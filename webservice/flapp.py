@@ -73,6 +73,7 @@ def app_page():
         return redirect("/")
     data = {s:dict(config.items(s)) for s in config.sections()}
     data['authenticator'] = auth
+    escaped_data = {s:json.dumps(dict(config.items(s))) for s in config.sections()}
     vstr = 'v'+__version__
     upgradestr = check_upgrade()
     data['discovery_app']['version'] = 'v'+__version__+' '+check_upgrade()
@@ -80,7 +81,7 @@ def app_page():
     config.remove_option('discovery_app','error_msg')
     config.remove_option('discovery_app','success_msg')
     config_utils.write_config(config)
-    return render_template("config.html", data=data)
+    return render_template("config.html", data=data, escaped_data=escaped_data)
 
 @app.route("/save_creds", methods=['POST'])
 def handle_save_creds():
