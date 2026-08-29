@@ -882,6 +882,8 @@ tr.row-running .run-pill { display: inline-flex; }
               <option value="ocr">OCI OCR</option>
               <option disabled>──── Web ────</option>
               <option value="webapp">Web application (DAST)</option>
+              <option disabled>──── EASM ────</option>
+              <option value="easm">External attack surface (EASM)</option>
               <option disabled>──── CMDB ────</option>
               <option value="servicenow">Servicenow CMDB</option>
             </select>
@@ -1045,6 +1047,17 @@ tr.row-running .run-pill { display: inline-flex; }
             <div class="form-group">
               <input type="url" placeholder="https://example.com" name="url" id="url" value="">
               <textarea placeholder="Paste ZAP plan YAML here" name="zap_plan_yaml" id="zap_plan_yaml" rows="5" style="display: none"></textarea>
+            </div>
+          </div>
+
+          <div id="easm_div">
+            <div class="form-group">
+              <label>External FQDN</label>
+              <input type="text" placeholder="example.com" name="easm_fqdn" id="easm_fqdn"
+                     maxlength="253"
+                     pattern="([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}"
+                     title="Enter a valid fully qualified domain name, e.g. host.example.com">
+              <span class="help-block">Fully qualified domain name of the external host to assess</span>
             </div>
           </div>
 
@@ -1649,6 +1662,7 @@ tr.row-running .run-pill { display: inline-flex; }
     else if (x === "printer") { show("printer_div"); req("printer_hosts"); }
     else if (x === "cctv") { show("cctv_div"); req("cctv_hosts"); }
     else if (x === "webapp") { show("webapp_div"); req("url"); }
+    else if (x === "easm") { show("easm_div"); req("easm_fqdn"); }
     else if (x === "host") { show("host_div"); req("host_list"); req("user_name"); req("user_passwd"); }
     else if (x === "win_host") { show("win_host_div"); req("win_host_list"); req("win_user_name"); req("win_user_passwd"); }
     else if (x === "vmware") { show("vmware_div"); req("vcenter_host"); req("vcenter_user"); req("vcenter_passwd"); }
@@ -1792,6 +1806,7 @@ tr.row-running .run-pill { display: inline-flex; }
     } else if (x === "printer") { document.getElementById("printer_hosts").value = scan_obj['printer_hosts']; }
     else if (x === "cctv") { document.getElementById("cctv_hosts").value = scan_obj['cctv_hosts']; }
     else if (x === "webapp") { document.getElementById("url").value = scan_obj['url']; }
+    else if (x === "easm") { document.getElementById("easm_fqdn").value = scan_obj['fqdn']; }
     else if (x === "host") {
       document.getElementById("host_list").value = scan_obj['original_host_list'];
       document.getElementById("user_name").value = scan_obj['user_name'];

@@ -102,6 +102,8 @@ def create_twigs_cmd(config, scan_name, scan_type):
             twigs_cmd = twigs_cmd + " webapp --planfile "+config[scan_name]['plan_file']
         else:
             twigs_cmd = twigs_cmd + " webapp --url "+config[scan_name]['url']
+    elif scan_type == 'easm':
+        twigs_cmd = twigs_cmd + " easm --fqdn "+config[scan_name]['fqdn']
     elif scan_type == 'nmap':
         twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['hosts'] 
         if 'services' in config[scan_name]:
@@ -404,6 +406,8 @@ def add_scan(config, request):
             config[scan_name]['no_ping'] = 'on'
         else:
             config[scan_name]['no_ping'] = 'off'
+    elif scan_type == 'easm':
+        config[scan_name]['fqdn'] = request.form['easm_fqdn']
     elif scan_type == 'nmap':
         config[scan_name]['hosts'] = request.form['hosts']
         items = request.form.items()
