@@ -103,7 +103,7 @@ def create_twigs_cmd(config, scan_name, scan_type):
         else:
             twigs_cmd = twigs_cmd + " webapp --url "+config[scan_name]['url']
     elif scan_type == 'easm':
-        twigs_cmd = twigs_cmd + " easm --fqdn "+config[scan_name]['fqdn']
+        twigs_cmd = twigs_cmd + " easm --seed "+config[scan_name]['fqdn']
     elif scan_type == 'nmap':
         twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['hosts'] 
         if 'services' in config[scan_name]:
