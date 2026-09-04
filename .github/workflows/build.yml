@@ -35,7 +35,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: threatworx/discovery_app:${{ env.TAG_NAME }}, threatworx/discovery_app:latest
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
 
       - name: "tag the build"
         uses: EndBug/latest-tag@latest
