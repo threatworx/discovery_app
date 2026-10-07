@@ -114,6 +114,18 @@ def create_twigs_cmd(config, scan_name, scan_type):
         twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['snmp_hosts'] + " --services snmp --snmp_community " + config[scan_name]['community_str']
         if config[scan_name]['security_name'] != '':
             twigs_cmd = twigs_cmd + " --snmp_security_name "+config[scan_name]['security_name']
+        if config[scan_name].get('snmp_version', '') != '':
+            twigs_cmd = twigs_cmd + " --snmp_version "+config[scan_name]['snmp_version']
+        if config[scan_name].get('snmp_level', '') != '':
+            twigs_cmd = twigs_cmd + " --snmp_level "+config[scan_name]['snmp_level']
+        if config[scan_name].get('snmp_auth_protocol', '') != '':
+            twigs_cmd = twigs_cmd + " --snmp_auth_protocol "+config[scan_name]['snmp_auth_protocol']
+        if config[scan_name].get('snmp_auth_passphrase', '') != '':
+            twigs_cmd = twigs_cmd + " --snmp_auth_passphrase '"+config[scan_name]['snmp_auth_passphrase']+"'"
+        if config[scan_name].get('snmp_priv_protocol', '') != '':
+            twigs_cmd = twigs_cmd + " --snmp_priv_protocol "+config[scan_name]['snmp_priv_protocol']
+        if config[scan_name].get('snmp_priv_passphrase', '') != '':
+            twigs_cmd = twigs_cmd + " --snmp_priv_passphrase '"+config[scan_name]['snmp_priv_passphrase']+"'"
     elif scan_type == 'printer':
         twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['printer_hosts'] + " --services printers" 
     elif scan_type == 'cctv':
@@ -429,6 +441,24 @@ def add_scan(config, request):
         config[scan_name]['security_name'] = ''
         if 'security_name' in request.form and request.form['security_name'] != '':
             config[scan_name]['security_name'] = request.form['security_name']
+        config[scan_name]['snmp_version'] = '1'
+        if 'snmp_version' in request.form and request.form['snmp_version'] != '':
+            config[scan_name]['snmp_version'] = request.form['snmp_version']
+        config[scan_name]['snmp_level'] = ''
+        if 'snmp_level' in request.form and request.form['snmp_level'] != '':
+            config[scan_name]['snmp_level'] = request.form['snmp_level']
+        config[scan_name]['snmp_auth_protocol'] = ''
+        if 'snmp_auth_protocol' in request.form and request.form['snmp_auth_protocol'] != '':
+            config[scan_name]['snmp_auth_protocol'] = request.form['snmp_auth_protocol']
+        config[scan_name]['snmp_auth_passphrase'] = ''
+        if 'snmp_auth_passphrase' in request.form and request.form['snmp_auth_passphrase'] != '':
+            config[scan_name]['snmp_auth_passphrase'] = request.form['snmp_auth_passphrase']
+        config[scan_name]['snmp_priv_protocol'] = ''
+        if 'snmp_priv_protocol' in request.form and request.form['snmp_priv_protocol'] != '':
+            config[scan_name]['snmp_priv_protocol'] = request.form['snmp_priv_protocol']
+        config[scan_name]['snmp_priv_passphrase'] = ''
+        if 'snmp_priv_passphrase' in request.form and request.form['snmp_priv_passphrase'] != '':
+            config[scan_name]['snmp_priv_passphrase'] = request.form['snmp_priv_passphrase']
     elif scan_type == 'printer':
         config[scan_name]['printer_hosts'] = request.form['printer_hosts']
     elif scan_type == 'cctv':

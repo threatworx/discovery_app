@@ -950,8 +950,64 @@ tr.row-running .run-pill { display: inline-flex; }
               <span class="help-block">SNMP community string (defaults to 'public')</span>
             </div>
             <div class="form-group">
+              <label>SNMP Version <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+              <div class="select-wrapper" style="max-width: 340px;">
+                <select name="snmp_version" id="snmp_version">
+                  <option value="1" selected>1</option>
+                  <option value="2c">2c</option>
+                  <option value="3">3</option>
+                </select>
+              </div>
+              <span class="help-block">SNMP protocol version (defaults to '1')</span>
+            </div>
+            <div class="form-group">
               <label>SNMP v3 Security Name <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
               <input type="text" placeholder="security-name" name="security_name" id="security_name" pattern="[a-zA-Z0-9.\/\-_]+">
+            </div>
+            <div class="form-group">
+              <label>SNMP v3 Security Level <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+              <div class="select-wrapper" style="max-width: 340px;">
+                <select name="snmp_level" id="snmp_level">
+                  <option value="" selected>-- none --</option>
+                  <option value="noAuthNoPriv">noAuthNoPriv</option>
+                  <option value="authNoPriv">authNoPriv</option>
+                  <option value="authPriv">authPriv</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>SNMP v3 Auth Protocol <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+              <div class="select-wrapper" style="max-width: 340px;">
+                <select name="snmp_auth_protocol" id="snmp_auth_protocol">
+                  <option value="" selected>-- none --</option>
+                  <option value="MD5">MD5</option>
+                  <option value="SHA">SHA</option>
+                  <option value="SHA-224">SHA-224</option>
+                  <option value="SHA-256">SHA-256</option>
+                  <option value="SHA-384">SHA-384</option>
+                  <option value="SHA-512">SHA-512</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>SNMP v3 Auth Passphrase <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+              <input type="password" placeholder="••••••••" name="snmp_auth_passphrase" id="snmp_auth_passphrase">
+            </div>
+            <div class="form-group">
+              <label>SNMP v3 Privacy Protocol <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+              <div class="select-wrapper" style="max-width: 340px;">
+                <select name="snmp_priv_protocol" id="snmp_priv_protocol">
+                  <option value="" selected>-- none --</option>
+                  <option value="DES">DES</option>
+                  <option value="AES">AES</option>
+                  <option value="AES-192">AES-192</option>
+                  <option value="AES-256">AES-256</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>SNMP v3 Privacy Passphrase <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
+              <input type="password" placeholder="••••••••" name="snmp_priv_passphrase" id="snmp_priv_passphrase">
             </div>
           </div>
 
@@ -1803,6 +1859,12 @@ tr.row-running .run-pill { display: inline-flex; }
       document.getElementById("snmp_hosts").value = scan_obj['snmp_hosts'];
       document.getElementById("community_str").value = scan_obj['community_str'];
       document.getElementById("security_name").value = scan_obj['security_name'];
+      document.getElementById("snmp_version").value = scan_obj['snmp_version'] || '1';
+      document.getElementById("snmp_level").value = scan_obj['snmp_level'] || '';
+      document.getElementById("snmp_auth_protocol").value = scan_obj['snmp_auth_protocol'] || '';
+      if (scan_obj['snmp_auth_passphrase']) document.getElementById("snmp_auth_passphrase").value = scan_obj['snmp_auth_passphrase'];
+      document.getElementById("snmp_priv_protocol").value = scan_obj['snmp_priv_protocol'] || '';
+      if (scan_obj['snmp_priv_passphrase']) document.getElementById("snmp_priv_passphrase").value = scan_obj['snmp_priv_passphrase'];
     } else if (x === "printer") { document.getElementById("printer_hosts").value = scan_obj['printer_hosts']; }
     else if (x === "cctv") { document.getElementById("cctv_hosts").value = scan_obj['cctv_hosts']; }
     else if (x === "webapp") { document.getElementById("url").value = scan_obj['url']; }
