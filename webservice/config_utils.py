@@ -313,6 +313,9 @@ def create_key_file(scan_name, private_key, permissions=0o644):
     os.chmod(pk_file_name, permissions)
     return os.path.basename(pk_file_name)
 
+def split_host_list(host_list):
+    return [h.strip() for h in host_list.split(',') if h.strip()]
+
 def create_host_csv(scan_name, hostname, user, passwd, private_key):
     global CONFIG_PATH
 
@@ -326,14 +329,15 @@ def create_host_csv(scan_name, hostname, user, passwd, private_key):
          fieldnames = ['hostname','userlogin','userpwd','privatekey','assetname']
          writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_NONE, escapechar='\\')
          writer.writeheader()
-         rdict = {}
-         rdict['hostname'] = hostname
-         rdict['userlogin'] = user
-         if pk_file_name:
-             rdict['privatekey'] = pk_file_name 
-         else:
-             rdict['userpwd'] = passwd
-         writer.writerow(rdict)
+         for host in split_host_list(hostname):
+             rdict = {}
+             rdict['hostname'] = host
+             rdict['userlogin'] = user
+             if pk_file_name:
+                 rdict['privatekey'] = pk_file_name
+             else:
+                 rdict['userpwd'] = passwd
+             writer.writerow(rdict)
     return os.path.basename(csv_file)
 
 def create_win_host_csv(scan_name, hostname, user, passwd):
@@ -344,11 +348,12 @@ def create_win_host_csv(scan_name, hostname, user, passwd):
          fieldnames = ['hostname','userlogin','userpwd']
          writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_NONE, escapechar='\\')
          writer.writeheader()
-         rdict = {}
-         rdict['hostname'] = hostname
-         rdict['userlogin'] = user
-         rdict['userpwd'] = passwd
-         writer.writerow(rdict)
+         for host in split_host_list(hostname):
+             rdict = {}
+             rdict['hostname'] = host
+             rdict['userlogin'] = user
+             rdict['userpwd'] = passwd
+             writer.writerow(rdict)
     return os.path.basename(csv_file)
 
 def create_oci_config(scan_name, userid, tenancy, region, key_file):

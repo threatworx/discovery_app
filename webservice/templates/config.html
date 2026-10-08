@@ -1033,7 +1033,8 @@ tr.row-running .run-pill { display: inline-flex; }
             <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
             <div class="form-group">
               <label>Host / IP / Range / CIDR</label>
-              <input type="text" placeholder="10.0.0.1 or 10.0.0.0/24" name="host_list" id="host_list" pattern="[a-zA-Z0-9.\/\-_]+">
+              <input type="text" placeholder="10.0.0.1, 10.0.1.0/24" name="host_list" id="host_list" pattern="[a-zA-Z0-9.\/\-_, ]+">
+              <span class="help-block">Comma-separated host names, IP addresses, ranges, or CIDRs</span>
             </div>
             <div class="form-group">
               <label>SSH Username</label>
@@ -1052,7 +1053,8 @@ tr.row-running .run-pill { display: inline-flex; }
             <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-credentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
             <div class="form-group">
               <label>Host / IP / Range / CIDR</label>
-              <input type="text" placeholder="192.168.1.10" name="win_host_list" id="win_host_list" pattern="[a-zA-Z0-9.\/\-_]+">
+              <input type="text" placeholder="192.168.1.10, 192.168.2.0/24" name="win_host_list" id="win_host_list" pattern="[a-zA-Z0-9.\/\-_, ]+">
+              <span class="help-block">Comma-separated host names, IP addresses, ranges, or CIDRs</span>
             </div>
             <div class="form-group">
               <label>Username</label>
