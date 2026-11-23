@@ -11,6 +11,9 @@ import psutil
 import json
 import traceback
 import requests
+import time
+import tempfile
+from werkzeug.utils import secure_filename
 from distutils.version import LooseVersion
 from flask import Flask
 from flask import request, redirect, render_template, url_for
@@ -119,6 +122,52 @@ def handle_save_config():
     config_utils.write_config(config)
     return redirect(url_for('app_page',auth=authenticator))
 
+@app.route("/upload_sbom", methods=['POST'])
+def upload_sbom():
+    config = config_utils.get_config()
+    authenticator = request.args.get('auth')
+    if not authenticator or authenticator not in authenticators:
+        config.set('discovery_app','error_msg', "Not authenticated")
+        config_utils.write_config(config)
+        return redirect("/")
+
+    def fail(msg):
+        config.set('discovery_app','error_msg', "Error: "+msg)
+        config_utils.write_config(config)
+        return redirect(url_for('app_page',auth=authenticator,tab='sbom'))
+
+    if config['threatworx']['token'] == None or config['threatworx']['token'] == '':
+        return fail("Please save Threatworx credentials before uploading an SBOM")
+
+    sbom_file = request.files.get('sbom_file')
+    standard = request.form.get('sbom_standard', '')
+    sbom_format = request.form.get('sbom_format', '')
+    asset_name = request.form.get('sbom_asset_name', '').strip()
+    if not sbom_file or sbom_file.filename == '':
+        return fail("Please select an SBOM file to upload")
+    if standard not in config_utils.SBOM_STANDARDS:
+        return fail("Invalid SBOM standard '"+standard+"'")
+    if sbom_format not in config_utils.SBOM_FORMATS:
+        return fail("Invalid SBOM format '"+sbom_format+"'")
+    if asset_name == '':
+        return fail("Please specify an asset name")
+
+    run_id = 'sbom' + time.strftime('%Y%m%d%H%M%S')
+    upload_dir = os.path.join(tempfile.gettempdir(), 'tw_sbom_uploads')
+    os.makedirs(upload_dir, mode=0o700, exist_ok=True)
+    input_file = os.path.join(upload_dir, run_id + '_' + (secure_filename(sbom_file.filename) or 'sbom'))
+    sbom_file.save(input_file)
+
+    config_utils.refresh_tw_creds(config)
+    twigs_cmd = config_utils.create_sbom_cmd(config, run_id, input_file, standard, sbom_format, asset_name)
+    subprocess.Popen([twigs_cmd], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
+
+    config.set('discovery_app','last_sbom_run', run_id)
+    config.set('discovery_app','last_sbom_asset', asset_name)
+    config.set('discovery_app','success_msg', "Started SBOM upload for asset '"+asset_name+"'")
+    config_utils.write_config(config)
+    return redirect(url_for('app_page',auth=authenticator,tab='sbom'))
+
 @app.route("/delete_scan", methods=['GET'])
 def delete_config():
     authenticator = request.args.get('auth') 
@@ -167,13 +216,20 @@ def run_config():
 
 @app.route("/view_log", methods=['GET'])
 def view_log():
-    scan_name = request.args.get('scan_name')
+    auth = request.args.get('auth')
+    if not auth or auth not in authenticators:
+        return 'Not authenticated', 401, {'Content-Type': 'text/plain'}
+    scan_name = request.args.get('scan_name') or ''
+    # Only plain log names under /tmp, no path components
+    if scan_name == '' or os.path.basename(scan_name) != scan_name or scan_name.startswith('.'):
+        return 'Invalid log name', 400, {'Content-Type': 'text/plain'}
     log_file = "/tmp/"+scan_name
     
     if os.path.isfile(log_file):
         f = open(log_file, 'r', encoding='latin-1')
         contents = f.read()
         f.close()
+        contents = config_utils.sanitize_log(contents, config_utils.get_config())
 
         return contents, 200, {'Content-Type': 'text/plain'}
     return 'Log for '+scan_name+' not available', 404, {'Content-Type': 'text/plain'}

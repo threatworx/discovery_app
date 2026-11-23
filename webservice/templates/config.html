@@ -370,6 +370,27 @@ header {
 }
 .section-heading i { color: var(--accent); }
 
+/* ─── INLINE EDIT ROW ─── */
+.schedule-table tbody tr.edit-row,
+.schedule-table tbody tr.edit-row:hover { background: var(--surface2); cursor: default; }
+.schedule-table tbody tr.edit-row > td { padding: 4px 14px 18px; }
+.schedule-table tbody tr.edit-row .form-section { margin-bottom: 0; }
+.form-actions { display: flex; align-items: center; gap: 12px; }
+.btn-secondary {
+  background: transparent;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 22px;
+  font-family: var(--sans);
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn-secondary:hover { color: var(--text); border-color: var(--border-bright); }
+
 /* ─── FORM CONTROLS ─── */
 .form-group { margin-bottom: 18px; }
 
@@ -431,6 +452,33 @@ textarea {
   display: block;
 }
 
+input[type=file] {
+  width: 100%;
+  max-width: 540px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px dashed var(--border-bright);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  display: block;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+input[type=file]::file-selector-button {
+  margin-right: 12px;
+  padding: 6px 14px;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--sans);
+  cursor: pointer;
+}
+.last-run-info { font-size: 13px; color: var(--text-muted); margin-top: 18px; }
+.last-run-info a { color: var(--accent); }
+
 textarea:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px var(--accent-glow); }
 
 .help-block {
@@ -480,6 +528,7 @@ select {
 select:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px var(--accent-glow); }
 select option { background: var(--surface); color: var(--text); }
 select option:disabled { color: var(--text-dim); }
+input:disabled, select:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ─── TOGGLE SWITCHES ─── */
 .sw-row input[type=checkbox],
@@ -723,9 +772,68 @@ tr.row-running .run-pill { display: inline-flex; }
     <button class="tab-btn" onclick="openTab(event, 'Schedules')" id="scheduleTab">
       <i class="fa fa-clock-o"></i>&nbsp; Discovery Schedules
     </button>
+    <button class="tab-btn" onclick="openTab(event, 'AddSchedule')" id="addScheduleTab">
+      <i class="fa fa-plus-circle"></i>&nbsp; Add Discovery Schedule
+    </button>
+    <button class="tab-btn" onclick="openTab(event, 'Sbom')" id="sbomTab">
+      <i class="fa fa-upload"></i>&nbsp; Upload SBOM
+    </button>
     <button class="tab-btn" onclick="openTab(event, 'Settings')" id="settingsTab">
       <i class="fa fa-cog"></i>&nbsp; Settings
     </button>
+  </div>
+
+  <!-- SBOM UPLOAD TAB -->
+  <div id="Sbom" class="tabcontent">
+    <form action="/upload_sbom?auth={{data['authenticator']}}" method="post" enctype="multipart/form-data" id="sbom_form">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-upload"></i> Upload SBOM
+        </div>
+        <p class="help-block" style="margin-top:0">One-time upload of a Software Bill of Materials to your ThreatWorx instance. No schedule is created.</p>
+        <div class="settings-grid">
+          <div class="form-group">
+            <label>SBOM File</label>
+            <input type="file" name="sbom_file" id="sbom_file" accept=".json,.csv,.spdx,.txt,.tv" onchange="sbom_file_change()" required>
+            <span class="help-block">Select the SBOM file from your computer</span>
+          </div>
+          <div class="form-group">
+            <label>SBOM Standard</label>
+            <div class="select-wrapper" style="max-width: 340px;">
+              <select name="sbom_standard" id="sbom_standard" required>
+                <option value="cyclonedx" selected>CycloneDX</option>
+                <option value="spdx">SPDX</option>
+                <option value="threatworx">ThreatWorx</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>SBOM Format</label>
+            <div class="select-wrapper" style="max-width: 340px;">
+              <select name="sbom_format" id="sbom_format" required>
+                <option value="json" selected>JSON</option>
+                <option value="csv">CSV</option>
+                <option value="tagvalue">Tag-Value</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Asset Name</label>
+            <input type="text" placeholder="e.g. payments-service" name="sbom_asset_name" id="sbom_asset_name" required>
+            <span class="help-block">Name of the asset in ThreatWorx. It is also used as the asset ID.</span>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" id="sbom_submitbtn">
+          <i class="fa fa-upload"></i> Upload SBOM
+        </button>
+        {% if data['discovery_app']['last_sbom_run'] %}
+        <div class="last-run-info">
+          Last upload: asset <strong>{{data['discovery_app']['last_sbom_asset']}}</strong> &middot;
+          <a href="/view_log?scan_name={{data['discovery_app']['last_sbom_run']}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-file-text-o"></i> View log</a>
+        </div>
+        {% endif %}
+      </div>
+    </form>
   </div>
 
   <!-- SETTINGS TAB -->
@@ -824,7 +932,7 @@ tr.row-running .run-pill { display: inline-flex; }
             <td colspan="8">
               <div class="empty-state">
                 <i class="fa fa-inbox"></i>
-                <p>No discovery schedules configured yet.<br>Add one below to get started.</p>
+                <p>No discovery schedules configured yet.<br>Use the <a href="#" onclick="showTab('addScheduleTab'); return false;">Add Discovery Schedule</a> tab to get started.</p>
               </div>
             </td>
           </tr>
@@ -832,12 +940,15 @@ tr.row-running .run-pill { display: inline-flex; }
         </tbody>
       </table>
     </div>
+  </div>
 
+  <!-- ADD SCHEDULE TAB -->
+  <div id="AddSchedule" class="tabcontent">
     <!-- Add Schedule Form -->
     <form action="/save_scan?auth={{data['authenticator']}}" method="post" id="main_form">
       <div class="form-section">
         <div class="section-heading">
-          <i class="fa fa-plus-circle"></i> Add Discovery Schedule
+          <i class="fa fa-plus-circle" id="form_heading_icon"></i> <span id="form_heading_text">Add Discovery Schedule</span>
         </div>
 
         <div class="form-group">
@@ -1623,9 +1734,14 @@ tr.row-running .run-pill { display: inline-flex; }
         </div>
 
         <br>
-        <button type="submit" class="btn-primary" name="submitbtn" id="submitbtn">
-          <i class="fa fa-plus"></i> Add Schedule
-        </button>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" name="submitbtn" id="submitbtn">
+            <i class="fa fa-plus" id="submitbtn_icon"></i> <span id="submitbtn_text">Add Schedule</span>
+          </button>
+          <button type="button" class="btn-secondary" id="cancel_edit_btn" style="display:none" onclick="close_inline_edit()">
+            <i class="fa fa-times"></i> Cancel
+          </button>
+        </div>
 
       </div>
     </form>
@@ -1688,10 +1804,24 @@ tr.row-running .run-pill { display: inline-flex; }
 
   // ─── TAB LOGIC ───
   function openTab(evt, name) {
+    if (name === 'AddSchedule' && editRow) close_inline_edit();
     document.querySelectorAll('.tabcontent').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById(name).style.display = 'block';
     evt.currentTarget.classList.add('active');
+  }
+
+  // Pre-select the SBOM format from the chosen file's extension
+  function sbom_file_change() {
+    const f = document.getElementById('sbom_file').files[0];
+    if (!f) return;
+    const ext = f.name.split('.').pop().toLowerCase();
+    const fmt = { json: 'json', csv: 'csv', spdx: 'tagvalue', tv: 'tagvalue', txt: 'tagvalue' }[ext];
+    if (fmt) document.getElementById('sbom_format').value = fmt;
+  }
+
+  function showTab(btnId) {
+    document.getElementById(btnId).click();
   }
 
   // ─── MODE CHANGE ───
@@ -1839,7 +1969,6 @@ tr.row-running .run-pill { display: inline-flex; }
 
   function edit_load(scan_name, scan_obj) {
     const mySelect = document.getElementById('scan_type');
-    mySelect.scrollIntoView({ behavior: 'smooth' });
     const event = new Event('change');
     mySelect.value = scan_obj['type'];
     mySelect.dispatchEvent(event);
@@ -1999,17 +2128,74 @@ tr.row-running .run-pill { display: inline-flex; }
   // ─── TABLE ROW CLICK ───
   const table = document.getElementById('schedule_table');
   let selectedRow = null;
+  let editRow = null;
   table.addEventListener('click', function(event) {
+    if (event.target.closest('.schedule-actions') || event.target.closest('.edit-row')) return;
     const clickedRow = event.target.closest('tr');
-    if (clickedRow && clickedRow.parentNode.tagName === 'TBODY') {
-      if (selectedRow) selectedRow.classList.remove('selected-row');
-      clickedRow.classList.add('selected-row');
-      selectedRow = clickedRow;
-      const cells = clickedRow.querySelectorAll('td');
-      const scan_obj = JSON.parse(cells[7].textContent);
-      edit_load(cells[1].textContent.trim(), scan_obj);
-    }
+    if (!clickedRow || clickedRow.parentNode.tagName !== 'TBODY') return;
+    const cells = clickedRow.querySelectorAll('td');
+    if (cells.length < 8) return;
+    // Clicking the row that is already open collapses it
+    if (clickedRow === selectedRow) { close_inline_edit(); return; }
+    open_inline_edit(clickedRow, cells[1].textContent.trim(), JSON.parse(cells[7].textContent));
   });
+
+  // ─── INLINE EDIT ───
+  // The single schedule form is moved into an expanded row beneath the clicked
+  // schedule, and moved back to the Add Discovery Schedule tab when closed.
+  function set_form_mode(scan_name) {
+    const editing = !!scan_name;
+    document.getElementById('form_heading_text').textContent = editing ? 'Edit Schedule: ' + scan_name : 'Add Discovery Schedule';
+    document.getElementById('form_heading_icon').className = editing ? 'fa fa-pencil' : 'fa fa-plus-circle';
+    document.getElementById('submitbtn_text').textContent = editing ? 'Update Schedule' : 'Add Schedule';
+    document.getElementById('submitbtn_icon').className = editing ? 'fa fa-save' : 'fa fa-plus';
+    document.getElementById('cancel_edit_btn').style.display = editing ? '' : 'none';
+    // Discovery type and name identify the schedule, so they are locked while editing.
+    // Disabled fields are not submitted, so hidden copies carry their values in the POST.
+    const form = document.getElementById('main_form');
+    form.querySelectorAll('input.locked-field-value').forEach(el => el.remove());
+    ['scan_type', 'scan_name'].forEach(id => {
+      const field = document.getElementById(id);
+      field.disabled = editing;
+      if (editing) {
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = field.name;
+        hidden.value = field.value;
+        hidden.className = 'locked-field-value';
+        form.appendChild(hidden);
+      }
+    });
+  }
+
+  function open_inline_edit(row, scan_name, scan_obj) {
+    close_inline_edit();
+    const form = document.getElementById('main_form');
+    editRow = document.createElement('tr');
+    editRow.className = 'edit-row';
+    const td = document.createElement('td');
+    td.colSpan = 8;
+    editRow.appendChild(td);
+    row.after(editRow);
+    td.appendChild(form);
+    row.classList.add('selected-row');
+    selectedRow = row;
+    edit_load(scan_name, scan_obj);
+    set_form_mode(scan_name);
+    row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function close_inline_edit() {
+    if (selectedRow) selectedRow.classList.remove('selected-row');
+    selectedRow = null;
+    if (!editRow) return;
+    document.getElementById('AddSchedule').appendChild(document.getElementById('main_form'));
+    editRow.remove();
+    editRow = null;
+    document.getElementById('scan_type').value = '';
+    mode_change();
+    set_form_mode(null);
+  }
 
   function delete_scan(item, authenticator) {
     if (confirm("Delete schedule \"" + item + "\"? This cannot be undone.")) {
@@ -2020,7 +2206,8 @@ tr.row-running .run-pill { display: inline-flex; }
   }
 
   // ─── INIT ───
-  document.getElementById("scheduleTab").click();
+  const initialTab = { sbom: 'sbomTab', settings: 'settingsTab', add: 'addScheduleTab' }[new URLSearchParams(location.search).get('tab')];
+  document.getElementById(initialTab || "scheduleTab").click();
   check_run_status();
   setInterval(check_run_status, 5000);
 
