@@ -80,6 +80,19 @@ def app_page():
     vstr = 'v'+__version__
     upgradestr = check_upgrade()
     data['discovery_app']['version'] = 'v'+__version__+' '+check_upgrade()
+    passive_procs = config_utils.find_passive_procs()
+    try:
+        interfaces = sorted(i for i in psutil.net_if_stats().keys() if i != 'lo')
+    except Exception:
+        interfaces = []
+    data['passive'] = {
+        'running': len(passive_procs) > 0,
+        'interface': config['discovery_app'].get('passive_interface', ''),
+        'run_id': config_utils.PASSIVE_RUN_ID,
+        'report_interval': config_utils.PASSIVE_REPORT_INTERVAL,
+        'interfaces': interfaces,
+        'log_exists': os.path.isfile('/tmp/'+config_utils.PASSIVE_RUN_ID),
+    }
     #del data['threatworx']['token']
     config.remove_option('discovery_app','error_msg')
     config.remove_option('discovery_app','success_msg')
@@ -167,6 +180,71 @@ def upload_sbom():
     config.set('discovery_app','success_msg', "Started SBOM upload for asset '"+asset_name+"'")
     config_utils.write_config(config)
     return redirect(url_for('app_page',auth=authenticator,tab='sbom'))
+
+def _passive_redirect(config, authenticator, error=None, success=None):
+    if error:
+        config.set('discovery_app','error_msg', "Error: "+error)
+    if success:
+        config.set('discovery_app','success_msg', success)
+    config_utils.write_config(config)
+    return redirect(url_for('app_page',auth=authenticator,tab='passive'))
+
+@app.route("/start_passive", methods=['POST'])
+def start_passive():
+    config = config_utils.get_config()
+    authenticator = request.args.get('auth')
+    if not authenticator or authenticator not in authenticators:
+        config.set('discovery_app','error_msg', "Not authenticated")
+        config_utils.write_config(config)
+        return redirect("/")
+
+    if config['threatworx']['token'] == None or config['threatworx']['token'] == '':
+        return _passive_redirect(config, authenticator, error="Please save Threatworx credentials before starting passive discovery")
+
+    interface = request.form.get('passive_interface', '').strip()
+    if not config_utils.valid_interface(interface):
+        return _passive_redirect(config, authenticator, error="Invalid network interface '"+interface+"'")
+
+    if config_utils.find_passive_procs():
+        return _passive_redirect(config, authenticator, error="Passive discovery is already running")
+
+    config.set('discovery_app','passive_interface', interface)
+    config_utils.refresh_tw_creds(config)
+    twigs_cmd = config_utils.create_passive_cmd(config, interface)
+    with open('/tmp/'+config_utils.PASSIVE_RUN_ID, 'w') as log_fd:
+        subprocess.Popen(twigs_cmd, stdin=subprocess.DEVNULL, stdout=log_fd, stderr=subprocess.STDOUT,
+                         close_fds=True, start_new_session=True)
+    return _passive_redirect(config, authenticator, success="Started passive discovery on interface '"+interface+"'")
+
+@app.route("/stop_passive", methods=['POST'])
+def stop_passive():
+    config = config_utils.get_config()
+    authenticator = request.args.get('auth')
+    if not authenticator or authenticator not in authenticators:
+        config.set('discovery_app','error_msg', "Not authenticated")
+        config_utils.write_config(config)
+        return redirect("/")
+
+    procs = config_utils.find_passive_procs()
+    if not procs:
+        return _passive_redirect(config, authenticator, error="Passive discovery is not running")
+
+    # SIGTERM lets twigs stop its capture and clean up; force kill whatever
+    # (including child processes) is still around after a grace period.
+    children = []
+    for p in procs:
+        try:
+            children.extend(p.children(recursive=True))
+            p.terminate()
+        except psutil.Error:
+            pass
+    gone, alive = psutil.wait_procs(procs, timeout=10)
+    for p in alive + [c for c in children if c.is_running()]:
+        try:
+            p.kill()
+        except psutil.Error:
+            pass
+    return _passive_redirect(config, authenticator, success="Stopped passive discovery")
 
 @app.route("/delete_scan", methods=['GET'])
 def delete_config():

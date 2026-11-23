@@ -688,6 +688,20 @@ input:disabled, select:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
 tr.row-running .run-pill { display: inline-flex; }
+.run-pill.is-running { display: inline-flex; }
+.idle-pill {
+  display: inline-flex;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.btn-stop { color: var(--danger); border-color: var(--danger); }
+.btn-stop:hover { color: var(--danger); border-color: var(--danger); background: var(--danger-bg); }
 .run-indicator { display: none; }
 
 .col-status { width: 40px; }
@@ -778,6 +792,9 @@ tr.row-running .run-pill { display: inline-flex; }
     <button class="tab-btn" onclick="openTab(event, 'Sbom')" id="sbomTab">
       <i class="fa fa-upload"></i>&nbsp; Upload SBOM
     </button>
+    <button class="tab-btn" onclick="openTab(event, 'Passive')" id="passiveTab">
+      <i class="fa fa-wifi"></i>&nbsp; Passive Discovery
+    </button>
     <button class="tab-btn" onclick="openTab(event, 'Settings')" id="settingsTab">
       <i class="fa fa-cog"></i>&nbsp; Settings
     </button>
@@ -830,6 +847,46 @@ tr.row-running .run-pill { display: inline-flex; }
         <div class="last-run-info">
           Last upload: asset <strong>{{data['discovery_app']['last_sbom_asset']}}</strong> &middot;
           <a href="/view_log?scan_name={{data['discovery_app']['last_sbom_run']}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-file-text-o"></i> View log</a>
+        </div>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <!-- PASSIVE DISCOVERY TAB -->
+  <div id="Passive" class="tabcontent">
+    {% set passive = data['passive'] %}
+    <form action="/{{ 'stop_passive' if passive['running'] else 'start_passive' }}?auth={{data['authenticator']}}" method="post" id="passive_form">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-wifi"></i> Passive Discovery
+          &nbsp;{% if passive['running'] %}<span class="run-pill is-running">RUNNING</span>{% else %}<span class="idle-pill">STOPPED</span>{% endif %}
+        </div>
+        <p class="help-block" style="margin-top:0">Continuously listens for network traffic on an interface connected to a SPAN / mirror port or TAP and reports discovered devices to ThreatWorx every {{passive['report_interval']}}. Runs until stopped; no schedule is created.</p>
+        <div class="settings-grid">
+          <div class="form-group">
+            <label>Network Interface</label>
+            <input type="text" placeholder="e.g. eth1" name="passive_interface" id="passive_interface" list="passive_interface_list"
+                   value="{{passive['interface']}}" pattern="[A-Za-z0-9_.:@\-]{1,32}" {{ 'disabled' if passive['running'] else 'required' }}>
+            <datalist id="passive_interface_list">
+              {% for iface in passive['interfaces'] %}<option value="{{iface}}">{% endfor %}
+            </datalist>
+            <span class="help-block">Interface to listen on (requires root or CAP_NET_RAW)</span>
+          </div>
+        </div>
+        {% if passive['running'] %}
+        <button type="submit" class="btn-secondary btn-stop" id="passive_stopbtn" onclick="return confirm('Stop passive discovery?');">
+          <i class="fa fa-stop"></i> Stop Passive Discovery
+        </button>
+        {% else %}
+        <button type="submit" class="btn-primary" id="passive_startbtn">
+          <i class="fa fa-play"></i> Start Passive Discovery
+        </button>
+        {% endif %}
+        {% if passive['log_exists'] %}
+        <div class="last-run-info">
+          {% if passive['interface'] %}Interface <strong>{{passive['interface']}}</strong> &middot;{% endif %}
+          <a href="/view_log?scan_name={{passive['run_id']}}&auth={{data['authenticator']}}" target="_blank"><i class="fa fa-file-text-o"></i> View log</a>
         </div>
         {% endif %}
       </div>
@@ -956,20 +1013,11 @@ tr.row-running .run-pill { display: inline-flex; }
           <div class="select-wrapper" style="max-width: 340px;">
             <select name="scan_type" id="scan_type" onchange="mode_change()">
               <option selected value> — select a type — </option>
-              <option disabled>──── AI-SPM  ────</option>
-              <option value="trustmodel">AI Model Evaluation (Powered by TrustModel)</option>
               <option disabled>──── Network ────</option>
               <option value="nmap">Fingerprint scan (uncredentialed)</option>
               <option value="snmp">SNMP scan (network devices)</option>
               <option value="host">Linux deep discovery via SSH</option>
               <option value="win_host">Windows deep discovery via WinRM</option>
-              <option value="vmware">VMware</option>
-              <option value="defender">MS Defender / Office 365</option>
-              <option disabled>──── IoT / OT ────</option>
-              <option value="cisco_meraki">Cisco Meraki</option>
-              <option value="cisco_dna_center">Cisco Catalyst Center (DNA Center)</option>
-              <option value="printer">Printers</option>
-              <option value="cctv">CCTV Cameras</option>
               <option disabled>──── Source Code ────</option>
               <option value="github">Github</option>
               <option value="gitlab">Gitlab</option>
@@ -991,11 +1039,15 @@ tr.row-running .run-pill { display: inline-flex; }
               <option value="oci">OCI CWP (agentless)</option>
               <option value="oci-cspm">OCI CSPM</option>
               <option value="ocr">OCI OCR</option>
-              <option disabled>──── Web ────</option>
-              <option value="webapp">Web application (DAST)</option>
               <option disabled>──── EASM ────</option>
               <option value="easm">External attack surface (EASM)</option>
-              <option disabled>──── CMDB ────</option>
+              <option value="webapp">Web application (DAST)</option>
+              <option disabled>──── Integrations ────</option>
+              <option value="trustmodel">AI Model Evaluation (Powered by TrustModel)</option>
+              <option value="defender">MS Defender / Office 365</option>
+              <option value="vmware">VMware</option>
+              <option value="cisco_meraki">Cisco Meraki</option>
+              <option value="cisco_dna_center">Cisco Catalyst Center (DNA Center)</option>
               <option value="servicenow">Servicenow CMDB</option>
             </select>
           </div>
@@ -1038,6 +1090,8 @@ tr.row-running .run-pill { display: inline-flex; }
                 <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" name="stype_vmware" value='vmware'><span class="sw-track"><span class="sw-thumb"></span></span>VMware Clusters</label>
                 <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" name="stype_os" value='os'><span class="sw-track"><span class="sw-thumb"></span></span>OS Services</label>
                 <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" name="stype_printers" value='printers'><span class="sw-track"><span class="sw-thumb"></span></span>Printers</label>
+                <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" name="stype_cctv" value='cctv'><span class="sw-track"><span class="sw-thumb"></span></span>CCTV Cameras</label>
+                <label class="checkbox-tag" onclick="toggleTag(this)"><input type="checkbox" name="stype_ot" value='ot'><span class="sw-track"><span class="sw-thumb"></span></span>OT Devices</label>
               </div>
               <span class="help-block">Select one or more service classes to discover</span>
             </div>
@@ -1117,24 +1171,6 @@ tr.row-running .run-pill { display: inline-flex; }
             <div class="form-group">
               <label>SNMP v3 Privacy Passphrase <span style="font-weight:400; text-transform:none; color: var(--text-dim)">(optional)</span></label>
               <input type="password" placeholder="••••••••" name="snmp_priv_passphrase" id="snmp_priv_passphrase">
-            </div>
-          </div>
-
-          <div id="printer_div">
-            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
-            <div class="form-group">
-              <label>Printer IPs / Ranges / CIDRs</label>
-              <input type="text" placeholder="192.168.1.0/24" name="printer_hosts" id="printer_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
-              <span class="help-block">Comma-separated network printer IP addresses, ranges, or CIDRs</span>
-            </div>
-          </div>
-
-          <div id="cctv_div">
-            <a class="info-link" target="_blank" href="https://threatworx.io/docs/twigs-uncredentialed-discovery/"><i class="fa fa-info-circle"></i> View documentation</a>
-            <div class="form-group">
-              <label>CCTV / Camera IPs / Ranges / CIDRs</label>
-              <input type="text" placeholder="192.168.2.0/24" name="cctv_hosts" id="cctv_hosts" required pattern="[a-zA-Z0-9.\/\-_,]+">
-              <span class="help-block">Comma-separated CCTV / camera device IP addresses, ranges, or CIDRs</span>
             </div>
           </div>
 
@@ -1843,10 +1879,14 @@ tr.row-running .run-pill { display: inline-flex; }
     const show = id => document.getElementById(id).style.display = 'block';
     const req = id => document.getElementById(id).required = true;
 
-    if (x === "nmap") { show("nmap_div"); req("hosts"); }
+    if (x === "nmap") {
+      show("nmap_div"); req("hosts");
+      document.querySelectorAll('#nmap_div [name^="stype_"]').forEach(item => {
+        item.value = item.name.replace('stype_','');
+        setSw(null, item.name === 'stype_web', item);
+      });
+    }
     else if (x === "snmp") { show("snmp_div"); req("snmp_hosts"); }
-    else if (x === "printer") { show("printer_div"); req("printer_hosts"); }
-    else if (x === "cctv") { show("cctv_div"); req("cctv_hosts"); }
     else if (x === "webapp") { show("webapp_div"); req("url"); }
     else if (x === "easm") { show("easm_div"); req("easm_fqdn"); }
     else if (x === "host") { show("host_div"); req("host_list"); req("user_name"); req("user_passwd"); }
@@ -1968,6 +2008,11 @@ tr.row-running .run-pill { display: inline-flex; }
   }
 
   function edit_load(scan_name, scan_obj) {
+    // Legacy printer / CCTV schedules are now fingerprint schedules with the matching service class
+    const legacy = { printer: ['printer_hosts', 'printers'], cctv: ['cctv_hosts', 'cctv'] }[scan_obj['type']];
+    if (legacy) {
+      scan_obj = Object.assign({}, scan_obj, { type: 'nmap', hosts: scan_obj[legacy[0]], services: legacy[1] });
+    }
     const mySelect = document.getElementById('scan_type');
     const event = new Event('change');
     mySelect.value = scan_obj['type'];
@@ -1994,9 +2039,7 @@ tr.row-running .run-pill { display: inline-flex; }
       if (scan_obj['snmp_auth_passphrase']) document.getElementById("snmp_auth_passphrase").value = scan_obj['snmp_auth_passphrase'];
       document.getElementById("snmp_priv_protocol").value = scan_obj['snmp_priv_protocol'] || '';
       if (scan_obj['snmp_priv_passphrase']) document.getElementById("snmp_priv_passphrase").value = scan_obj['snmp_priv_passphrase'];
-    } else if (x === "printer") { document.getElementById("printer_hosts").value = scan_obj['printer_hosts']; }
-    else if (x === "cctv") { document.getElementById("cctv_hosts").value = scan_obj['cctv_hosts']; }
-    else if (x === "webapp") { document.getElementById("url").value = scan_obj['url']; }
+    } else if (x === "webapp") { document.getElementById("url").value = scan_obj['url']; }
     else if (x === "easm") { document.getElementById("easm_fqdn").value = scan_obj['fqdn']; }
     else if (x === "host") {
       document.getElementById("host_list").value = scan_obj['original_host_list'];
@@ -2206,7 +2249,7 @@ tr.row-running .run-pill { display: inline-flex; }
   }
 
   // ─── INIT ───
-  const initialTab = { sbom: 'sbomTab', settings: 'settingsTab', add: 'addScheduleTab' }[new URLSearchParams(location.search).get('tab')];
+  const initialTab = { sbom: 'sbomTab', passive: 'passiveTab', settings: 'settingsTab', add: 'addScheduleTab' }[new URLSearchParams(location.search).get('tab')];
   document.getElementById(initialTab || "scheduleTab").click();
   check_run_status();
   setInterval(check_run_status, 5000);

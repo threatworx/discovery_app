@@ -2,8 +2,10 @@ services:
     discovery_app:
         image: threatworx/discovery_app:latest
         container_name: threatworx_discovery_app
-        ports:
-            - 443:443
+        # Host networking so passive discovery can listen on the host's
+        # SPAN / mirror / TAP interfaces. The app is served directly on
+        # the host's port 443 (port mappings don't apply in host mode).
+        network_mode: host
         volumes:
             - ./config:/opt/discovery_app/config
         restart: always

@@ -274,6 +274,35 @@ def create_sbom_cmd(config, run_id, input_file, standard, sbom_format, asset_nam
     twigs_cmd = twigs_cmd + ' 1> /tmp/' + q(run_id) + ' 2>&1; rm -f ' + q(input_file)
     return twigs_cmd
 
+# Passive discovery: a single long-running `twigs passive` process listening
+# on a network interface. It has no schedule; it is started and stopped from
+# the UI. Its output goes to /tmp/<PASSIVE_RUN_ID> (viewable via /view_log).
+PASSIVE_RUN_ID = 'tw_passive_discovery'
+PASSIVE_REPORT_INTERVAL = '15m'
+_IFACE_RE = re.compile(r'^[A-Za-z0-9_.:@-]{1,32}$')
+
+def valid_interface(iface):
+    return bool(iface) and _IFACE_RE.match(iface) is not None
+
+def create_passive_cmd(config, interface):
+    twigs_log = config['discovery_app'].get('log_level', 'info')
+    log_switch = '-vv' if twigs_log == 'debug' else '-v'
+    return [twigs_bin, log_switch, '--run_id', PASSIVE_RUN_ID, 'passive',
+            '--interface', interface, '--continuous',
+            '--report_interval', PASSIVE_REPORT_INTERVAL]
+
+def find_passive_procs():
+    import psutil
+    procs = []
+    for p in psutil.process_iter():
+        try:
+            cl = p.cmdline()
+            if '--run_id' in cl and PASSIVE_RUN_ID in cl and 'passive' in cl:
+                procs.append(p)
+        except Exception:
+            pass
+    return procs
+
 def create_cron_entry(config, scan_name, twigs_cmd):
     if config[scan_name]['type'] == 'trustmodel':
         return
@@ -481,10 +510,6 @@ def add_scan(config, request):
         config[scan_name]['snmp_priv_passphrase'] = ''
         if 'snmp_priv_passphrase' in request.form and request.form['snmp_priv_passphrase'] != '':
             config[scan_name]['snmp_priv_passphrase'] = request.form['snmp_priv_passphrase']
-    elif scan_type == 'printer':
-        config[scan_name]['printer_hosts'] = request.form['printer_hosts']
-    elif scan_type == 'cctv':
-        config[scan_name]['cctv_hosts'] = request.form['cctv_hosts']
     elif scan_type == 'host':
         config[scan_name]['original_host_list'] = request.form['host_list']
         if 'user_private_key' in request.form:
