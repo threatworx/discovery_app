@@ -67,44 +67,6 @@ def write_config(config):
         config.write(fd)
 
 # refresh TW credentials to local auth file for use with twigs command
-# Secrets that twigs (or the HTTP libraries it uses at debug level) can print,
-# e.g. "POST /api/v1/...?handle=x&token=SECRET". They are masked before the
-# log is written to disk and again when a log is viewed.
-SECRET_KEYS = r'(?:token|access_token|api_key|apikey|password|passwd|secret|client_secret)'
-_SECRET_PATTERNS = [
-    # key=value in URLs / query strings
-    (re.compile(r'(\b' + SECRET_KEYS + r'=)[^&\s"\']+', re.I), r'\1********'),
-    # "key": "value" in JSON
-    (re.compile(r'("' + SECRET_KEYS + r'"\s*:\s*")[^"]*', re.I), r'\1********'),
-    # --token value on command lines
-    (re.compile(r'(--' + SECRET_KEYS + r'[\s=]+)\S+', re.I), r'\1********'),
-    # Authorization headers
-    (re.compile(r'(Authorization[\'"]?\s*[:=]\s*[\'"]?(?:Bearer|Basic|Token)\s+)[^\s\'",}]+', re.I), r'\1********'),
-]
-
-# Same rules as _SECRET_PATTERNS, as a GNU sed filter for the shell pipeline.
-# Must not contain '%' since the command also ends up in crontab.
-_K = 'token|access_token|api_key|apikey|password|passwd|secret|client_secret'
-LOG_SANITIZER = ("sed -u -E "
-    "-e 's/(\\b(" + _K + ")=)[^&[:space:]\"'\"'\"'\"]+/\\1********/Ig' "
-    "-e 's/(\"(" + _K + ")\"[[:space:]]*:[[:space:]]*\")[^\"]*/\\1********/Ig' "
-    "-e 's/(--(" + _K + ")[[:space:]=]+)[^[:space:]]+/\\1********/Ig' "
-    "-e 's/(Authorization[\"'\"'\"'\"]?[[:space:]]*[:=][[:space:]]*[\"'\"'\"'\"]?(Bearer|Basic|Token)[[:space:]]+)[^[:space:]\"'\"'\"'\",}]+/\\1********/Ig'")
-
-def sanitize_log(text, config=None):
-    for pattern, repl in _SECRET_PATTERNS:
-        text = pattern.sub(repl, text)
-    # Also mask the configured ThreatWorx token wherever it appears verbatim
-    if config is not None:
-        token = config['threatworx'].get('token', '')
-        if token and len(token) >= 8:
-            text = text.replace(token, '********')
-    return text
-
-# Redirect all output of a shell command into a sanitized log file
-def log_redirect(log_file):
-    return " 2>&1 | " + LOG_SANITIZER + " > " + log_file
-
 def refresh_tw_creds(config):
     os.system('mkdir -p '+os.path.expanduser('~/.tw'))
     tw_dict = {}
@@ -293,7 +255,7 @@ def create_twigs_cmd(config, scan_name, scan_type):
         if 'repository' in config[scan_name] and config[scan_name]['repository'] != '':
             twigs_cmd = twigs_cmd + " --repository "+config[scan_name]['repository']
 
-    twigs_cmd = twigs_cmd + log_redirect("/tmp/"+scan_name)
+    twigs_cmd = twigs_cmd + " 1> /tmp/"+scan_name+" 2>&1"
     return twigs_cmd
 
 SBOM_STANDARDS = ('cyclonedx', 'spdx', 'threatworx')
@@ -309,7 +271,7 @@ def create_sbom_cmd(config, run_id, input_file, standard, sbom_format, asset_nam
     twigs_cmd = ' '.join([twigs_bin, log_switch, '--run_id', q(run_id), 'sbom',
         '--input', q(input_file), '--standard', q(standard), '--format', q(sbom_format),
         '--assetid', q(asset_name), '--assetname', q(asset_name)])
-    twigs_cmd = twigs_cmd + log_redirect('/tmp/' + q(run_id)) + '; rm -f ' + q(input_file)
+    twigs_cmd = twigs_cmd + ' 1> /tmp/' + q(run_id) + ' 2>&1; rm -f ' + q(input_file)
     return twigs_cmd
 
 def create_cron_entry(config, scan_name, twigs_cmd):

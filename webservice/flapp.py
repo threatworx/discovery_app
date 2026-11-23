@@ -229,7 +229,6 @@ def view_log():
         f = open(log_file, 'r', encoding='latin-1')
         contents = f.read()
         f.close()
-        contents = config_utils.sanitize_log(contents, config_utils.get_config())
 
         return contents, 200, {'Content-Type': 'text/plain'}
     return 'Log for '+scan_name+' not available', 404, {'Content-Type': 'text/plain'}
