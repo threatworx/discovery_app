@@ -960,8 +960,8 @@ tr.row-running .run-pill { display: inline-flex; }
         </thead>
         <tbody>
           {% set has_schedules = [] %}
-          {% for item in data %}
-          {% if item != 'threatworx' and item != 'discovery_app' and item != 'authenticator' %}
+          {% for item in escaped_data %}
+          {% if item != 'threatworx' and item != 'discovery_app' %}
           {% set _ = has_schedules.append(1) %}
           <tr class="plugin-row" id="loading-dots-{{item}}">
             <td>
@@ -1192,6 +1192,12 @@ tr.row-running .run-pill { display: inline-flex; }
             </label>
             <input type="password" placeholder="SSH password" name="user_passwd" id="user_passwd">
             <textarea placeholder="Paste private key contents here" name="user_private_key" id="user_private_key" rows="5" style="display: none"></textarea>
+            <label class="sw-row" style="margin-top: 14px;" onclick="toggleSwRow(this)">
+              <input type="checkbox" name="host_shadow_ai" id="host_shadow_ai">
+              <span class="sw-track"><span class="sw-thumb"></span></span>
+              <span class="sw-row-label">Discover shadow AI</span>
+            </label>
+            <span class="help-block">AI desktop apps, CLI tools, local LLM runtimes, IDE / browser AI extensions, local models, AI provider credentials (presence only), AI SDK packages and AI chat site visits</span>
           </div>
 
           <div id="win_host_div">
@@ -1210,6 +1216,12 @@ tr.row-running .run-pill { display: inline-flex; }
               <input type="password" placeholder="••••••••" name="win_user_passwd" id="win_user_passwd">
               <span class="help-block">DOMAIN is optional in the username field</span>
             </div>
+            <label class="sw-row" onclick="toggleSwRow(this)">
+              <input type="checkbox" name="win_host_shadow_ai" id="win_host_shadow_ai">
+              <span class="sw-track"><span class="sw-thumb"></span></span>
+              <span class="sw-row-label">Discover shadow AI</span>
+            </label>
+            <span class="help-block">AI desktop apps, CLI tools, local LLM runtimes, IDE / browser AI extensions, local models, AI provider credentials (presence only), AI SDK packages, AI chat site visits and WSL environments</span>
           </div>
 
           <div id="meraki_div">
@@ -2046,10 +2058,12 @@ tr.row-running .run-pill { display: inline-flex; }
       document.getElementById("user_name").value = scan_obj['user_name'];
       if (scan_obj['user_passwd']) document.getElementById("user_passwd").value = scan_obj['user_passwd'];
       if (scan_obj['user_private_key']) document.getElementById("user_private_key").value = scan_obj['user_private_key'];
+      setSw('host_shadow_ai', scan_obj['shadow_ai'] === 'on');
     } else if (x === "win_host") {
       document.getElementById("win_host_list").value = scan_obj['original_win_host_list'];
       document.getElementById("win_user_name").value = scan_obj['win_user_name'];
       document.getElementById("win_user_passwd").value = scan_obj['win_user_passwd'];
+      setSw('win_host_shadow_ai', scan_obj['shadow_ai'] === 'on');
     } else if (x === "vmware") {
       document.getElementById("vcenter_host").value = scan_obj['vcenter_host'];
       document.getElementById("vcenter_user").value = scan_obj['vcenter_user'];

@@ -133,8 +133,12 @@ def create_twigs_cmd(config, scan_name, scan_type):
         twigs_cmd = twigs_cmd + " nmap --hosts "+config[scan_name]['cctv_hosts'] + " --services cctv" 
     elif scan_type == 'host':
         twigs_cmd = twigs_cmd + " host --host_list "+CONFIG_PATH+config[scan_name]['host_list']
+        if config[scan_name].get('shadow_ai', 'off') == 'on':
+            twigs_cmd = twigs_cmd + " --shadow_ai --shadow_ai_check_credentials --shadow_ai_check_packages --shadow_ai_check_browsing"
     elif scan_type == 'win_host':
         twigs_cmd = twigs_cmd + " win_host --host_list "+CONFIG_PATH+config[scan_name]['win_host_list']
+        if config[scan_name].get('shadow_ai', 'off') == 'on':
+            twigs_cmd = twigs_cmd + " --shadow_ai --shadow_ai_check_credentials --shadow_ai_check_packages --shadow_ai_check_browsing --shadow_ai_check_wsl"
     elif scan_type == 'vmware':
         twigs_cmd = twigs_cmd + " vmware --host "+config[scan_name]['vcenter_host']+" --user "+config[scan_name]['vcenter_user']+" --password '"+config[scan_name]['vcenter_passwd']+"'"
     elif scan_type == 'cisco_meraki':
@@ -517,11 +521,13 @@ def add_scan(config, request):
         config[scan_name]['user_name'] = request.form['user_name']
         config[scan_name]['user_passwd'] = request.form['user_passwd']
         config[scan_name]['host_list'] = create_host_csv(scan_name, request.form['host_list'], request.form['user_name'], request.form['user_passwd'], request.form['user_private_key'])
+        config[scan_name]['shadow_ai'] = 'on' if 'host_shadow_ai' in request.form else 'off'
     elif scan_type == 'win_host':
         config[scan_name]['original_win_host_list'] = request.form['win_host_list']
         config[scan_name]['win_user_name'] = request.form['win_user_name']
         config[scan_name]['win_user_passwd'] = request.form['win_user_passwd']
         config[scan_name]['win_host_list'] = create_win_host_csv(scan_name, request.form['win_host_list'], request.form['win_user_name'], request.form['win_user_passwd'])
+        config[scan_name]['shadow_ai'] = 'on' if 'win_host_shadow_ai' in request.form else 'off'
     elif scan_type == 'vmware':
         config[scan_name]['vcenter_host'] = request.form['vcenter_host']
         config[scan_name]['vcenter_user'] = request.form['vcenter_user']
